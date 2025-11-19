@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://btr4l7o8r7pij"]
+
+[ext_resource type="Script" uid="uid://xethu4nx0h3i" path="res://game/player/player.gd" id="1_wv0h6"]
+[ext_resource type="PackedScene" uid="uid://dg64otbli3ts0" path="res://game/player/models/char.glb" id="2_r5dqo"]
+[ext_resource type="PackedScene" uid="uid://bhup8668lipr" path="res://game/cameras/PlayerCamera.tscn" id="3_e8u23"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e8u23"]
+size = Vector3(0.3, 1.27, 0.7)
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_wv0h6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+shape = SubResource("BoxShape3D_e8u23")
+
+[node name="Nameplate" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.47989, 0)
+billboard = 1
+
+[node name="Model" parent="." instance=ExtResource("2_r5dqo")]
+
+[node name="PlayerCamera" parent="." instance=ExtResource("3_e8u23")]
+transform = Transform3D(-4.33111e-08, -0.135024, 0.990842, -5.90208e-09, 0.990842, 0.135024, -1, 0, -4.37114e-08, 2.30182, 1.09487, 0.32583)
+fov = 58.5831

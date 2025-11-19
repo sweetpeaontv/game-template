@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://b46nucqwh0xsl"]
+
+[ext_resource type="PackedScene" uid="uid://bpuwfdi56xoau" path="res://game/worlds/models/cube.glb" id="1_bcxc4"]
+[ext_resource type="Script" uid="uid://ljdti2hjik14" path="res://game/worlds/SpawnManager.gd" id="2_5geq7"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_bfthn"]
+size = Vector2(15, 15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8mhuu"]
+size = Vector3(15, 0, 15)
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_bcxc4"]
+
+[sub_resource type="Sky" id="Sky_5geq7"]
+sky_material = SubResource("PhysicalSkyMaterial_bcxc4")
+
+[sub_resource type="Environment" id="Environment_bcxc4"]
+background_mode = 2
+sky = SubResource("Sky_5geq7")
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bcxc4"]
+size = Vector3(2, 2, 2)
+
+[node name="GameWorld" type="Node3D"]
+
+[node name="GroundPlane" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.00393, 0, 0, 0, 1.00393, 0, 0, 0, 1.00393, 0, 0, 0)
+mesh = SubResource("PlaneMesh_bfthn")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="GroundPlane"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GroundPlane/StaticBody3D"]
+shape = SubResource("BoxShape3D_8mhuu")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_bcxc4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.570714, 0.778561, 0.376408, -0.502155, -5, 10, -3)
+light_energy = 2.0
+shadow_enabled = true
+
+[node name="cube" parent="." instance=ExtResource("1_bcxc4")]
+transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 2, 0, 4)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="cube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="cube/StaticBody3D"]
+transform = Transform3D(1.00128, 0, 0, 0, 1.00128, 0, 0, 0, 1.00128, 0, 1, 0)
+shape = SubResource("BoxShape3D_bcxc4")
+
+[node name="SpawnManager" type="Node3D" parent="."]
+script = ExtResource("2_5geq7")
