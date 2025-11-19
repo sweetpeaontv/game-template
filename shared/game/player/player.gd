@@ -8,7 +8,7 @@ const JUMP_VELOCITY = 4.5
 
 func _ready() -> void:
 	var peer_id = get_multiplayer_authority()
-	print("Player: _ready - peer_id: ", peer_id)
+	print("Player: _ready - peer_id: ", peer_id, ", is_server: ", multiplayer.is_server())
 	
 	# Set nameplate to peer_id
 	setNameplate(str(peer_id))

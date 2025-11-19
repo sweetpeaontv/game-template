@@ -41,8 +41,8 @@ how scenes are actually loaded.
 signal scene_ready(scene_name)
 
 var _scenes := {
-	"MainMenu": preload("res://ui/screens/MainMenu.tscn"),
-	"GameWorld": preload("res://game/worlds/GameWorld.tscn"),
+	"MainMenu": preload("res://app/ui/screens/MainMenu.tscn"),
+	"GameWorld": preload("res://shared/game/worlds/GameWorld.tscn"),
 }
 
 var _pending_scene_name: String = ""

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cdc8tlmpl0vw5"]
 
-[ext_resource type="Script" uid="uid://dmkuhcp8tr3s6" path="res://ui/screens/StartGameModal.gd" id="1_5u5uc"]
+[ext_resource type="Script" uid="uid://dmkuhcp8tr3s6" path="res://app/ui/screens/StartGameModal.gd" id="1_5u5uc"]
 
 [node name="StartGameModal" type="Node2D"]
 script = ExtResource("1_5u5uc")

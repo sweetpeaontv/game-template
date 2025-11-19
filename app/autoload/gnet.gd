@@ -400,9 +400,18 @@ func _on_peer_connected(peer_id: int):
 	_update_player_directory()
 	
 	# Handle late join spawning if we're already playing
-	if Engine.has_singleton("GameManager") and GameManager.state == GameManager.SessionState.PLAYING:
-		if allow_late_join and autospawn_on_join:
-			spawn_requested.emit(peer_id)
+	# Check ServerGameManager state if available, otherwise check GameManager
+	var is_playing := false
+	if Engine.has_singleton("ServerGameManager"):
+		# Check server game state (GameState.PLAYING = 1)
+		var server_state = ServerGameManager.get_game_state()
+		is_playing = server_state == 1  # PLAYING
+	elif Engine.has_singleton("GameManager"):
+		# Fallback to GameManager state
+		is_playing = GameManager.state == GameManager.SessionState.PLAYING
+	
+	if is_playing and allow_late_join and autospawn_on_join:
+		spawn_requested.emit(peer_id)
 	
 	peer_connected.emit(peer_id)
 
@@ -530,8 +539,9 @@ func _update_player_directory() -> void:
 
 func _on_game_state_changed(new_state) -> void:
 	"""Called when game session state changes."""
-	# Clear players when returning to IDLE
-	if new_state == GameManager.SessionState.IDLE:
+	# Clear players when returning to IDLE (client state)
+	# IDLE = 1 in SessionState enum
+	if new_state == 1:  # IDLE
 		players.clear()
 		player_directory_changed.emit(players)
 
@@ -565,7 +575,13 @@ func get_player_name(peer_id: int) -> String:
 ## end PLAYER METADATA ##
 
 func _exit_tree():
-	"""Clean up Steam on exit."""
+	"""Clean up multiplayer connection and Steam on exit."""
+	# Disconnect from any active multiplayer session
+	if multiplayer.has_multiplayer_peer():
+		print("GNet: Cleaning up multiplayer connection on exit...")
+		disconnect_game()
+	
+	# Clean up Steam
 	if steam_initialized:
 		if steam:
 			steam.steamShutdown()

@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://b46nucqwh0xsl"]
 
-[ext_resource type="PackedScene" uid="uid://bpuwfdi56xoau" path="res://game/worlds/models/cube.glb" id="1_bcxc4"]
-[ext_resource type="Script" uid="uid://ljdti2hjik14" path="res://game/worlds/SpawnManager.gd" id="2_5geq7"]
+[ext_resource type="PackedScene" uid="uid://bpuwfdi56xoau" path="res://shared/game/worlds/models/cube.glb" id="1_bcxc4"]
+[ext_resource type="Script" uid="uid://ljdti2hjik14" path="res://shared/game/worlds/SpawnManager.gd" id="2_5geq7"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_bfthn"]
 size = Vector2(15, 15)
