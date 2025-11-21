@@ -2,50 +2,43 @@ extends CharacterBody3D
 
 @onready var nameplate := $Nameplate
 @onready var camera := $PlayerCamera
+@onready var input: PlayerInput = $Input
+@onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
 
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
+var peer_id: int = 0
+
+@export var speed = 4.0
+@export var gravity: float = 9.8
 
 func _ready() -> void:
-	var peer_id = get_multiplayer_authority()
-	print("Player: _ready - peer_id: ", peer_id, ", is_server: ", multiplayer.is_server())
-	
-	# Set nameplate to peer_id
+	await get_tree().process_frame
+
+	set_multiplayer_authority(1)
+	input.set_multiplayer_authority(peer_id)
+	rollback_synchronizer.process_settings()
+
 	setNameplate(str(peer_id))
-	
-	# Only set camera as current for the local player
-	if multiplayer.has_multiplayer_peer() and peer_id == multiplayer.get_unique_id():
-		camera.current = true
-		print("Player: Set camera as current for peer_id: ", peer_id)
 
-func _physics_process(delta: float) -> void:
-	# Only process movement for the player we have authority over
-	if not multiplayer.has_multiplayer_peer():
+func _rollback_tick(_delta, _tick, _is_fresh):
+	if not input:
+		push_error("Player: Input node not found!")
 		return
-	
-	if get_multiplayer_authority() != multiplayer.get_unique_id():
-		return
-	
-	# Add the gravity.
+
+	# Apply gravity if not on floor
 	if not is_on_floor():
-		velocity += get_gravity() * delta
-
-	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+		velocity.y -= gravity * NetworkTime.ticktime
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+		# Reset vertical velocity when on floor (optional: allows for jumping)
+		velocity.y = 0.0
 
+	# Apply horizontal movement from input
+	var horizontal_movement = input.movement.normalized() * speed
+	velocity.x = horizontal_movement.x
+	velocity.z = horizontal_movement.z
+
+	velocity *= NetworkTime.physics_factor
 	move_and_slide()
+	velocity /= NetworkTime.physics_factor
 
 func setNameplate(player_name: String) -> void:
 	if nameplate:
