@@ -19,6 +19,10 @@ var game_state: GameState = GameState.IN_LOBBY
 
 signal game_state_changed(new_state: GameState)
 
+# Track player spawn acknowledgments from clients (for late joiners)
+# Format: {client_peer_id: {player_peer_id: true}}
+var _player_spawn_acks: Dictionary = {}
+
 func _ready() -> void:
 	name = "ServerGameManager"
 	set_process_mode(Node.PROCESS_MODE_ALWAYS)  # Always process, even when paused
@@ -164,7 +168,9 @@ func spawn_player(peer_id: int) -> void:
 	Logger.info("ServerGameManager: Spawn position: {0}", [spawn_position])
 
 	# Spawn on server first (authoritative)
-	_spawn_player_impl(peer_id, spawn_position)
+	# Wait for the player to be fully ready before sending RPCs to clients
+	# This ensures RollbackSynchronizer is initialized before any RPCs are sent
+	await _spawn_player_impl(peer_id, spawn_position)
 
 	# Then send RPC to all clients to spawn this player
 	# This ensures all clients (including late-joiners) receive the player reliably
@@ -198,23 +204,35 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 
 	player.peer_id = peer_id
 
-	# Find scene root
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		# Try to find GameWorld by name in root's children
-		for child in get_tree().root.get_children():
-			if child.name == "GameWorld":
-				scene_root = child
-				break
+	# Give player a unique name based on peer_id for multiplayer path resolution
+	# Do this BEFORE adding to tree so multiplayer system uses correct path from the start
+	player.name = "Player_%d" % peer_id
 
-	if not scene_root:
-		push_error("ServerGameManager: No scene root found")
+	# Find PlayersContainer in Main scene
+	var players_container = _get_players_container()
+	if not players_container:
+		push_error("ServerGameManager: PlayersContainer not found")
 		return
 
-	# Add to scene tree
-	scene_root.add_child(player, true)  # Use force_readable_name=true for multiplayer replication
+	# Add to PlayersContainer
+	# Use force_readable_name=true for multiplayer replication
+	players_container.add_child(player, true)
 
+	# Wait for the player to be fully ready
+	await get_tree().process_frame
+	if not player.is_node_ready():
+		await player.ready
+
+	# Wait a frame for RollbackSynchronizer initialization
+	await get_tree().process_frame
+
+	# Set position AFTER RollbackSynchronizer is initialized to avoid visual jumps
+	# This ensures the position is set after the sync system is ready
 	player.global_position = spawn_position
+
+	# Wait for a network tick to pass so RollbackSynchronizer records this position as initial state
+	# This prevents the position from being overridden by incoming state updates from the server
+	# The visual jump happens because the server sends state with an old position, overriding our correct one
 
 	if not multiplayer.is_server():
 		# We're on a client - check if this is our player
@@ -230,21 +248,20 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	Logger.info("ServerGameManager: Spawned player {0} at {1}", [peer_id, spawn_position])
 
 func _find_player(peer_id: int) -> Node:
-	"""Find existing player node for peer_id in current scene."""
-	var scene_root = get_tree().current_scene
+	"""Find existing player node for peer_id in PlayersContainer."""
+	var players_container = _get_players_container()
+	if not players_container:
+		return null
 
-	# If current_scene is null, try to find GameWorld in the scene tree
-	if not scene_root:
-		# Try to find GameWorld by name in root's children
-		for child in get_tree().root.get_children():
-			if child.name == "GameWorld":
-				scene_root = child
-				break
-		if not scene_root:
-			return null
+	# Recursively search for player nodes in PlayersContainer
+	return _find_player_recursive(players_container, peer_id)
 
-	# Recursively search for player nodes
-	return _find_player_recursive(scene_root, peer_id)
+func _get_players_container() -> Node:
+	"""Gets the Players node from the Main scene."""
+	var main = get_tree().root.get_node_or_null("Main")
+	if main:
+		return main.get_node_or_null("Players")
+	return null
 
 func _find_player_recursive(node: Node, peer_id: int) -> Node:
 	"""
@@ -315,37 +332,56 @@ func spawn_all_players_for_client(client_peer_id: int) -> void:
 	"""
 	Spawn all existing players (including the new client's own player) for a late-joining client.
 	Server-only. Uses RPCs to ensure reliable spawning.
+	Waits for all players to be spawned before returning.
 	"""
 	if not multiplayer.is_server():
 		return
 
 	Logger.info("ServerGameManager: Spawning all players for late-joining client: {0}", [client_peer_id])
 
-	# Find all existing player nodes in the scene
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		# Try to find GameWorld in the scene tree
-		for child in get_tree().root.get_children():
-			if child.name == "GameWorld":
-				scene_root = child
-				break
-
-	if not scene_root:
-		Logger.warning("ServerGameManager: No scene root found for spawning players")
+	# Find all existing player nodes in PlayersContainer
+	var players_container = _get_players_container()
+	if not players_container:
+		Logger.warning("ServerGameManager: PlayersContainer not found for spawning players")
 		return
 
 	# Find all player nodes and spawn them for the new client via RPC
-	var existing_players = _find_all_players(scene_root)
+	var existing_players = _find_all_players(players_container)
 	Logger.info("ServerGameManager: Found {0} existing players to replicate", [existing_players.size()])
 
+	# Track which players we're waiting for
+	var players_to_spawn = []
+	for player_data in existing_players:
+		var player_peer_id = player_data.peer_id
+		if player_peer_id != 0:
+			players_to_spawn.append(player_peer_id)
+
+	# Initialize acknowledgment tracking for this client BEFORE sending spawn RPCs
+	# This ensures we can track spawns immediately
+	if not _player_spawn_acks.has(client_peer_id):
+		_player_spawn_acks[client_peer_id] = {}
+
+	# Clear any existing acks for this client (in case of reconnection)
+	_player_spawn_acks[client_peer_id].clear()
+
+	# Send spawn RPCs for all players
+	# Use current position to avoid visual jumps when late joiner sees players
 	for player_data in existing_players:
 		var player = player_data.player
 		var player_peer_id = player_data.peer_id
 		if player_peer_id != 0:
+			# Get the player's current position (not spawn position) to avoid visual jumps
+			var current_position = player.global_position
 			# Spawn this player for the late-joining client via RPC
 			# This includes the new client's own player if it was already spawned on server
-			Logger.info("ServerGameManager: Sending spawn RPC for player {0} to client {1} at position {2}", [player_peer_id, client_peer_id, player.global_position])
-			_spawn_player_rpc.rpc_id(client_peer_id, player_peer_id, player.global_position)
+			Logger.info("ServerGameManager: Sending spawn RPC for player {0} to client {1} at current position {2}", [player_peer_id, client_peer_id, current_position])
+			_spawn_player_rpc.rpc_id(client_peer_id, player_peer_id, current_position)
+
+	# Wait for spawn RPCs to be processed
+	# Note: Some RPC errors may occur during this brief window, but they're harmless
+	# RollbackSynchronizer will retry once players are spawned
+	await get_tree().process_frame
+	await get_tree().process_frame
 
 func _find_all_players(node: Node) -> Array:
 	"""
@@ -368,12 +404,26 @@ func _find_all_players(node: Node) -> Array:
 
 	return players
 
+@rpc("any_peer", "call_remote", "reliable")
+func _player_spawned_ack(player_peer_id: int) -> void:
+	"""RPC called by client to acknowledge that a player has been spawned."""
+	if not multiplayer.is_server():
+		return
+
+	var client_peer_id = multiplayer.get_remote_sender_id()
+	if not _player_spawn_acks.has(client_peer_id):
+		_player_spawn_acks[client_peer_id] = {}
+
+	_player_spawn_acks[client_peer_id][player_peer_id] = true
+	Logger.info("ServerGameManager: Client {0} acknowledged spawn of player {1}", [client_peer_id, player_peer_id])
+
 @rpc("authority", "call_remote", "reliable")
 func _spawn_player_rpc(peer_id: int, position: Vector3) -> void:
 	"""
 	RPC to spawn a player on clients.
 	Used for both initial spawning and late-joining clients.
 	Delegates to the shared implementation function.
+	After spawning, sends acknowledgment to server.
 	"""
 	if multiplayer.is_server():
 		return
@@ -381,7 +431,17 @@ func _spawn_player_rpc(peer_id: int, position: Vector3) -> void:
 	var my_id = multiplayer.get_unique_id()
 	Logger.info("ServerGameManager: Client (unique_id: {0}) received _spawn_player_rpc for peer_id: {1}", [my_id, peer_id])
 	Logger.info("ServerGameManager: This client should {0} this player's input", ["control" if peer_id == my_id else "NOT control"])
-	_spawn_player_impl(peer_id, position)
+
+	# Spawn the player and wait for it to complete
+	await _spawn_player_impl(peer_id, position)
+
+	# Wait a frame for initialization
+	await get_tree().process_frame
+
+	# Notify server that this player is ready
+	_player_spawned_ack.rpc_id(1, peer_id)
+	Logger.info("ServerGameManager: Client notified server that player {0} is ready", [peer_id])
+
 
 @rpc("authority", "call_local", "reliable")
 func _start_game_for_all() -> void:

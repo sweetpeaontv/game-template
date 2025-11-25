@@ -2,11 +2,14 @@ extends Node
 
 const START_SCENE := "MainMenu"
 
+@onready var world_container: Node = $WorldContainer
+@onready var players_container: Node = $Players
+
 # Entry point into the game
 func _ready() -> void:
 	checkAutoloads()
 	# run any setup before main menu
-	
+
 	# go to start scene
 	call_deferred("_boot")
 

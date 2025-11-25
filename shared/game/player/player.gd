@@ -15,6 +15,7 @@ func _ready() -> void:
 
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
+	await get_tree().process_frame
 	rollback_synchronizer.process_settings()
 
 	setNameplate(str(peer_id))

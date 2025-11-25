@@ -4,3 +4,7 @@
 
 [node name="Main" type="Node"]
 script = ExtResource("1_bk4ef")
+
+[node name="WorldContainer" type="Node" parent="."]
+
+[node name="Players" type="Node" parent="."]
