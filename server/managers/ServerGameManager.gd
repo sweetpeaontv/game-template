@@ -36,7 +36,6 @@ func _connect_signals() -> void:
 	# Connect to Gnet signals
 	if Gnet:
 		Gnet.peer_connected.connect(_on_gnet_peer_connected)
-		Gnet.spawn_requested.connect(_on_gnet_spawn_requested)
 		Gnet.connection_succeeded.connect(_on_gnet_connection_succeeded)
 
 	# Connect to SceneManager for scene ready
@@ -44,13 +43,20 @@ func _connect_signals() -> void:
 		SceneManager.scene_ready.connect(_on_scene_ready)
 
 func _on_gnet_connection_succeeded() -> void:
-	"""Handle connection succeeded. Server loads world for all."""
+	"""Handle connection succeeded. Server loads world for itself and any connected clients."""
 	if not multiplayer.is_server():
 		return
 
-	Logger.info("Connection succeeded, loading GameWorld for all", [], script_name, "_on_gnet_connection_succeeded")
-	# Trigger RPC to load world for all
-	_load_gameworld_for_all.rpc()
+	Logger.info("Connection succeeded, loading GameWorld for server", [], script_name, "_on_gnet_connection_succeeded")
+	# Load gameworld for server directly
+	_load_gameworld_for_host()
+
+	# Load gameworld for any already-connected clients
+	var connected_peers = Gnet.get_connected_players() if Gnet else []
+	for peer_id in connected_peers:
+		if peer_id != 1:  # Skip server (peer_id 1)
+			Logger.info("Loading GameWorld for connected client {0}", [peer_id], script_name, "_on_gnet_connection_succeeded")
+			_load_gameworld_for_peer.rpc_id(peer_id)
 
 func _on_gnet_peer_connected(peer_id: int) -> void:
 	"""Handle peer connection. Only acts if we're the server."""
@@ -58,7 +64,8 @@ func _on_gnet_peer_connected(peer_id: int) -> void:
 		return
 
 	Logger.info("Peer connected: {0}, game_state: {1}", [peer_id, game_state], script_name, "_on_gnet_peer_connected")
-	handle_peer_connected(peer_id, game_state)
+
+	_load_gameworld_for_peer.rpc_id(peer_id)
 
 func _on_gnet_spawn_requested(peer_id: int) -> void:
 	"""Handle spawn request from Gnet. Only acts if we're the server."""
@@ -169,9 +176,6 @@ func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks:
 			_player_spawn_acks[client_peer_id] = {}
 		_player_spawn_acks[client_peer_id].clear()
 
-	# Prepare player data for RPC
-	var players_to_rpc: Array = []
-
 	for player_data in players:
 		var peer_id = player_data.get("peer_id", 0)
 		var position = player_data.get("position", Vector3.ZERO)
@@ -181,28 +185,28 @@ func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks:
 
 		# Spawn on server first (authoritative)
 		await _spawn_player_impl(peer_id, position)
-		players_to_rpc.append({"peer_id": peer_id, "position": position})
 
 	# Send batched RPC to clients (only if there are clients to send to)
 	# Server already has players spawned, so we only need to notify clients
-	if not players_to_rpc.is_empty():
-		var connected_clients = Gnet.get_connected_players() if Gnet else []
+	var connected_clients = Gnet.get_connected_players() if Gnet else []
 
-		if target_peer_ids.is_empty():
-			# Broadcast to all clients (only if there are any)
-			if not connected_clients.is_empty():
-				_spawn_players_rpc.rpc(players_to_rpc)
-				Logger.info("Sent spawn RPC for {0} players to all clients", [players_to_rpc.size()], script_name, "spawn_players")
-			else:
-				Logger.info("No connected clients to send spawn RPC to (server-only)", [], script_name, "spawn_players")
+	if target_peer_ids.is_empty():
+		# Broadcast to all clients (only if there are any)
+		if not connected_clients.is_empty():
+			var remaining_clients = connected_clients.filter(func(p): return p != 1)
+
+			_spawn_players_rpc.rpc(remaining_clients)
+			Logger.info("Sent spawn RPC for {0} players to all clients", [remaining_clients.size()], script_name, "spawn_players")
 		else:
-			# Send to specific clients (only if they're actually connected)
-			for target_peer_id in target_peer_ids:
-				if connected_clients.has(target_peer_id):
-					_spawn_players_rpc.rpc_id(target_peer_id, players_to_rpc)
-					Logger.info("Sent spawn RPC for {0} players to client {1}", [players_to_rpc.size(), target_peer_id], script_name, "spawn_players")
-				else:
-					Logger.warning("Target client {0} is not connected, skipping spawn RPC", [target_peer_id], script_name, "spawn_players")
+			Logger.info("No connected clients to send spawn RPC to (server-only)", [], script_name, "spawn_players")
+	else:
+		# Send to specific clients (only if they're actually connected)
+		for target_peer_id in target_peer_ids:
+			if connected_clients.has(target_peer_id) and target_peer_id != 1:
+				_spawn_players_rpc.rpc_id(target_peer_id, players)
+				Logger.info("Sent spawn RPC for {0} players to client {1}", [players.size(), target_peer_id], script_name, "spawn_players")
+			else:
+				Logger.warning("Target client {0} is not connected, skipping spawn RPC", [target_peer_id], script_name, "spawn_players")
 
 	# Wait for RPCs to be processed (only if initializing acks)
 	if initialize_acks:
@@ -294,7 +298,9 @@ func _get_players_container() -> Node:
 func _notify_client_ready() -> void:
 	"""
 	RPC called by late-joining client to notify host that they're ready.
-	Server spawns the new client's player and sends RPCs for all players.
+	Server spawns the new client's player on its own client.
+	Server spawns the new client's player on existing peers.
+	Server sends all existing players to the new late-joining client including its own player.
 	"""
 	if not multiplayer.is_server():
 		return
@@ -302,38 +308,18 @@ func _notify_client_ready() -> void:
 	var client_peer_id = multiplayer.get_remote_sender_id()
 	Logger.info("Late-joining client {0} is ready", [client_peer_id], script_name, "_notify_client_ready")
 
-	# Get position for new player (spawn position if new, current position if exists)
-	var new_player_position: Vector3
-	if not _find_player(client_peer_id):
-		if not SpawnManager:
-			push_error("ServerGameManager: SpawnManager autoload not found!")
-			return
-		var spawn_index = client_peer_id - 1  # peer_id 1 = index 0
-		new_player_position = SpawnManager.get_spawn_point(spawn_index)
-		Logger.info("Spawning late-joining player {0} at position {1}", [client_peer_id, new_player_position], script_name, "_notify_client_ready")
-	else:
-		var existing_player = _find_player(client_peer_id)
-		if existing_player:
-			new_player_position = existing_player.global_position
-			Logger.info("Player {0} already exists on server, using current position {1}", [client_peer_id, new_player_position], script_name, "_notify_client_ready")
-		else:
-			return
+	# Get position for new player
+	var new_player_position: Vector3 = SpawnManager.get_spawn_point(0)
 
-	# Spawn new player on server and notify existing clients
+	# Spawn new player on server and on existing peers
 	var new_player_data = [{"peer_id": client_peer_id, "position": new_player_position}]
 
 	var all_connected = Gnet.get_connected_players()
+	var existing_peers = all_connected.filter(func(p): return p != client_peer_id)
 
 	Logger.info("All connected players: {0}", [all_connected], script_name, "_notify_client_ready")
-
-	var existing_peer_ids = []
-	for existing_peer_id in all_connected:
-		if existing_peer_id != client_peer_id and existing_peer_id != 0:
-			existing_peer_ids.append(existing_peer_id)
-
-		if not existing_peer_ids.is_empty():
-			Logger.info("Spawning new player {0} to existing clients {1}", [client_peer_id, existing_peer_ids], script_name, "_notify_client_ready")
-			spawn_players(new_player_data, existing_peer_ids, false)
+	Logger.info("Spawning new player {0} to existing clients {1}", [new_player_data, existing_peers], script_name, "_notify_client_ready")
+	spawn_players(new_player_data, existing_peers, false)
 
 	# Send all existing players to the new late-joining client
 	var players_container = _get_players_container()
@@ -354,7 +340,6 @@ func _notify_client_ready() -> void:
 		Logger.info("Spawning existing players {0} to new client {1}", [all_players_data, client_peer_id], script_name, "_notify_client_ready")
 		spawn_players(all_players_data, [client_peer_id], true)
 
-
 func _find_all_players(players_container: Node) -> Array:
 	"""
 	Find all player nodes in PlayersContainer.
@@ -364,12 +349,9 @@ func _find_all_players(players_container: Node) -> Array:
 
 	# Players are direct children of PlayersContainer
 	for child in players_container.get_children():
-		# Get peer_id from Input node
-		var input_node = child.get_node_or_null("Input")
-		if input_node:
-			var peer_id = input_node.get_multiplayer_authority()
-			if peer_id != 0:
-				players.append({"player": child, "peer_id": peer_id})
+		var peer_id = child.peer_id
+		if peer_id != 0:
+			players.append({"player": child, "peer_id": peer_id})
 
 	return players
 
@@ -398,7 +380,7 @@ func _spawn_players_rpc(players_data: Array) -> void:
 		return
 
 	var my_id = multiplayer.get_unique_id()
-	Logger.info("Client (unique_id: {0}) received _spawn_players_rpc for {1} players", [my_id, players_data.size()], script_name, "_spawn_players_rpc")
+	Logger.info("Client (unique_id: {0}) received _spawn_players_rpc for {1} players :: {2}", [my_id, players_data.size(), players_data], script_name, "_spawn_players_rpc")
 
 	# Spawn each player
 	for player_data in players_data:
@@ -431,13 +413,16 @@ func _start_game_for_all() -> void:
 
 	_set_game_state(GameState.PLAYING)
 
-@rpc("authority", "call_local", "reliable")
-func _load_gameworld_for_all() -> void:
-	"""RPC called when connection succeeds - loads GameWorld for all players."""
+func _load_gameworld_for_host() -> void:
+	"""Load GameWorld for the server (called directly, not via RPC)."""
 	if not GameManager:
 		return
 
-	# Update client state to LOADING
+	if not SceneManager:
+		return
+
+	Logger.info("Loading GameWorld for server", [], script_name, "_load_gameworld_for_all")
+	# Update server state to LOADING
 	GameManager._set_state(GameManager.SessionState.LOADING)
 	SceneManager.request_scene_change("GameWorld")
 
@@ -456,7 +441,6 @@ func _load_gameworld_for_peer() -> void:
 
 	Logger.info("Setting client state to LOADING and loading GameWorld", [], script_name, "_load_gameworld_for_peer")
 	GameManager._set_state(GameManager.SessionState.LOADING)
-	# Client should call goto_scene directly, not request_scene_change
 	SceneManager.goto_scene("GameWorld")
 	Logger.info("Called SceneManager.goto_scene('GameWorld')", [], script_name, "_load_gameworld_for_peer")
 
@@ -488,9 +472,6 @@ func handle_peer_connected(peer_id: int, current_game_state: GameState) -> void:
 
 	# If we're already in gameworld, load it for the new client
 	if current_game_state == GameState.IN_LOBBY or current_game_state == GameState.PLAYING:
-		Logger.info("Host detected late-joining peer, loading GameWorld for peer_id: {0}", [peer_id], script_name, "handle_peer_connected")
-		# Wait a frame to ensure the client is fully connected before sending RPCs
-		await get_tree().process_frame
 		# Trigger RPC to load world for this peer
 		_load_gameworld_for_peer.rpc_id(peer_id)
 		# Also sync the current game state to the late joiner

@@ -17,7 +17,6 @@ signal connection_succeeded()
 signal players_changed(connected_players: Array[int])
 signal friends_lobbies_found(lobbies: Array[Dictionary])
 signal player_directory_changed(players: Dictionary)
-signal spawn_requested(peer_id: int)
 
 enum Adapter { STEAM, ENET }
 
@@ -401,6 +400,8 @@ func _on_steam_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, res
 func _on_peer_connected(peer_id: int):
 	Logger.info("Peer connected: {0}", [peer_id], script_name, "_on_peer_connected")
 
+	peer_connected.emit(peer_id)
+
 	# Only server manages connected_players list (server-authoritative)
 	if multiplayer.is_server():
 		if not connected_players.has(peer_id):
@@ -409,25 +410,6 @@ func _on_peer_connected(peer_id: int):
 			players_changed.emit(connected_players)
 			# Sync updated list to all clients
 			_sync_connected_players_to_all()
-
-	# Update player directory
-	_update_player_directory()
-
-	# Handle late join spawning if we're already playing
-	# Check ServerGameManager state if available, otherwise check GameManager
-	var is_playing := false
-	if Engine.has_singleton("ServerGameManager"):
-		# Check server game state (GameState.PLAYING = 1)
-		var server_state = ServerGameManager.get_game_state()
-		is_playing = server_state == 1  # PLAYING
-	elif Engine.has_singleton("GameManager"):
-		# Fallback to GameManager state
-		is_playing = GameManager.state == GameManager.SessionState.PLAYING
-
-	if is_playing and allow_late_join and autospawn_on_join:
-		spawn_requested.emit(peer_id)
-
-	peer_connected.emit(peer_id)
 
 func _on_peer_disconnected(peer_id: int):
 	Logger.info("Peer disconnected: {0}", [peer_id], script_name, "_on_peer_disconnected")
@@ -456,18 +438,21 @@ func _on_connection_failed():
 	connection_failed.emit("Connection failed")
 
 func _on_connection_succeeded():
+	"""
+	Called when a client successfully connects to a server.
+	This is only called for clients, not the server/host.
+	The server emits connection_succeeded signal when hosting starts.
+	"""
 	Logger.info("Connected successfully", [], script_name, "_on_connection_succeeded")
 	var my_id = multiplayer.get_unique_id()
 	Logger.info("My ID is: {0}", [my_id], script_name, "_on_connection_succeeded")
-	Logger.info("Is hosting: {0}", [is_hosting], script_name, "_on_connection_succeeded")
 
 	# Clients wait for server to send authoritative connected_players list
 	# Server will send it via RPC when client connects
 	if not multiplayer.is_server():
 		Logger.info("Client connected, waiting for server to sync connected_players list", [], script_name, "_on_connection_succeeded")
 
-	# Initialize player directory
-	_update_player_directory()
+	connection_succeeded.emit()
 
 func _on_server_disconnected():
 	"""Called when clients lose connection to the host/server."""

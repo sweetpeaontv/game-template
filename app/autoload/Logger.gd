@@ -54,14 +54,14 @@ const SPECIAL_PEER_COLORS = {
 
 const PEER_COLOR_PALETTE = [
 	{"bg_color": "#10b981", "text_color": "#ffffff"},  # emerald green
-	{"bg_color": "#8b5cf6", "text_color": "#ffffff"},  # violet purple
+	{"bg_color": "#06b6d4", "text_color": "#ffffff"},  # cyan
 	{"bg_color": "#ec4899", "text_color": "#ffffff"},  # fuchsia pink
 	{"bg_color": "#f97316", "text_color": "#ffffff"},  # orange
 	{"bg_color": "#14b8a6", "text_color": "#ffffff"},  # teal
 	{"bg_color": "#84cc16", "text_color": "#000000"},  # lime green
-	{"bg_color": "#a855f7", "text_color": "#ffffff"},  # purple
+	{"bg_color": "#0ea5e9", "text_color": "#ffffff"},  # sky blue
 	{"bg_color": "#22c55e", "text_color": "#ffffff"},  # green
-	{"bg_color": "#9333ea", "text_color": "#ffffff"},  # deep purple
+	{"bg_color": "#e11d48", "text_color": "#ffffff"},  # rose red
 	{"bg_color": "#d946ef", "text_color": "#ffffff"},  # magenta
 ]
 
@@ -225,13 +225,13 @@ func _print_rich_log(peer_id_str: String, log_type: String, message: String, scr
 	var peer_space = _format_space_with_bg(peer_color.bg_color)
 
 	# Combine log type, context, and message with peer-colored spaces
-	var log_and_message = log_type_formatted
+	var peer_and_message = peer_formatted
 	if context_string != "":
-		log_and_message += peer_space + context_string
-	log_and_message += peer_space + message_formatted
+		peer_and_message += peer_space + context_string
+	peer_and_message += peer_space + message_formatted
 
 	# Create the full log line with peer-colored space between peer ID and log type+message
-	var log_line = peer_formatted + peer_space + log_and_message
+	var log_line = log_type_formatted + peer_and_message
 	var wrapped_line = "[bgcolor=%s]%s[/bgcolor]" % [LOG_LINE_BG_COLOR, log_line]
 
 	print_rich(wrapped_line)
