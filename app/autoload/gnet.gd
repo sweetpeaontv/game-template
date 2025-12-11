@@ -563,7 +563,7 @@ func set_player_name(peer_id: int, player_name: String) -> void:
 @rpc("authority", "call_remote", "reliable")
 func _sync_player_name(peer_id: int, player_name: String) -> void:
 	"""Sync player name from host."""
-	if players.has(peer_id):
+	if players.has(peer_id) and players.size() > 1:
 		players[peer_id]["name"] = player_name
 		player_directory_changed.emit(players)
 

@@ -1,9 +1,14 @@
 extends CharacterBody3D
 
 @onready var nameplate := $Nameplate
-@onready var camera := $PlayerCamera
 @onready var input: PlayerInput = $Input
 @onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
+@onready var head: Node3D = $CameraHead
+@onready var camera: Camera3D = $CameraHead/Camera3D
+
+const SENSITIVITY = 0.004
+const MIN_PITCH = deg_to_rad(-40)
+const MAX_PITCH = deg_to_rad(60)
 
 var peer_id: int = 0
 
@@ -11,11 +16,8 @@ var peer_id: int = 0
 @export var gravity: float = 9.8
 
 func _ready() -> void:
-	await get_tree().process_frame
-
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
-	await get_tree().process_frame
 	rollback_synchronizer.process_settings()
 
 	setNameplate(str(peer_id))
@@ -25,17 +27,26 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
-	# Apply gravity if not on floor
-	if not is_on_floor():
-		velocity.y -= gravity * NetworkTime.ticktime
-	else:
-		# Reset vertical velocity when on floor (optional: allows for jumping)
-		velocity.y = 0.0
+	if input.mouse_movement != Vector2.ZERO:
+		#print('mouse movement', input.mouse_movement)
+		head.rotate_y(-input.mouse_movement.x * SENSITIVITY)
+		camera.rotate_x(-input.mouse_movement.y * SENSITIVITY)
+		camera.rotation.x = clamp(camera.rotation.x, MIN_PITCH, MAX_PITCH)
 
-	# Apply horizontal movement from input
-	var horizontal_movement = input.movement.normalized() * speed
-	velocity.x = horizontal_movement.x
-	velocity.z = horizontal_movement.z
+	var input_dir = input.movement
+	var direction = (head.transform.basis * transform.basis * Vector3(input_dir.x, 0, input_dir.z)).normalized()
+
+	#print('direction', direction)
+	if is_on_floor():
+		if direction:
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
+		else:
+			velocity.x = lerp(velocity.x, direction.x * speed, _delta * 7.0)
+			velocity.z = lerp(velocity.z, direction.z * speed, _delta * 7.0)
+	else:
+		velocity.x = lerp(velocity.x, direction.x * speed, _delta * 3.0)
+		velocity.z = lerp(velocity.z, direction.z * speed, _delta * 3.0)
 
 	velocity *= NetworkTime.physics_factor
 	move_and_slide()
