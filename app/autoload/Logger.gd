@@ -23,7 +23,7 @@ const LOG_TYPES = {
 	"warning": {
 		"bg_color": "#fbbf24",
 		"message_bg_color": "#fcd34d",
-		"text_color": "#000000"
+		"text_color": "#ffffff"
 	},
 	"error": {
 		"bg_color": "#dc2626",

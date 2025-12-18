@@ -206,7 +206,8 @@ func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks:
 				_spawn_players_rpc.rpc_id(target_peer_id, players)
 				Logger.info("Sent spawn RPC for {0} players to client {1}", [players.size(), target_peer_id], script_name, "spawn_players")
 			else:
-				Logger.warning("Target client {0} is not connected, skipping spawn RPC", [target_peer_id], script_name, "spawn_players")
+				if target_peer_id != 1:
+					Logger.warning("Target client {0} is not connected, skipping spawn RPC", [target_peer_id], script_name, "spawn_players")
 
 	# Wait for RPCs to be processed (only if initializing acks)
 	if initialize_acks:
