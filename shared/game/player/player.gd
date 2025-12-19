@@ -4,8 +4,7 @@ extends CharacterBody3D
 @onready var model := $Model
 @onready var input: PlayerInput = $Input
 @onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
-@onready var head: Node3D = $CameraHead
-@onready var camera: Camera3D = $CameraHead/Camera3D
+@onready var first_person_camera: FirstPersonCameraInput = $FirstPersonCameraInput
 
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
@@ -15,11 +14,13 @@ var peer_id: int = 0
 
 @export var gravity: float = 9.8
 
+const ROTATION_INTERPOLATE_SPEED := 10
+var _previous_camera_basis: Basis = Basis.IDENTITY
+
 func _ready() -> void:
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
-	head.set_multiplayer_authority(peer_id)
-	head.set_peer_id(peer_id)
+	first_person_camera.set_multiplayer_authority(peer_id)
 	rollback_synchronizer.process_settings()
 	_setup()
 
@@ -40,11 +41,11 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
-	# this is not properly synced yet
-	# TODO: sync the camera head rotation
-	var head_forward = -head.transform.basis.z
-	var target_angle = atan2(head_forward.x, head_forward.z)
-	model.rotation.y = lerp_angle(model.rotation.y, target_angle, _delta * 10.0)
+	if first_person_camera.camera_basis != _previous_camera_basis:
+		_previous_camera_basis = first_person_camera.camera_basis
+		rotate_player_model(_delta)
+
+	var direction = (first_person_camera.camera_basis * transform.basis * Vector3(input.movement.x, 0, input.movement.z)).normalized()
 
 	if input.shift:
 		speed = SPRINT_SPEED
@@ -53,16 +54,16 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 
 	if is_on_floor():
 		velocity.y = 0
-		if input.direction:
-			velocity.x = input.direction.x * speed
-			velocity.z = input.direction.z * speed
+		if direction:
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
 		else:
-			velocity.x = lerp(velocity.x, input.direction.x * speed, _delta * 7.0)
-			velocity.z = lerp(velocity.z, input.direction.z * speed, _delta * 7.0)
+			velocity.x = lerp(velocity.x, direction.x * speed, _delta * 7.0)
+			velocity.z = lerp(velocity.z, direction.z * speed, _delta * 7.0)
 	else:
 		velocity.y -= gravity * _delta
-		velocity.x = lerp(velocity.x, input.direction.x * speed, _delta * 3.0)
-		velocity.z = lerp(velocity.z, input.direction.z * speed, _delta * 3.0)
+		velocity.x = lerp(velocity.x, direction.x * speed, _delta * 3.0)
+		velocity.z = lerp(velocity.z, direction.z * speed, _delta * 3.0)
 
 	velocity *= NetworkTime.physics_factor
 	move_and_slide()
@@ -70,6 +71,13 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 
 func _process(_delta: float) -> void:
 	pass
+
+func rotate_player_model(delta: float) -> void:
+	var camera_basis: Basis = first_person_camera.camera_basis
+
+	var head_forward = -camera_basis.z
+	var target_angle = atan2(head_forward.x, head_forward.z)
+	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
 
 func setNameplate(player_name: String) -> void:
 	if nameplate:

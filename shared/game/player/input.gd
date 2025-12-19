@@ -1,13 +1,11 @@
 extends BaseNetInput
 class_name PlayerInput
 
-@onready var head: Node3D = $"../CameraHead"
-@onready var camera: Camera3D = $"../CameraHead/Camera3D"
-@onready var player:= $".."
-
 var movement: Vector3 = Vector3.ZERO
-var direction: Vector3 = Vector3.ZERO
 var shift: bool = false
+
+func _ready():
+	NetworkTime.before_tick_loop.connect(_gather)
 
 func _gather():
 	movement = Vector3(
@@ -18,4 +16,5 @@ func _gather():
 
 	shift = Input.is_action_pressed("shift")
 
-	direction = (head.transform.basis * player.transform.basis * Vector3(movement.x, 0, movement.z)).normalized()
+func _exit_tree():
+	NetworkTime.before_tick_loop.disconnect(_gather)

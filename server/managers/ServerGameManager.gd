@@ -266,7 +266,8 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	# Set camera for local player (works for both host and clients)
 	var my_id = multiplayer.get_unique_id()
 	if peer_id == my_id:
-		var camera = player.get_node_or_null("CameraHead/Camera3D")
+		# needs to be changed to be dynamic
+		var camera = player.get_node_or_null("FirstPersonCameraInput/CameraMount/CameraRotation/SpringArm3D/Camera3D")
 		if camera:
 			camera.current = true
 			Logger.info("Set camera as current for local player (peer_id: {0})", [peer_id], script_name, "_spawn_player_impl")
