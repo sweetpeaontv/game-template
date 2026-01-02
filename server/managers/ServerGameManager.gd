@@ -263,17 +263,6 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	# Set position AFTER RollbackSynchronizer is initialized to avoid visual jumps
 	player.global_position = spawn_position
 
-	# Set camera for local player (works for both host and clients)
-	var my_id = multiplayer.get_unique_id()
-	if peer_id == my_id:
-		# needs to be changed to be dynamic
-		var camera = player.get_node_or_null("FirstPersonCameraInput/CameraMount/CameraRotation/SpringArm3D/Camera3D")
-		if camera:
-			camera.current = true
-			Logger.info("Set camera as current for local player (peer_id: {0})", [peer_id], script_name, "_spawn_player_impl")
-		else:
-			push_warning("ServerGameManager: PlayerCamera not found for local player")
-
 	Logger.info("Spawned player {0} at {1}", [peer_id, spawn_position], script_name, "_spawn_player_impl")
 
 func _find_player(peer_id: int) -> Node:

@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://b6koxp16wqff0"]
+
+[ext_resource type="Script" uid="uid://bf5rtialdbrjr" path="res://shared/game/cameras/ThirdPersonCameraInput.gd" id="1_3fje4"]
+
+[node name="ThirdPersonCameraInput" type="Node3D" node_paths=PackedStringArray("orbit_pivot", "pitch_pivot", "spring_arm", "camera_3D")]
+script = ExtResource("1_3fje4")
+orbit_pivot = NodePath("OrbitPivot")
+pitch_pivot = NodePath("OrbitPivot/PitchPivot")
+spring_arm = NodePath("OrbitPivot/PitchPivot/SpringArm3D")
+camera_3D = NodePath("OrbitPivot/PitchPivot/SpringArm3D/Camera3D")
+
+[node name="OrbitPivot" type="Node3D" parent="."]
+
+[node name="PitchPivot" type="Node3D" parent="OrbitPivot"]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="OrbitPivot/PitchPivot"]
+
+[node name="Camera3D" type="Camera3D" parent="OrbitPivot/PitchPivot/SpringArm3D"]

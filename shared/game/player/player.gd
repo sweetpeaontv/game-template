@@ -5,6 +5,10 @@ extends CharacterBody3D
 @onready var input: PlayerInput = $Input
 @onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
 @onready var first_person_camera: FirstPersonCameraInput = $FirstPersonCameraInput
+@onready var third_person_camera: ThirdPersonCameraInput = $ThirdPersonCameraInput
+
+enum CameraType { FIRST_PERSON, THIRD_PERSON }
+@onready var camera_type: CameraType = CameraType.THIRD_PERSON
 
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
@@ -20,18 +24,34 @@ var _previous_camera_basis: Basis = Basis.IDENTITY
 func _ready() -> void:
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
+
 	first_person_camera.set_multiplayer_authority(peer_id)
+	third_person_camera.set_multiplayer_authority(peer_id)
+
 	rollback_synchronizer.process_settings()
 	_setup()
 
 func _setup() -> void:
 	setNameplate(str(peer_id))
 
-	# Hide player model and nameplate for local player
 	var my_id = multiplayer.get_unique_id()
+
+	# Local Player setup - hide model and nameplate, set camera current
 	if peer_id == my_id:
-		model.visible = false
-		nameplate.visible = false
+		if camera_type == CameraType.FIRST_PERSON:
+			var camera = get_node_or_null(first_person_camera.get_camera_path())
+			if camera:
+				camera.current = true
+
+			model.visible = false
+			nameplate.visible = false
+		elif camera_type == CameraType.THIRD_PERSON:
+			var camera = get_node_or_null(third_person_camera.get_camera_path())
+			if camera:
+				camera.current = true
+
+			model.visible = true
+			nameplate.visible = true
 	else:
 		model.visible = true
 		nameplate.visible = true
@@ -41,11 +61,13 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
-	if first_person_camera.camera_basis != _previous_camera_basis:
-		_previous_camera_basis = first_person_camera.camera_basis
+	var camera_basis = get_camera_basis()
+
+	if camera_basis != _previous_camera_basis:
+		_previous_camera_basis = camera_basis
 		rotate_player_model(_delta)
 
-	var direction = (first_person_camera.camera_basis * transform.basis * Vector3(input.movement.x, 0, input.movement.z)).normalized()
+	var direction = (camera_basis * transform.basis * Vector3(input.movement.x, 0, input.movement.z)).normalized()
 
 	if input.shift:
 		speed = SPRINT_SPEED
@@ -72,8 +94,15 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 func _process(_delta: float) -> void:
 	pass
 
+func get_camera_basis() -> Basis:
+	if camera_type == CameraType.FIRST_PERSON:
+		return first_person_camera.camera_basis
+	elif camera_type == CameraType.THIRD_PERSON:
+		return third_person_camera.camera_basis
+	return Basis.IDENTITY
+
 func rotate_player_model(delta: float) -> void:
-	var camera_basis: Basis = first_person_camera.camera_basis
+	var camera_basis: Basis = get_camera_basis()
 
 	var head_forward = -camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
