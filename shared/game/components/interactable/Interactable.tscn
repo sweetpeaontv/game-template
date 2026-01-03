@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://d0d0hw864xqyq"]
+
+[ext_resource type="Script" uid="uid://e2we8qus80kt" path="res://shared/game/components/interactable/Interactable.gd" id="1_y5k86"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_y5k86"]
+height = 1.0
+radius = 1.0
+
+[node name="Interactable" type="Node3D"]
+script = ExtResource("1_y5k86")
+
+[node name="InteractionLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.355087, 0)
+visible = false
+billboard = 1
+
+[node name="Area" type="Area3D" parent="."]
+
+[node name="CollisionCylinder" type="CollisionShape3D" parent="Area"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CylinderShape3D_y5k86")
+
+[connection signal="body_entered" from="Area" to="." method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Area" to="." method="_on_area_3d_body_exited"]

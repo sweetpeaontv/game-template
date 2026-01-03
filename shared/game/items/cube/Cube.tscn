@@ -1,0 +1,21 @@
+[gd_scene load_steps=6 format=3 uid="uid://8gmqyqbcm3y6"]
+
+[ext_resource type="Script" uid="uid://da58mm8pbhjtn" path="res://shared/game/items/cube/Cube.gd" id="1_56cyy"]
+[ext_resource type="PackedScene" uid="uid://duhdgtve5pxql" path="res://shared/game/items/cube/hand-cube.glb" id="1_81wnv"]
+[ext_resource type="PackedScene" uid="uid://d2mchvwhf5n5m" path="res://shared/game/components/pickupable/Pickupable.tscn" id="2_ur2sb"]
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://shared/game/components/interactable/Interactable.tscn" id="4_hkabq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ur2sb"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="Cube" type="RigidBody3D"]
+script = ExtResource("1_56cyy")
+
+[node name="hand-cube" parent="." instance=ExtResource("1_81wnv")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_ur2sb")
+
+[node name="Pickupable" parent="." instance=ExtResource("2_ur2sb")]
+
+[node name="Interactable" parent="." instance=ExtResource("4_hkabq")]

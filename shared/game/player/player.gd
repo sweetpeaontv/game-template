@@ -8,7 +8,7 @@ extends CharacterBody3D
 @onready var third_person_camera: ThirdPersonCameraInput = $ThirdPersonCameraInput
 
 enum CameraType { FIRST_PERSON, THIRD_PERSON }
-@onready var camera_type: CameraType = CameraType.THIRD_PERSON
+@onready var camera_type: CameraType = CameraType.FIRST_PERSON
 
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
