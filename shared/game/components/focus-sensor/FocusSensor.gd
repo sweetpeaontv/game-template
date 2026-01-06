@@ -12,12 +12,22 @@ enum AimMode {
 @export var max_distance: float = 3.0
 
 var last_hit: Object = null
+var is_local_player: bool = false
 
 func _ready() -> void:
-	aim_source = get_viewport().get_camera_3d()
+	if actor:
+		is_local_player = actor.peer_id == multiplayer.get_unique_id()
+
+	if is_local_player:
+		# this is a bit unrefined but works for now
+		var camera_path = "FirstPersonCameraInput/CameraMount/CameraRotation/SpringArm3D/Camera3D"
+		aim_source = actor.get_node_or_null(camera_path)
 
 # needs to be improved to prevent constant raycasting, should only raycast after camera transform changes etc
 func _process(_delta: float) -> void:
+	if not is_local_player:
+		return
+
 	var hit = _query_focus_hit()
 	if hit != last_hit:
 		if hit:

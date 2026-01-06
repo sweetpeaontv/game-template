@@ -14,6 +14,7 @@ enum CameraType { FIRST_PERSON, THIRD_PERSON }
 @onready var camera_type: CameraType = CameraType.FIRST_PERSON
 const ROTATION_INTERPOLATE_SPEED := 10
 var _previous_camera_basis: Basis = Basis.IDENTITY
+var current_camera: Node3D = null
 
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
@@ -28,6 +29,7 @@ func _ready() -> void:
 
 	first_person_camera.set_multiplayer_authority(peer_id)
 	third_person_camera.set_multiplayer_authority(peer_id)
+	focus_sensor.set_multiplayer_authority(peer_id)
 
 	rollback_synchronizer.process_settings()
 	_setup()
@@ -46,14 +48,14 @@ func _setup() -> void:
 			var camera = get_node_or_null(first_person_camera.get_camera_path())
 			if camera:
 				camera.current = true
-
+				current_camera = camera
 			model.visible = false
 			nameplate.visible = false
 		elif camera_type == CameraType.THIRD_PERSON:
 			var camera = get_node_or_null(third_person_camera.get_camera_path())
 			if camera:
 				camera.current = true
-
+				current_camera = camera
 			model.visible = true
 			nameplate.visible = true
 	else:
@@ -79,7 +81,7 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 		speed = WALK_SPEED
 
 	if input.interact and focus:
-		focus._interact()
+		focus.interactable._interact()
 
 	if is_on_floor():
 		velocity.y = 0

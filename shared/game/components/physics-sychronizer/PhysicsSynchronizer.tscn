@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bfmyoa7cydypw"]
+
+[ext_resource type="Script" uid="uid://ptxp7w14cls" path="res://shared/game/components/physics-sychronizer/PhysicsSynchronizer.gd" id="1_5amy1"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ampy8"]
+properties/0/path = NodePath("PhysicsSynchronizer:sync_pos")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("PhysicsSynchronizer:sync_lvel")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("PhysicsSynchronizer:sync_avel")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("PhysicsSynchronizer:sync_quat")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("PhysicsSynchronizer:sync_frame")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+
+[node name="PhysicsSynchronizer" type="MultiplayerSynchronizer"]
+replication_config = SubResource("SceneReplicationConfig_ampy8")
+script = ExtResource("1_5amy1")
