@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://btr4l7o8r7pij"]
+[gd_scene load_steps=10 format=3 uid="uid://btr4l7o8r7pij"]
 
 [ext_resource type="Script" uid="uid://xethu4nx0h3i" path="res://shared/game/player/player.gd" id="1_wv0h6"]
 [ext_resource type="PackedScene" uid="uid://d4mqt8g3pgc7m" path="res://shared/game/player/models/char.glb" id="2_r5dqo"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bfnfkubk6xhwg" path="res://shared/game/player/input.gd" id="5_k0llr"]
 [ext_resource type="PackedScene" uid="uid://b6koxp16wqff0" path="res://shared/game/cameras/ThirdPersonCamera.tscn" id="6_14irj"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="6_k0llr"]
+[ext_resource type="PackedScene" uid="uid://ba2fkje1sw238" path="res://shared/game/components/focus-sensor/FocusSensor.tscn" id="7_3wsxe"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_e8u23"]
 size = Vector3(0.3, 1.27, 0.7)
@@ -28,7 +29,7 @@ billboard = 1
 script = ExtResource("4_fvl6w")
 root = NodePath("..")
 state_properties = Array[String]([":global_transform", "Model:transform"])
-input_properties = Array[String](["Input:movement", "Input:shift", "FirstPersonCameraInput:camera_basis", "ThirdPersonCameraInput:camera_basis"])
+input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "FirstPersonCameraInput:camera_basis", "ThirdPersonCameraInput:camera_basis"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
 [node name="Input" type="Node" parent="."]
@@ -43,6 +44,9 @@ player = NodePath("..")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.981233, 0)
 rollback_synchronizer = NodePath("../RollbackSynchronizer")
 player = NodePath("..")
+
+[node name="FocusSensor" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("7_3wsxe")]
+actor = NodePath("..")
 
 [node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
 script = ExtResource("6_k0llr")

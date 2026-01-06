@@ -46,15 +46,18 @@ transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.
 light_energy = 2.0
 shadow_enabled = true
 
-[node name="Cube" parent="." instance=ExtResource("1_6h6rn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.95928, 0.132361, -5.40403)
+[node name="Cube2" parent="." instance=ExtResource("1_6h6rn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.93722, 0.2, -4.98459)
 
-[node name="cube" parent="." instance=ExtResource("1_bcxc4")]
+[node name="Cube" parent="." instance=ExtResource("1_6h6rn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.959, 0.1, -5.404)
+
+[node name="bigcube" parent="." instance=ExtResource("1_bcxc4")]
 transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 2, 0, 4)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="cube"]
+[node name="StaticBody3D" type="StaticBody3D" parent="bigcube"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="cube/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="bigcube/StaticBody3D"]
 transform = Transform3D(1.00128, 0, 0, 0, 1.00128, 0, 0, 0, 1.00128, 0, 1, 0)
 shape = SubResource("BoxShape3D_bcxc4")
 

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://ba2fkje1sw238"]
+
+[ext_resource type="Script" uid="uid://cbwrtav4higev" path="res://shared/game/components/focus-sensor/FocusSensor.gd" id="1_s78vn"]
+
+[node name="FocusSensor" type="Node3D"]
+script = ExtResource("1_s78vn")

@@ -5,12 +5,6 @@ extends Node3D
 @onready var camera := $"."
 @export var player: CharacterBody3D
 
-'''
-const SENSITIVITY = 0.004
-const MIN_PITCH = deg_to_rad(-40)
-const MAX_PITCH = deg_to_rad(60)
-'''
-
 const BOB_FREQ = 2.4
 const BOB_AMP = 0.08
 var t_bob: float = 0.0

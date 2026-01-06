@@ -6,20 +6,21 @@ extends CharacterBody3D
 @onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
 @onready var first_person_camera: FirstPersonCameraInput = $FirstPersonCameraInput
 @onready var third_person_camera: ThirdPersonCameraInput = $ThirdPersonCameraInput
+@onready var focus_sensor: Node3D = $FocusSensor
+
+var peer_id: int = 0
 
 enum CameraType { FIRST_PERSON, THIRD_PERSON }
 @onready var camera_type: CameraType = CameraType.FIRST_PERSON
+const ROTATION_INTERPOLATE_SPEED := 10
+var _previous_camera_basis: Basis = Basis.IDENTITY
 
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 @export var speed = WALK_SPEED
+var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var peer_id: int = 0
-
-@export var gravity: float = 9.8
-
-const ROTATION_INTERPOLATE_SPEED := 10
-var _previous_camera_basis: Basis = Basis.IDENTITY
+var focus = null
 
 func _ready() -> void:
 	set_multiplayer_authority(1)
@@ -32,6 +33,9 @@ func _ready() -> void:
 	_setup()
 
 func _setup() -> void:
+	# signal connections
+	focus_sensor.focus_hit.connect(_on_focus_hit)
+
 	setNameplate(str(peer_id))
 
 	var my_id = multiplayer.get_unique_id()
@@ -74,6 +78,9 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 	else:
 		speed = WALK_SPEED
 
+	if input.interact and focus:
+		focus._interact()
+
 	if is_on_floor():
 		velocity.y = 0
 		if direction:
@@ -113,3 +120,7 @@ func setNameplate(player_name: String) -> void:
 		nameplate.text = player_name
 	else:
 		push_warning("Player: Cannot set nameplate - nameplate node not initialized")
+
+# signals
+func _on_focus_hit(hit: Object) -> void:
+	focus = hit

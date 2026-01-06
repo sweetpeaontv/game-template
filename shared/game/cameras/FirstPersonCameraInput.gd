@@ -11,7 +11,7 @@ var camera_yaw : float = 0.0
 var camera_pitch : float = 0.0
 
 const SENSITIVITY = 0.004
-const CAMERA_X_ROT_MIN = deg_to_rad(-40)
+const CAMERA_X_ROT_MIN = deg_to_rad(-60)
 const CAMERA_X_ROT_MAX = deg_to_rad(60)
 
 func _ready() -> void:

@@ -15,6 +15,7 @@ enum SessionState { MAIN_MENU, IDLE, CONNECTING, IN_LOBBY, LOADING, PLAYING, END
 var state := SessionState.MAIN_MENU
 var script_name: String = "GameManager"
 var game_scene_name: String = "GameWorld"
+var is_verbose: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -49,11 +50,13 @@ func _join_game() -> void:
 
 func _on_gnet_connection_succeeded() -> void:
 	"""Called when connection to game succeeds. Handles client-side state."""
-	Logger.info("_on_gnet_connection_succeeded called, is_server: {0}", [multiplayer.is_server()], script_name, "_on_gnet_connection_succeeded")
+	if is_verbose:
+		Logger.info("_on_gnet_connection_succeeded called, is_server: {0}", [multiplayer.is_server()], script_name, "_on_gnet_connection_succeeded")
 	# ServerGameManager handles server-side connection logic
 	# Client: wait for host to send RPC
 	if not multiplayer.is_server():
-		Logger.info("Client detected, waiting for host RPC", [], script_name, "_on_gnet_connection_succeeded")
+		if is_verbose:
+			Logger.info("Client detected, waiting for host RPC", [], script_name, "_on_gnet_connection_succeeded")
 		_set_state(SessionState.LOADING)
 
 func _on_gnet_connection_failed(_reason: String) -> void:
@@ -65,7 +68,8 @@ func _on_scene_ready(scene_name: String) -> void:
 	if scene_name == "GameWorld":
 		# Client: notify server that we're ready (ServerGameManager handles server-side)
 		if not multiplayer.is_server() and ServerGameManager:
-			Logger.info("Client GameWorld ready, notifying server", [], script_name, "_on_scene_ready")
+			if is_verbose:
+				Logger.info("Client GameWorld ready, notifying server", [], script_name, "_on_scene_ready")
 			ServerGameManager._notify_client_ready.rpc_id(1)
 
 func launch_game() -> void:

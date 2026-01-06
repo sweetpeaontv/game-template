@@ -4,6 +4,8 @@ extends Node3D
 
 func _ready() -> void:
 	label.visible = false
+	# haven't found a more elegant way to do this
+	get_parent().collision_layer |= LayerDefs.PHYSICS_LAYERS_3D["INTERACTABLE"]
 
 func _get_interact_key_text() -> String:
 	"""Returns the text representation of the interact key, or a fallback if not found."""
