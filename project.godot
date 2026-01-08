@@ -28,13 +28,13 @@ GameManager="*res://app/autoload/GameManager.gd"
 SweetLogger="*res://app/autoload/SweetLogger.gd"
 EventBus="*res://app/autoload/EventBus.gd"
 SpawnManager="*res://shared/game/worlds/SpawnManager.gd"
+WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
+NetworkSimulator="*res://addons/netfox.extras/network-simulator.gd"
 NetworkTime="*res://addons/netfox/network-time.gd"
 NetworkTimeSynchronizer="*res://addons/netfox/network-time-synchronizer.gd"
 NetworkRollback="*res://addons/netfox/rollback/network-rollback.gd"
 NetworkEvents="*res://addons/netfox/network-events.gd"
 NetworkPerformance="*res://addons/netfox/network-performance.gd"
-WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
-NetworkSimulator="*res://addons/netfox.extras/network-simulator.gd"
 
 [editor_plugins]
 
