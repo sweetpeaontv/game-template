@@ -48,10 +48,10 @@ func _ready():
 	if steam_available:
 		steam = Engine.get_singleton("Steam")
 		if is_verbose:
-			Logger.info("Steam available, but not initialized. Use toggle to enable.", [], script_name, "_ready")
+			SweetLogger.info("Steam available, but not initialized. Use toggle to enable.", [], script_name, "_ready")
 	else:
 		if is_verbose:
-			Logger.info("Steam not available, using ENet", [], script_name, "_ready")
+			SweetLogger.info("Steam not available, using ENet", [], script_name, "_ready")
 
 	# Default to ENet for local development
 	current_adapter = Adapter.ENET
@@ -80,7 +80,7 @@ func use_adapter(adapter_name: String):
 		"steam":
 			if not steam_available:
 				if is_verbose:
-					Logger.warning("Steam not available, staying with ENet", [], script_name, "use_adapter")
+					SweetLogger.warning("Steam not available, staying with ENet", [], script_name, "use_adapter")
 				return
 
 			# Initialize Steam if not already initialized
@@ -92,18 +92,18 @@ func use_adapter(adapter_name: String):
 				current_adapter = Adapter.STEAM
 				useSteam = true
 				if is_verbose:
-					Logger.info("Switched to Steam adapter", [], script_name, "use_adapter")
+					SweetLogger.info("Switched to Steam adapter", [], script_name, "use_adapter")
 			else:
 				if is_verbose:
-					Logger.warning("Steam initialization failed, staying with ENet", [], script_name, "use_adapter")
+					SweetLogger.warning("Steam initialization failed, staying with ENet", [], script_name, "use_adapter")
 		"enet":
 			current_adapter = Adapter.ENET
 			useSteam = false
 			if is_verbose:
-				Logger.info("Switched to ENet adapter", [], script_name, "use_adapter")
+				SweetLogger.info("Switched to ENet adapter", [], script_name, "use_adapter")
 		_:
 			if is_verbose:
-				Logger.warning("Unknown adapter '{0}', use 'steam' or 'enet'", [adapter_name], script_name, "use_adapter")
+				SweetLogger.warning("Unknown adapter '{0}', use 'steam' or 'enet'", [adapter_name], script_name, "use_adapter")
 
 func host_game(options: Dictionary = {}) -> bool:
 	"""
@@ -115,7 +115,7 @@ func host_game(options: Dictionary = {}) -> bool:
 	- lobby_type: String (Steam only: "public", "friends", "private")
 	"""
 	if is_verbose:
-		Logger.info("Hosting game", [], script_name, "host_game")
+		SweetLogger.info("Hosting game", [], script_name, "host_game")
 	var max_players = options.get("max_players", 4)
 	var port = options.get("port", 7777)
 	return _host(max_players, port, options)
@@ -168,7 +168,7 @@ func find_friends_lobbies():
 		return
 
 	if is_verbose:
-		Logger.info("Checking friends' game status...", [], script_name, "find_friends_lobbies")
+		SweetLogger.info("Checking friends' game status...", [], script_name, "find_friends_lobbies")
 	var friends_lobbies: Array[Dictionary] = []
 	var friend_count = steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)
 	var my_app_id = steam.getAppID()
@@ -204,7 +204,7 @@ func find_friends_lobbies():
 		friends_lobbies.append(lobby_data)
 
 	if is_verbose:
-		Logger.info("Found {0} friends' lobbies", [friends_lobbies.size()], script_name, "find_friends_lobbies")
+		SweetLogger.info("Found {0} friends' lobbies", [friends_lobbies.size()], script_name, "find_friends_lobbies")
 	friends_lobbies_found.emit(friends_lobbies)
 
 ## STEAM ##
@@ -214,7 +214,7 @@ func _initialize_steam():
 	"""Initialize Steam API."""
 	if not steam:
 		if is_verbose:
-			Logger.error("Steam singleton not found", [], script_name, "_initialize_steam")
+			SweetLogger.error("Steam singleton not found", [], script_name, "_initialize_steam")
 		steam_available = false
 		current_adapter = Adapter.ENET
 		useSteam = false
@@ -224,7 +224,7 @@ func _initialize_steam():
 	var init_result = steam.steamInit()
 	if not init_result:
 		if is_verbose:
-			Logger.error("Steam initialization failed", [], script_name, "_initialize_steam")
+			SweetLogger.error("Steam initialization failed", [], script_name, "_initialize_steam")
 		steam_available = false
 		steam_initialized = false
 		current_adapter = Adapter.ENET
@@ -235,9 +235,9 @@ func _initialize_steam():
 	steam_initialized = true
 	useSteam = true
 	if is_verbose:
-		Logger.info("Steam initialized successfully", [], script_name, "_initialize_steam")
+		SweetLogger.info("Steam initialized successfully", [], script_name, "_initialize_steam")
 	if is_verbose:
-		Logger.info("Steam User ID: {0}", [steam.getSteamID()], script_name, "_initialize_steam")
+		SweetLogger.info("Steam User ID: {0}", [steam.getSteamID()], script_name, "_initialize_steam")
 
 	steam.lobby_created.connect(_on_steam_lobby_created)
 	steam.lobby_joined.connect(_on_steam_lobby_joined)
@@ -247,7 +247,7 @@ func _initialize_steam():
 
 func create_socket():
 	if is_verbose:
-		Logger.debug("create_socket", [], script_name, "create_socket")
+		SweetLogger.debug("create_socket", [], script_name, "create_socket")
 	multiplayer_peer = SteamMultiplayerPeer.new()
 	multiplayer_peer.create_host(0)
 	multiplayer.set_multiplayer_peer(multiplayer_peer)
@@ -260,7 +260,7 @@ func _host(max_players: int, port: int, options: Dictionary) -> bool:
 
 func _host_steam_impl(max_players: int, options: Dictionary) -> bool:
 	if is_verbose:
-		Logger.info("_host (Steam)", [], script_name, "_host_steam_impl")
+		SweetLogger.info("_host (Steam)", [], script_name, "_host_steam_impl")
 	if not steam_available or not steam_initialized:
 		connection_failed.emit("initial_connect_failed")
 		return false
@@ -274,10 +274,10 @@ func _host_steam_impl(max_players: int, options: Dictionary) -> bool:
 
 	# Use Steam singleton to create lobby (async call - result comes via callback)
 	if is_verbose:
-		Logger.info("Creating Steam lobby with type: {0} and max_players: {1}", [lobby_type, max_players], script_name, "_host_steam_impl")
+		SweetLogger.info("Creating Steam lobby with type: {0} and max_players: {1}", [lobby_type, max_players], script_name, "_host_steam_impl")
 	steam.createLobby(lobby_type, max_players)
 	if is_verbose:
-		Logger.info("createLobby call initiated (async)", [], script_name, "_host_steam_impl")
+		SweetLogger.info("createLobby call initiated (async)", [], script_name, "_host_steam_impl")
 
 	# createLobby is async - we'll get the result in _on_steam_lobby_created callback
 	is_hosting = true
@@ -285,7 +285,7 @@ func _host_steam_impl(max_players: int, options: Dictionary) -> bool:
 
 func _host_enet_impl(port: int, max_players: int) -> bool:
 	if is_verbose:
-		Logger.info("_host (ENet)", [], script_name, "_host_enet_impl")
+		SweetLogger.info("_host (ENet)", [], script_name, "_host_enet_impl")
 	multiplayer_peer = ENetMultiplayerPeer.new()
 
 	var result = multiplayer_peer.create_server(port, max_players)
@@ -296,18 +296,18 @@ func _host_enet_impl(port: int, max_players: int) -> bool:
 	multiplayer.multiplayer_peer = multiplayer_peer
 	is_hosting = true
 	if is_verbose:
-		Logger.info("ENet server started on port {0}", [port], script_name, "_host_enet_impl")
+		SweetLogger.info("ENet server started on port {0}", [port], script_name, "_host_enet_impl")
 	if is_verbose:
-		Logger.info("multiplayer.is_server() = {0}", [multiplayer.is_server()], script_name, "_host_enet_impl")
+		SweetLogger.info("multiplayer.is_server() = {0}", [multiplayer.is_server()], script_name, "_host_enet_impl")
 	if is_verbose:
-		Logger.info("multiplayer.get_unique_id() = {0}", [multiplayer.get_unique_id()], script_name, "_host_enet_impl")
+		SweetLogger.info("multiplayer.get_unique_id() = {0}", [multiplayer.get_unique_id()], script_name, "_host_enet_impl")
 
 	# Add host to connected players immediately
 	var host_id = 1  # Host always has ID 1
 	if not connected_players.has(host_id):
 		connected_players.append(host_id)
 		if is_verbose:
-			Logger.info("Added host to connected_players: {0}", [connected_players], script_name, "_host_enet_impl")
+			SweetLogger.info("Added host to connected_players: {0}", [connected_players], script_name, "_host_enet_impl")
 		players_changed.emit(connected_players)
 
 	# Initialize player directory for host
@@ -317,18 +317,18 @@ func _host_enet_impl(port: int, max_players: int) -> bool:
 	_sync_connected_players_to_all()
 
 	if is_verbose:
-		Logger.info("Emitting connection_succeeded signal", [], script_name, "_host_enet_impl")
+		SweetLogger.info("Emitting connection_succeeded signal", [], script_name, "_host_enet_impl")
 	connection_succeeded.emit()
 	if is_verbose:
-		Logger.info("connection_succeeded signal emitted", [], script_name, "_host_enet_impl")
+		SweetLogger.info("connection_succeeded signal emitted", [], script_name, "_host_enet_impl")
 	return true
 
 func _on_steam_lobby_created(_result: int, _lobby_id: int):
 	if is_verbose:
-		Logger.debug("_on_steam_lobby_created", [], script_name, "_on_steam_lobby_created")
+		SweetLogger.debug("_on_steam_lobby_created", [], script_name, "_on_steam_lobby_created")
 	if _result == 1:  # Steam.RESULT_OK
 		if is_verbose:
-			Logger.info("Steam lobby created with ID: {0}", [_lobby_id], script_name, "_on_steam_lobby_created")
+			SweetLogger.info("Steam lobby created with ID: {0}", [_lobby_id], script_name, "_on_steam_lobby_created")
 
 		create_socket()
 
@@ -337,7 +337,7 @@ func _on_steam_lobby_created(_result: int, _lobby_id: int):
 		if not connected_players.has(host_id):
 			connected_players.append(host_id)
 			if is_verbose:
-				Logger.info("Added host to connected_players: {0}", [connected_players], script_name, "_on_steam_lobby_created")
+				SweetLogger.info("Added host to connected_players: {0}", [connected_players], script_name, "_on_steam_lobby_created")
 			players_changed.emit(connected_players)
 
 		# Sync connected players to all clients (server-authoritative)
@@ -366,23 +366,23 @@ func _join(target) -> bool:
 
 func _join_steam_impl(lobby_id: int) -> bool:
 	if is_verbose:
-		Logger.info("_join (Steam)", [], script_name, "_join_steam_impl")
+		SweetLogger.info("_join (Steam)", [], script_name, "_join_steam_impl")
 	if not steam_available or not steam_initialized:
 		connection_failed.emit("initial_connect_failed")
 		return false
 
 	# Use Steam singleton to join lobby (async call)
 	if is_verbose:
-		Logger.info("Joining Steam lobby: {0}", [lobby_id], script_name, "_join_steam_impl")
+		SweetLogger.info("Joining Steam lobby: {0}", [lobby_id], script_name, "_join_steam_impl")
 	steam.joinLobby(lobby_id)
 	if is_verbose:
-		Logger.info("joinLobby call initiated (async)", [], script_name, "_join_steam_impl")
+		SweetLogger.info("joinLobby call initiated (async)", [], script_name, "_join_steam_impl")
 
 	return true  # Just indicates the request was initiated
 
 func _join_enet_impl(target) -> bool:
 	if is_verbose:
-		Logger.info("_join (ENet)", [], script_name, "_join_enet_impl")
+		SweetLogger.info("_join (ENet)", [], script_name, "_join_enet_impl")
 	var address: String
 	var port: int
 
@@ -407,23 +407,23 @@ func _join_enet_impl(target) -> bool:
 
 	multiplayer.multiplayer_peer = multiplayer_peer
 	if is_verbose:
-		Logger.info("Connecting to {0}:{1}", [address, port], script_name, "_join_enet_impl")
+		SweetLogger.info("Connecting to {0}:{1}", [address, port], script_name, "_join_enet_impl")
 	return true
 
 func _on_steam_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, response: int):
 	if is_verbose:
-		Logger.debug("_on_steam_lobby_joined", [], script_name, "_on_steam_lobby_joined")
+		SweetLogger.debug("_on_steam_lobby_joined", [], script_name, "_on_steam_lobby_joined")
 	if is_verbose:
-		Logger.debug("lobby_id: {0} response: {1}", [lobby_id, response], script_name, "_on_steam_lobby_joined")
+		SweetLogger.debug("lobby_id: {0} response: {1}", [lobby_id, response], script_name, "_on_steam_lobby_joined")
 
 	if response == 1:  # Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS
 		steam_lobby_id = lobby_id
 		if is_verbose:
-			Logger.info("Successfully joined Steam lobby: {0}", [lobby_id], script_name, "_on_steam_lobby_joined")
+			SweetLogger.info("Successfully joined Steam lobby: {0}", [lobby_id], script_name, "_on_steam_lobby_joined")
 
 		if not is_hosting:
 			if is_verbose:
-				Logger.info("Attempting P2P connection to lobby owner", [], script_name, "_on_steam_lobby_joined")
+				SweetLogger.info("Attempting P2P connection to lobby owner", [], script_name, "_on_steam_lobby_joined")
 			var lobby_owner_steam_id = steam.getLobbyOwner(lobby_id)
 			connect_socket(lobby_owner_steam_id)
 	else:
@@ -437,7 +437,7 @@ func _on_steam_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, res
 
 func _on_peer_connected(peer_id: int):
 	if is_verbose:
-		Logger.info("Peer connected: {0}", [peer_id], script_name, "_on_peer_connected")
+		SweetLogger.info("Peer connected: {0}", [peer_id], script_name, "_on_peer_connected")
 
 	peer_connected.emit(peer_id)
 
@@ -446,20 +446,20 @@ func _on_peer_connected(peer_id: int):
 		if not connected_players.has(peer_id):
 			connected_players.append(peer_id)
 			if is_verbose:
-				Logger.info("Added peer {0} to connected_players: {1}", [peer_id, connected_players], script_name, "_on_peer_connected")
+				SweetLogger.info("Added peer {0} to connected_players: {1}", [peer_id, connected_players], script_name, "_on_peer_connected")
 			players_changed.emit(connected_players)
 			# Sync updated list to all clients
 			_sync_connected_players_to_all()
 
 func _on_peer_disconnected(peer_id: int):
 	if is_verbose:
-		Logger.info("Peer disconnected: {0}", [peer_id], script_name, "_on_peer_disconnected")
+		SweetLogger.info("Peer disconnected: {0}", [peer_id], script_name, "_on_peer_disconnected")
 
 	# Only server manages connected_players list (server-authoritative)
 	if multiplayer.is_server():
 		connected_players.erase(peer_id)
 		if is_verbose:
-			Logger.info("Removed peer {0} from connected_players: {1}", [peer_id, connected_players], script_name, "_on_peer_disconnected")
+			SweetLogger.info("Removed peer {0} from connected_players: {1}", [peer_id, connected_players], script_name, "_on_peer_disconnected")
 		players_changed.emit(connected_players)
 		# Sync updated list to all clients
 		_sync_connected_players_to_all()
@@ -472,7 +472,7 @@ func _on_peer_disconnected(peer_id: int):
 
 func _on_connection_failed():
 	if is_verbose:
-		Logger.warning("Connection failed", [], script_name, "_on_connection_failed")
+		SweetLogger.warning("Connection failed", [], script_name, "_on_connection_failed")
 	# Clear players on failed connection
 	connected_players.clear()
 	players.clear()
@@ -487,23 +487,23 @@ func _on_connection_succeeded():
 	The server emits connection_succeeded signal when hosting starts.
 	"""
 	if is_verbose:
-		Logger.info("Connected successfully", [], script_name, "_on_connection_succeeded")
+		SweetLogger.info("Connected successfully", [], script_name, "_on_connection_succeeded")
 	var my_id = multiplayer.get_unique_id()
 	if is_verbose:
-		Logger.info("My ID is: {0}", [my_id], script_name, "_on_connection_succeeded")
+		SweetLogger.info("My ID is: {0}", [my_id], script_name, "_on_connection_succeeded")
 
 	# Clients wait for server to send authoritative connected_players list
 	# Server will send it via RPC when client connects
 	if not multiplayer.is_server():
 		if is_verbose:
-			Logger.info("Client connected, waiting for server to sync connected_players list", [], script_name, "_on_connection_succeeded")
+			SweetLogger.info("Client connected, waiting for server to sync connected_players list", [], script_name, "_on_connection_succeeded")
 
 	connection_succeeded.emit()
 
 func _on_server_disconnected():
 	"""Called when clients lose connection to the host/server."""
 	if is_verbose:
-		Logger.warning("Server disconnected", [], script_name, "_on_server_disconnected")
+		SweetLogger.warning("Server disconnected", [], script_name, "_on_server_disconnected")
 
 	# Clear all players since server is gone
 	connected_players.clear()
@@ -533,7 +533,7 @@ func _disconnect_steam_impl():
 		if steam_available:
 			steam.leaveLobby(steam_lobby_id)
 		if is_verbose:
-			Logger.info("Steam lobby closed: {0}", [steam_lobby_id], script_name, "_disconnect_steam_impl")
+			SweetLogger.info("Steam lobby closed: {0}", [steam_lobby_id], script_name, "_disconnect_steam_impl")
 
 	# Close the multiplayer peer connection
 	multiplayer_peer.close()
@@ -543,11 +543,11 @@ func _disconnect_enet_impl():
 	if is_hosting:
 		# As host, we need to notify all clients before shutting down
 		if is_verbose:
-			Logger.info("ENet server shutting down", [], script_name, "_disconnect_enet_impl")
+			SweetLogger.info("ENet server shutting down", [], script_name, "_disconnect_enet_impl")
 		# The close() method should handle notifying clients
 	else:
 		if is_verbose:
-			Logger.info("ENet client disconnecting", [], script_name, "_disconnect_enet_impl")
+			SweetLogger.info("ENet client disconnecting", [], script_name, "_disconnect_enet_impl")
 
 	# Close the multiplayer peer connection
 	multiplayer_peer.close()
@@ -635,7 +635,7 @@ func _sync_connected_players_to_all() -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Syncing connected_players to all clients: {0}", [connected_players], script_name, "_sync_connected_players_to_all")
+		SweetLogger.info("Syncing connected_players to all clients: {0}", [connected_players], script_name, "_sync_connected_players_to_all")
 	_sync_connected_players.rpc(connected_players)
 
 func _sync_connected_players_to_client(client_peer_id: int) -> void:
@@ -644,7 +644,7 @@ func _sync_connected_players_to_client(client_peer_id: int) -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Syncing connected_players to client {0}: {1}", [client_peer_id, connected_players], script_name, "_sync_connected_players_to_client")
+		SweetLogger.info("Syncing connected_players to client {0}: {1}", [client_peer_id, connected_players], script_name, "_sync_connected_players_to_client")
 	_sync_connected_players.rpc_id(client_peer_id, connected_players)
 
 @rpc("authority", "call_remote", "reliable")
@@ -654,11 +654,11 @@ func _sync_connected_players(server_connected_players: Array[int]) -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Received authoritative connected_players from server: {0}", [server_connected_players], script_name, "_sync_connected_players")
+		SweetLogger.info("Received authoritative connected_players from server: {0}", [server_connected_players], script_name, "_sync_connected_players")
 	connected_players = server_connected_players.duplicate()
 	players_changed.emit(connected_players)
 	if is_verbose:
-		Logger.info("Updated connected_players and emitted players_changed: {0}", [connected_players], script_name, "_sync_connected_players")
+		SweetLogger.info("Updated connected_players and emitted players_changed: {0}", [connected_players], script_name, "_sync_connected_players")
 
 	# Update player directory with new list
 	_update_player_directory()
@@ -671,7 +671,7 @@ func _exit_tree():
 	# Disconnect from any active multiplayer session
 	if multiplayer.has_multiplayer_peer():
 		if is_verbose:
-			Logger.info("Cleaning up multiplayer connection on exit...", [], script_name, "_exit_tree")
+			SweetLogger.info("Cleaning up multiplayer connection on exit...", [], script_name, "_exit_tree")
 		disconnect_game()
 
 	# Clean up Steam

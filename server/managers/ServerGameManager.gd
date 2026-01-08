@@ -49,7 +49,7 @@ func _on_gnet_connection_succeeded() -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Connection succeeded, loading GameWorld for server", [], script_name, "_on_gnet_connection_succeeded")
+		SweetLogger.info("Connection succeeded, loading GameWorld for server", [], script_name, "_on_gnet_connection_succeeded")
 	# Load gameworld for server directly
 	_load_gameworld_for_host()
 
@@ -58,7 +58,7 @@ func _on_gnet_connection_succeeded() -> void:
 	for peer_id in connected_peers:
 		if peer_id != 1:  # Skip server (peer_id 1)
 			if is_verbose:
-				Logger.info("Loading GameWorld for connected client {0}", [peer_id], script_name, "_on_gnet_connection_succeeded")
+				SweetLogger.info("Loading GameWorld for connected client {0}", [peer_id], script_name, "_on_gnet_connection_succeeded")
 			_load_gameworld_for_peer.rpc_id(peer_id)
 
 func _on_gnet_peer_connected(peer_id: int) -> void:
@@ -67,7 +67,7 @@ func _on_gnet_peer_connected(peer_id: int) -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Peer connected: {0}, game_state: {1}", [peer_id, game_state], script_name, "_on_gnet_peer_connected")
+		SweetLogger.info("Peer connected: {0}, game_state: {1}", [peer_id, game_state], script_name, "_on_gnet_peer_connected")
 
 	_load_gameworld_for_peer.rpc_id(peer_id)
 
@@ -86,7 +86,7 @@ func _on_scene_ready(scene_name: String) -> void:
 	if scene_name == "GameWorld":
 		# Server: spawn all players and set state to IN_LOBBY
 		if is_verbose:
-			Logger.info("GameWorld ready, setting state to IN_LOBBY and spawning all players", [], script_name, "_on_scene_ready")
+			SweetLogger.info("GameWorld ready, setting state to IN_LOBBY and spawning all players", [], script_name, "_on_scene_ready")
 		_set_game_state(GameState.IN_LOBBY)
 
 		# Get all connected peers and prepare spawn data
@@ -105,7 +105,7 @@ func _on_scene_ready(scene_name: String) -> void:
 			players_data.append({"peer_id": peer_id, "position": spawn_position})
 
 		if is_verbose:
-			Logger.info("players_data: {0}", [players_data], script_name, "_on_scene_ready")
+			SweetLogger.info("players_data: {0}", [players_data], script_name, "_on_scene_ready")
 		# Spawn all players and broadcast to all clients
 		spawn_players(players_data, [], false)
 
@@ -123,7 +123,7 @@ func _set_game_state(new_state: GameState) -> void:
 	_sync_game_state.rpc(new_state)
 
 	if is_verbose:
-		Logger.info("Game state changed to: {0}", [GameState.keys()[new_state]], script_name, "_set_game_state")
+		SweetLogger.info("Game state changed to: {0}", [GameState.keys()[new_state]], script_name, "_set_game_state")
 
 func get_game_state() -> GameState:
 	"""Get current server-authoritative game state."""
@@ -139,11 +139,11 @@ func start_server(options: Dictionary = {}) -> bool:
 	# Clean up any existing multiplayer connection first
 	if multiplayer.has_multiplayer_peer():
 		if is_verbose:
-			Logger.info("Cleaning up existing multiplayer connection...", [], script_name, "start_server")
+			SweetLogger.info("Cleaning up existing multiplayer connection...", [], script_name, "start_server")
 		Gnet.disconnect_game()
 
 	if is_verbose:
-		Logger.info("Starting server...", [], script_name, "start_server")
+		SweetLogger.info("Starting server...", [], script_name, "start_server")
 	return Gnet.host_game(options)
 
 ## PLAYER SPAWNING (AUTHORITATIVE) ##
@@ -170,16 +170,16 @@ func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks:
 
 	if not multiplayer.has_multiplayer_peer():
 		if is_verbose:
-			Logger.warning("spawn_players - no multiplayer peer", [], script_name, "spawn_players")
+			SweetLogger.warning("spawn_players - no multiplayer peer", [], script_name, "spawn_players")
 		return
 
 	if players.is_empty():
 		if is_verbose:
-			Logger.warning("spawn_players - no players to spawn", [], script_name, "spawn_players")
+			SweetLogger.warning("spawn_players - no players to spawn", [], script_name, "spawn_players")
 		return
 
 	if is_verbose:
-		Logger.info("spawn_players called with {0} players: {1}, targets: {2}", [players.size(), players, target_peer_ids], script_name, "spawn_players")
+		SweetLogger.info("spawn_players called with {0} players: {1}, targets: {2}", [players.size(), players, target_peer_ids], script_name, "spawn_players")
 
 	# Initialize acknowledgment tracking if requested
 	if initialize_acks and not target_peer_ids.is_empty():
@@ -209,21 +209,21 @@ func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks:
 
 			_spawn_players_rpc.rpc(remaining_clients)
 			if is_verbose:
-				Logger.info("Sent spawn RPC for {0} players to all clients", [remaining_clients.size()], script_name, "spawn_players")
+				SweetLogger.info("Sent spawn RPC for {0} players to all clients", [remaining_clients.size()], script_name, "spawn_players")
 		else:
 			if is_verbose:
-				Logger.info("No connected clients to send spawn RPC to (server-only)", [], script_name, "spawn_players")
+				SweetLogger.info("No connected clients to send spawn RPC to (server-only)", [], script_name, "spawn_players")
 	else:
 		# Send to specific clients (only if they're actually connected)
 		for target_peer_id in target_peer_ids:
 			if connected_clients.has(target_peer_id) and target_peer_id != 1:
 				_spawn_players_rpc.rpc_id(target_peer_id, players)
 				if is_verbose:
-					Logger.info("Sent spawn RPC for {0} players to client {1}", [players.size(), target_peer_id], script_name, "spawn_players")
+					SweetLogger.info("Sent spawn RPC for {0} players to client {1}", [players.size(), target_peer_id], script_name, "spawn_players")
 			else:
 				if target_peer_id != 1:
 					if is_verbose:
-						Logger.warning("Target client {0} is not connected, skipping spawn RPC", [target_peer_id], script_name, "spawn_players")
+						SweetLogger.warning("Target client {0} is not connected, skipping spawn RPC", [target_peer_id], script_name, "spawn_players")
 
 	# Wait for RPCs to be processed (only if initializing acks)
 	if initialize_acks:
@@ -239,7 +239,7 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	var existing_player = _find_player(peer_id)
 	if existing_player:
 		if is_verbose:
-			Logger.info("Player {0} already exists, updating position", [peer_id], script_name, "_spawn_player_impl")
+			SweetLogger.info("Player {0} already exists, updating position", [peer_id], script_name, "_spawn_player_impl")
 		existing_player.global_position = spawn_position
 		return
 
@@ -255,7 +255,7 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Player instantiated: {0} for peer_id: {1}", [player.name, peer_id], script_name, "_spawn_player_impl")
+		SweetLogger.info("Player instantiated: {0} for peer_id: {1}", [player.name, peer_id], script_name, "_spawn_player_impl")
 
 	player.peer_id = peer_id
 
@@ -282,7 +282,7 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	player.global_position = spawn_position
 
 	if is_verbose:
-		Logger.info("Spawned player {0} at {1}", [peer_id, spawn_position], script_name, "_spawn_player_impl")
+		SweetLogger.info("Spawned player {0} at {1}", [peer_id, spawn_position], script_name, "_spawn_player_impl")
 
 func _find_player(peer_id: int) -> Node:
 	"""Find existing player node for peer_id in PlayersContainer."""
@@ -316,7 +316,7 @@ func _notify_client_ready() -> void:
 
 	var client_peer_id = multiplayer.get_remote_sender_id()
 	if is_verbose:
-		Logger.info("Late-joining client {0} is ready", [client_peer_id], script_name, "_notify_client_ready")
+		SweetLogger.info("Late-joining client {0} is ready", [client_peer_id], script_name, "_notify_client_ready")
 
 	# Get position for new player
 	var new_player_position: Vector3 = SpawnManager.get_spawn_point(0)
@@ -328,16 +328,16 @@ func _notify_client_ready() -> void:
 	var existing_peers = all_connected.filter(func(p): return p != client_peer_id)
 
 	if is_verbose:
-		Logger.info("All connected players: {0}", [all_connected], script_name, "_notify_client_ready")
+		SweetLogger.info("All connected players: {0}", [all_connected], script_name, "_notify_client_ready")
 	if is_verbose:
-		Logger.info("Spawning new player {0} to existing clients {1}", [new_player_data, existing_peers], script_name, "_notify_client_ready")
+		SweetLogger.info("Spawning new player {0} to existing clients {1}", [new_player_data, existing_peers], script_name, "_notify_client_ready")
 	spawn_players(new_player_data, existing_peers, false)
 
 	# Send all existing players to the new late-joining client
 	var players_container = _get_players_container()
 	if not players_container:
 		if is_verbose:
-			Logger.warning("PlayersContainer not found for spawning players", [], script_name, "_notify_client_ready")
+			SweetLogger.warning("PlayersContainer not found for spawning players", [], script_name, "_notify_client_ready")
 		return
 
 	var existing_players = _find_all_players(players_container)
@@ -351,7 +351,7 @@ func _notify_client_ready() -> void:
 
 	if not all_players_data.is_empty():
 		if is_verbose:
-			Logger.info("Spawning existing players {0} to new client {1}", [all_players_data, client_peer_id], script_name, "_notify_client_ready")
+			SweetLogger.info("Spawning existing players {0} to new client {1}", [all_players_data, client_peer_id], script_name, "_notify_client_ready")
 		spawn_players(all_players_data, [client_peer_id], true)
 
 func _find_all_players(players_container: Node) -> Array:
@@ -381,7 +381,7 @@ func _player_spawned_ack(player_peer_id: int) -> void:
 
 	_player_spawn_acks[client_peer_id][player_peer_id] = true
 	if is_verbose:
-		Logger.info("Client {0} acknowledged spawn of player {1}", [client_peer_id, player_peer_id], script_name, "_player_spawned_ack")
+		SweetLogger.info("Client {0} acknowledged spawn of player {1}", [client_peer_id, player_peer_id], script_name, "_player_spawned_ack")
 
 @rpc("authority", "call_remote", "reliable")
 func _spawn_players_rpc(players_data: Array) -> void:
@@ -396,7 +396,7 @@ func _spawn_players_rpc(players_data: Array) -> void:
 
 	var my_id = multiplayer.get_unique_id()
 	if is_verbose:
-		Logger.info("Client (unique_id: {0}) received _spawn_players_rpc for {1} players :: {2}", [my_id, players_data.size(), players_data], script_name, "_spawn_players_rpc")
+		SweetLogger.info("Client (unique_id: {0}) received _spawn_players_rpc for {1} players :: {2}", [my_id, players_data.size(), players_data], script_name, "_spawn_players_rpc")
 
 	# Spawn each player
 	for player_data in players_data:
@@ -407,9 +407,9 @@ func _spawn_players_rpc(players_data: Array) -> void:
 			continue
 
 		if is_verbose:
-			Logger.info("Spawning player {0} on client", [peer_id], script_name, "_spawn_players_rpc")
+			SweetLogger.info("Spawning player {0} on client", [peer_id], script_name, "_spawn_players_rpc")
 		if is_verbose:
-			Logger.info("This client should {0} this player's input", ["control" if peer_id == my_id else "NOT control"], script_name, "_spawn_players_rpc")
+			SweetLogger.info("This client should {0} this player's input", ["control" if peer_id == my_id else "NOT control"], script_name, "_spawn_players_rpc")
 
 		# Spawn the player and wait for it to complete
 		await _spawn_player_impl(peer_id, position)
@@ -420,7 +420,7 @@ func _spawn_players_rpc(players_data: Array) -> void:
 		# Notify server that this player is ready
 		_player_spawned_ack.rpc_id(1, peer_id)
 		if is_verbose:
-			Logger.info("Client notified server that player {0} is ready", [peer_id], script_name, "_spawn_players_rpc")
+			SweetLogger.info("Client notified server that player {0} is ready", [peer_id], script_name, "_spawn_players_rpc")
 
 @rpc("authority", "call_local", "reliable")
 func _start_game_for_all() -> void:
@@ -441,7 +441,7 @@ func _load_gameworld_for_host() -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Loading GameWorld for server", [], script_name, "_load_gameworld_for_all")
+		SweetLogger.info("Loading GameWorld for server", [], script_name, "_load_gameworld_for_all")
 	# Update server state to LOADING
 	GameManager._set_state(GameManager.SessionState.LOADING)
 	SceneManager.request_scene_change("GameWorld")
@@ -450,7 +450,7 @@ func _load_gameworld_for_host() -> void:
 func _load_gameworld_for_peer() -> void:
 	"""RPC called by host to load GameWorld for a late-joining client."""
 	if is_verbose:
-		Logger.info("_load_gameworld_for_peer RPC received on client", [], script_name, "_load_gameworld_for_peer")
+		SweetLogger.info("_load_gameworld_for_peer RPC received on client", [], script_name, "_load_gameworld_for_peer")
 
 	if not GameManager:
 		push_error("ServerGameManager: GameManager not available on client")
@@ -461,11 +461,11 @@ func _load_gameworld_for_peer() -> void:
 		return
 
 	if is_verbose:
-		Logger.info("Setting client state to LOADING and loading GameWorld", [], script_name, "_load_gameworld_for_peer")
+		SweetLogger.info("Setting client state to LOADING and loading GameWorld", [], script_name, "_load_gameworld_for_peer")
 	GameManager._set_state(GameManager.SessionState.LOADING)
 	SceneManager.goto_scene("GameWorld")
 	if is_verbose:
-		Logger.info("Called SceneManager.goto_scene('GameWorld')", [], script_name, "_load_gameworld_for_peer")
+		SweetLogger.info("Called SceneManager.goto_scene('GameWorld')", [], script_name, "_load_gameworld_for_peer")
 
 @rpc("authority", "call_local", "reliable")
 func _sync_game_state(server_state: int) -> void:
@@ -492,7 +492,7 @@ func handle_peer_connected(peer_id: int, current_game_state: GameState) -> void:
 		return
 
 	if is_verbose:
-		Logger.info("handle_peer_connected for peer_id: {0}, game_state: {1}", [peer_id, current_game_state], script_name, "handle_peer_connected")
+		SweetLogger.info("handle_peer_connected for peer_id: {0}, game_state: {1}", [peer_id, current_game_state], script_name, "handle_peer_connected")
 
 	# If we're already in gameworld, load it for the new client
 	if current_game_state == GameState.IN_LOBBY or current_game_state == GameState.PLAYING:
@@ -501,7 +501,7 @@ func handle_peer_connected(peer_id: int, current_game_state: GameState) -> void:
 		# Also sync the current game state to the late joiner
 		_sync_game_state.rpc_id(peer_id, current_game_state)
 		if is_verbose:
-			Logger.info("Sent late-join RPCs to peer_id: {0}", [peer_id], script_name, "handle_peer_connected")
+			SweetLogger.info("Sent late-join RPCs to peer_id: {0}", [peer_id], script_name, "handle_peer_connected")
 
 func handle_spawn_request(peer_id: int) -> void:
 	"""Handle spawn request from Gnet. Called when Gnet requests spawning a late-joining player."""

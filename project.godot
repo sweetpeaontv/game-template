@@ -12,7 +12,7 @@ config_version=5
 
 config/name="game-template"
 run/main_scene="uid://b851e7ne5q1lu"
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -25,18 +25,20 @@ Gnet="*res://app/autoload/gnet.gd"
 DebugOverlay="*res://app/autoload/DebugOverlay.gd"
 ServerGameManager="*res://server/managers/ServerGameManager.gd"
 GameManager="*res://app/autoload/GameManager.gd"
+SweetLogger="*res://app/autoload/SweetLogger.gd"
 EventBus="*res://app/autoload/EventBus.gd"
-Logger="*res://app/autoload/Logger.gd"
 SpawnManager="*res://shared/game/worlds/SpawnManager.gd"
 NetworkTime="*res://addons/netfox/network-time.gd"
 NetworkTimeSynchronizer="*res://addons/netfox/network-time-synchronizer.gd"
 NetworkRollback="*res://addons/netfox/rollback/network-rollback.gd"
 NetworkEvents="*res://addons/netfox/network-events.gd"
 NetworkPerformance="*res://addons/netfox/network-performance.gd"
+WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
+NetworkSimulator="*res://addons/netfox.extras/network-simulator.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
+enabled=PackedStringArray("res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
 
 [input]
 

@@ -19,7 +19,7 @@ func _get_interact_key_text() -> String:
 	return "error"
 
 func _interact():
-	Logger.info("Interacting with {0}", [get_parent().name])
+	SweetLogger.info("Interacting with {0}", [get_parent().name])
 
 	# If the parent is not the multiplayer authority, send RPC to server
 	if not get_parent().is_multiplayer_authority():
@@ -42,7 +42,7 @@ func _perform_interaction():
 	if parent.has_method("_on_interact"):
 		parent._on_interact()
 	else:
-		Logger.warn("Parent {0} has no _on_interact method", [parent.name])
+		SweetLogger.warn("Parent {0} has no _on_interact method", [parent.name])
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
 	if not body is CharacterBody3D:
