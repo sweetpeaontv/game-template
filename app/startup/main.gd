@@ -1,6 +1,6 @@
 extends Node
 
-const START_SCENE := "MainMenu"
+const START_SCENE := "HomeMenu"
 
 @onready var world_container: Node = $WorldContainer
 @onready var players_container: Node = $Players

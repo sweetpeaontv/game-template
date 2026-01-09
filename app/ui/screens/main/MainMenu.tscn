@@ -1,9 +1,9 @@
 [gd_scene load_steps=2 format=3 uid="uid://ctackpldgak63"]
 
-[ext_resource type="Script" uid="uid://cjgruyes500td" path="res://app/ui/screens/MainMenu.gd" id="1_71j2o"]
+[ext_resource type="Script" uid="uid://cjgruyes500td" path="res://app/ui/screens/main/MainMenu.gd" id="1_sww8x"]
 
 [node name="MainMenu" type="Node2D"]
-script = ExtResource("1_71j2o")
+script = ExtResource("1_sww8x")
 
 [node name="Title" type="Label" parent="."]
 offset_left = 4.0

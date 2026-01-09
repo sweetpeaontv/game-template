@@ -1,0 +1,12 @@
+[gd_scene load_steps=4 format=3 uid="uid://djhxfyitb4kny"]
+
+[ext_resource type="Script" uid="uid://dkrpskqwbnisx" path="res://app/ui/screens/home/HomeMenu.gd" id="1_mllub"]
+[ext_resource type="PackedScene" uid="uid://bwgk64v6qjj3i" path="res://app/ui/screens/settings/SettingsModal.tscn" id="2_56gxu"]
+[ext_resource type="PackedScene" uid="uid://ctackpldgak63" path="res://app/ui/screens/main/MainMenu.tscn" id="2_bhsrm"]
+
+[node name="HomeMenu" type="Node2D"]
+script = ExtResource("1_mllub")
+
+[node name="MainMenu" parent="." instance=ExtResource("2_bhsrm")]
+
+[node name="SettingsModal" parent="." instance=ExtResource("2_56gxu")]
