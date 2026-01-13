@@ -1,21 +1,34 @@
-[gd_scene load_steps=6 format=3 uid="uid://8gmqyqbcm3y6"]
+[gd_scene load_steps=7 format=3 uid="uid://bpk6vmuacbrvy"]
 
-[ext_resource type="Script" uid="uid://da58mm8pbhjtn" path="res://shared/game/items/cube/Cube.gd" id="1_56cyy"]
-[ext_resource type="PackedScene" uid="uid://duhdgtve5pxql" path="res://shared/game/items/cube/hand-cube.glb" id="1_81wnv"]
-[ext_resource type="PackedScene" uid="uid://bfmyoa7cydypw" path="res://shared/game/components/physics-sychronizer/PhysicsSynchronizer.tscn" id="4_cfja5"]
+[ext_resource type="PackedScene" uid="uid://br5slp485xfc3" path="res://shared/game/items/cube/hand-cube.glb" id="1_81wnv"]
+[ext_resource type="Script" uid="uid://blgohumj1pvcx" path="res://shared/game/items/cube/Cube.gd" id="1_cfja5"]
+[ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="4_a5hvi"]
 [ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://shared/game/components/interactable/Interactable.tscn" id="4_hkabq"]
+[ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="5_hkfd8"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_ur2sb"]
-size = Vector3(0.1, 0.1, 0.1)
+[sub_resource type="BoxShape3D" id="BoxShape3D_who7n"]
+size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Cube" type="RigidBody3D"]
-script = ExtResource("1_56cyy")
-
-[node name="hand-cube" parent="." instance=ExtResource("1_81wnv")]
+script = ExtResource("1_cfja5")
+metadata/_custom_type_script = "uid://bklxcdyxgbjg2"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("BoxShape3D_ur2sb")
+shape = SubResource("BoxShape3D_who7n")
 
 [node name="Interactable" parent="." instance=ExtResource("4_hkabq")]
 
-[node name="PhysicsSynchronizer" parent="." instance=ExtResource("4_cfja5")]
+[node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
+script = ExtResource("4_a5hvi")
+root = NodePath("..")
+state_properties = Array[String]([":physics_state", ":_should_apply_impulse"])
+metadata/_custom_type_script = "uid://d350u8evihs1u"
+
+[node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
+script = ExtResource("5_hkfd8")
+root = NodePath("..")
+properties = Array[String]([":global_transform"])
+metadata/_custom_type_script = "uid://dour8fehaaugp"
+
+[node name="hand-cube" parent="." instance=ExtResource("1_81wnv")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)

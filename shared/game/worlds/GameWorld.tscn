@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://b46nucqwh0xsl"]
+[gd_scene load_steps=11 format=3 uid="uid://b46nucqwh0xsl"]
 
-[ext_resource type="PackedScene" uid="uid://8gmqyqbcm3y6" path="res://shared/game/items/cube/Cube.tscn" id="1_6h6rn"]
 [ext_resource type="PackedScene" uid="uid://bpuwfdi56xoau" path="res://shared/game/worlds/models/cube.glb" id="1_bcxc4"]
 [ext_resource type="Script" uid="uid://ljdti2hjik14" path="res://shared/game/worlds/SpawnManager.gd" id="2_5geq7"]
+[ext_resource type="PackedScene" uid="uid://bpk6vmuacbrvy" path="res://shared/game/items/cube/Cube.tscn" id="2_30h0s"]
+[ext_resource type="Script" uid="uid://wr5ur5dqrkni" path="res://addons/netfox.extras/physics/godot_driver_3d.gd" id="5_03arv"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_bfthn"]
 size = Vector2(15, 15)
@@ -46,8 +47,8 @@ transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.
 light_energy = 2.0
 shadow_enabled = true
 
-[node name="Cube" parent="." instance=ExtResource("1_6h6rn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.959, 0.1, -5.404)
+[node name="PhysicsCube" parent="." instance=ExtResource("2_30h0s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.924341, 0.27253395, -3.6265616)
 
 [node name="bigcube" parent="." instance=ExtResource("1_bcxc4")]
 transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 2, 0, 4)
@@ -60,3 +61,7 @@ shape = SubResource("BoxShape3D_bcxc4")
 
 [node name="SpawnManager" type="Node3D" parent="."]
 script = ExtResource("2_5geq7")
+
+[node name="PhysicsDriver3D" type="Node" parent="."]
+script = ExtResource("5_03arv")
+metadata/_custom_type_script = "uid://wr5ur5dqrkni"

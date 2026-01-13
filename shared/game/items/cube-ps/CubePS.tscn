@@ -1,0 +1,21 @@
+[gd_scene load_steps=6 format=3 uid="uid://8gmqyqbcm3y6"]
+
+[ext_resource type="Script" uid="uid://da58mm8pbhjtn" path="res://shared/game/items/cube-ps/CubePS.gd" id="1_p75mx"]
+[ext_resource type="PackedScene" uid="uid://duhdgtve5pxql" path="res://shared/game/items/cube-ps/hand-cube.glb" id="2_b50lu"]
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://shared/game/components/interactable/Interactable.tscn" id="3_cww8l"]
+[ext_resource type="PackedScene" uid="uid://bfmyoa7cydypw" path="res://shared/game/components/physics-sychronizer/PhysicsSynchronizer.tscn" id="4_jumao"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ur2sb"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="Cube" type="RigidBody3D"]
+script = ExtResource("1_p75mx")
+
+[node name="hand-cube" parent="." instance=ExtResource("2_b50lu")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_ur2sb")
+
+[node name="Interactable" parent="." instance=ExtResource("3_cww8l")]
+
+[node name="PhysicsSynchronizer" parent="." instance=ExtResource("4_jumao")]

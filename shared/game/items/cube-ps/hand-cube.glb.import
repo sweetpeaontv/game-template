@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://br5slp485xfc3"
-path="res://.godot/imported/hand-cube.glb-776c5551113bd1b72622d9236bf9485e.scn"
+uid="uid://duhdgtve5pxql"
+path="res://.godot/imported/hand-cube.glb-a60f08b1d5a9a0321e7e1f171024fe48.scn"
 
 [deps]
 
-source_file="res://shared/game/items/cube/hand-cube.glb"
-dest_files=["res://.godot/imported/hand-cube.glb-776c5551113bd1b72622d9236bf9485e.scn"]
+source_file="res://shared/game/items/cube-ps/hand-cube.glb"
+dest_files=["res://.godot/imported/hand-cube.glb-a60f08b1d5a9a0321e7e1f171024fe48.scn"]
 
 [params]
 
@@ -38,5 +38,5 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-gltf/naming_version=2
+gltf/naming_version=1
 gltf/embedded_image_handling=1

@@ -1,6 +1,7 @@
 class_name PhysicsSynchronizer
 extends MultiplayerSynchronizer
 
+# NOT CURRENTLY USED - NETFOX ROLLBACK SYNCHRONIZER + NETWORKRIGIDBODY USED INSTEAD
 # shout out PennyLoafers for this code
 
 @onready var sync_object : PhysicsBody3D = get_node(root_path)

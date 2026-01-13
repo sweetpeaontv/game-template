@@ -82,3 +82,7 @@ interact={
 
 3d_physics/layer_1="World"
 3d_physics/layer_5="Interactable"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"

@@ -19,25 +19,6 @@ func _get_interact_key_text() -> String:
 	return "error"
 
 func _interact():
-	SweetLogger.info("Interacting with {0}", [get_parent().name])
-
-	# If the parent is not the multiplayer authority, send RPC to server
-	if not get_parent().is_multiplayer_authority():
-		_interact_on_server.rpc_id(1)
-		return
-
-	# If we are the authority, perform the interaction
-	_perform_interaction()
-
-@rpc("any_peer", "call_remote", "reliable")
-func _interact_on_server():
-	# Verify we're on the server
-	if not get_parent().is_multiplayer_authority():
-		return
-
-	_perform_interaction()
-
-func _perform_interaction():
 	var parent = get_parent()
 	if parent.has_method("_on_interact"):
 		parent._on_interact()
