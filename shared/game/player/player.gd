@@ -113,7 +113,7 @@ func get_camera_basis() -> Basis:
 func rotate_player_model(delta: float) -> void:
 	var camera_basis: Basis = get_camera_basis()
 
-	var head_forward = -camera_basis.z
+	var head_forward = camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
 

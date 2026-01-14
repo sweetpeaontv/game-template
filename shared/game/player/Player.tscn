@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://btr4l7o8r7pij"]
 
 [ext_resource type="Script" uid="uid://xethu4nx0h3i" path="res://shared/game/player/player.gd" id="1_wv0h6"]
-[ext_resource type="PackedScene" uid="uid://d4mqt8g3pgc7m" path="res://shared/game/player/models/char.glb" id="2_r5dqo"]
+[ext_resource type="PackedScene" uid="uid://cg6uw4vpjuqvj" path="res://shared/game/player/models/char.glb" id="2_3wsxe"]
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="4_fvl6w"]
 [ext_resource type="PackedScene" uid="uid://craadyjtmmxuj" path="res://shared/game/cameras/FirstPersonCamera.tscn" id="5_14irj"]
 [ext_resource type="Script" uid="uid://bfnfkubk6xhwg" path="res://shared/game/player/input.gd" id="5_k0llr"]
@@ -23,7 +23,7 @@ shape = SubResource("BoxShape3D_e8u23")
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1.47989, 0)
 billboard = 1
 
-[node name="Model" parent="." instance=ExtResource("2_r5dqo")]
+[node name="Model" parent="." instance=ExtResource("2_3wsxe")]
 
 [node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
 script = ExtResource("4_fvl6w")
