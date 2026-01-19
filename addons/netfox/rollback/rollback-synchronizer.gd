@@ -374,6 +374,8 @@ func _prepare_tick_process(tick: int) -> void:
 			NetworkRollback.notify_simulated(node)
 
 func _can_simulate(node: Node, tick: int) -> bool:
+	# WORKAROUND UNTIL NETFOX UPDATES
+	return true
 	if not enable_prediction and _is_predicted_tick_for(node, tick):
 		# Don't simulate if prediction is not allowed and tick is predicted
 		return false

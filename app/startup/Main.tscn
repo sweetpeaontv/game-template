@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b851e7ne5q1lu"]
+[gd_scene load_steps=3 format=3 uid="uid://b851e7ne5q1lu"]
 
 [ext_resource type="Script" uid="uid://0tjw67kj0jvx" path="res://app/startup/main.gd" id="1_bk4ef"]
+[ext_resource type="Script" uid="uid://wr5ur5dqrkni" path="res://addons/netfox.extras/physics/godot_driver_3d.gd" id="2_jgnv3"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_bk4ef")
@@ -8,3 +9,7 @@ script = ExtResource("1_bk4ef")
 [node name="WorldContainer" type="Node" parent="."]
 
 [node name="Players" type="Node" parent="."]
+
+[node name="PhysicsDriver3D" type="Node" parent="."]
+script = ExtResource("2_jgnv3")
+metadata/_custom_type_script = "uid://wr5ur5dqrkni"

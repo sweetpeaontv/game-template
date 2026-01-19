@@ -1,44 +1,32 @@
 extends Node3D
 
+# THIS SHOULD PROBABLY BE REWORKED TO USE ROLLBACKSYNCHRONIZER
 signal focus_hit(hit: Object)
 
-enum AimMode {
-	CAMERA_FORWARD,
-}
-
 @export var actor: CharacterBody3D
-@export var aim_mode: AimMode = AimMode.CAMERA_FORWARD
-@export var aim_source: Node3D
 @export var max_distance: float = 3.0
 
 var last_hit: Object = null
-var is_local_player: bool = false
-
-func _ready() -> void:
-	if actor:
-		is_local_player = actor.peer_id == multiplayer.get_unique_id()
-
-	if is_local_player:
-		# this is a bit unrefined but works for now
-		var camera_path = "FirstPersonCameraInput/CameraMount/CameraRotation/SpringArm3D/Camera3D"
-		aim_source = actor.get_node_or_null(camera_path)
 
 # needs to be improved to prevent constant raycasting, should only raycast after camera transform changes etc
-func _process(_delta: float) -> void:
-	if not is_local_player:
+func _physics_process(_delta: float) -> void:
+	if not actor:
 		return
 
 	var hit = _query_focus_hit()
 	if hit != last_hit:
-		if hit:
-			focus_hit.emit(hit)
-		else:
-			focus_hit.emit(null)
+		focus_hit.emit(hit if hit else null)
 		last_hit = hit
 
 func _get_aim_ray() -> Array:
-	var origin := aim_source.global_position if aim_source else global_position
-	var dir := -aim_source.global_basis.z if aim_source else -global_basis.z
+	# Always use synced camera_basis for determinism
+	var camera_input = actor.get_node("FirstPersonCameraInput")
+	var camera_basis = camera_input.camera_basis
+	
+	# Camera position relative to player (from Player.tscn)
+	var origin = camera_input.global_position
+	var dir = -camera_basis.z
+	
 	return [origin, dir.normalized()]
 
 func _query_focus_hit() -> Object:
@@ -58,6 +46,4 @@ func _query_focus_hit() -> Object:
 	if hit.is_empty():
 		return null
 
-	var collider = hit.get("collider")
-
-	return collider
+	return hit.get("collider")

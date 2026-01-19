@@ -17,6 +17,7 @@ var peer_id: int = 0
 func set_player(curr_player: CharacterBody3D) -> void:
 	self.player = curr_player
 
+# headbob should be extracted into its own node (or perhaps CameraMount) instead of directly applying to the camera
 func _headbob(time) -> Vector3:
 	var pos = Vector3.ZERO
 	pos.y = sin(time * BOB_FREQ) * BOB_AMP

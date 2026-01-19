@@ -1,9 +1,17 @@
 extends CharacterBody3D
 
+# BODY NODES
 @onready var nameplate := $Nameplate
 @onready var model := $Model
+@onready var hold_point: Node3D = $HoldPoint
+
+# NETFOX SYNC NODES
 @onready var input: PlayerInput = $Input
 @onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
+@onready var interact_action: RewindableAction = $InteractAction
+var interact_target_id: int = -1
+
+# CAMERA NODES
 @onready var first_person_camera: FirstPersonCameraInput = $FirstPersonCameraInput
 @onready var third_person_camera: ThirdPersonCameraInput = $ThirdPersonCameraInput
 @onready var focus_sensor: Node3D = $FocusSensor
@@ -22,15 +30,20 @@ const SPRINT_SPEED = 8.0
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 var focus = null
+var holding = false
 
 func _ready() -> void:
+	await get_tree().process_frame
+
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
+	interact_action.set_multiplayer_authority(peer_id)
 
 	first_person_camera.set_multiplayer_authority(peer_id)
 	third_person_camera.set_multiplayer_authority(peer_id)
 	focus_sensor.set_multiplayer_authority(peer_id)
 
+	rollback_synchronizer.enable_input_broadcast = true
 	rollback_synchronizer.process_settings()
 	_setup()
 
@@ -62,7 +75,7 @@ func _setup() -> void:
 		model.visible = true
 		nameplate.visible = true
 
-func _rollback_tick(_delta, _tick, _is_fresh):
+func _rollback_tick(_delta, tick, _is_fresh):
 	if not input:
 		push_error("Player: Input node not found!")
 		return
@@ -81,7 +94,22 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 		speed = WALK_SPEED
 
 	if input.interact and focus:
-		focus.interactable._interact()
+		interact_action.set_active(true, tick)
+		SweetLogger.info("RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+	else:
+		interact_action.set_active(false, tick)
+	
+	match interact_action.get_status(tick):
+		RewindableAction.CONFIRMING:
+			SweetLogger.info("RewindableAction.CONFIRMING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+			_handle_interact()
+		RewindableAction.CANCELLING:
+			SweetLogger.info("RewindableAction.CANCELLING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+			_handle_interact_cancelled()
+		RewindableAction.ACTIVE:
+			pass
+		RewindableAction.INACTIVE:
+			pass
 
 	if is_on_floor():
 		velocity.y = 0
@@ -101,6 +129,17 @@ func _rollback_tick(_delta, _tick, _is_fresh):
 	velocity /= NetworkTime.physics_factor
 
 func _process(_delta: float) -> void:
+	pass
+
+func _handle_interact() -> void:
+	if not focus or not focus.interactable:
+		return
+
+	holding = true
+	var data = InteractionTypes.PickupData.pickup()
+	focus.interactable.interact(peer_id, data)
+
+func _handle_interact_cancelled() -> void:
 	pass
 
 func get_camera_basis() -> Basis:

@@ -39,7 +39,7 @@ func rotate_camera(move: Vector2):
 	camera_rot.rotation.x = camera_pitch
 
 func get_camera_rotation_basis() -> Basis:
-	return camera_mount.global_transform.basis
+	return camera_rot.global_transform.basis
 
 func _exit_tree():
 	NetworkTime.before_tick_loop.disconnect(_gather)

@@ -3,12 +3,40 @@ class_name PlayerInput
 
 var movement: Vector3 = Vector3.ZERO
 var shift: bool = false
+
+# INTERACT
 var interact: bool = false
+var _interact_buffer: bool = false
+
+# ALT INTERACT
+var alt_interact_released: bool = false
+var alt_interact: bool = false
+var alt_interact_hold_time: float = 0.0
+
+var _alt_interact_release_buffer: bool = false
+var _alt_interact_buffer: bool = false
+var _alt_interact_hold_duration: float = 0.0
 
 func _ready():
 	NetworkTime.before_tick_loop.connect(_gather)
 
+func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("interact"):
+		_interact_buffer = true
+
+	if Input.is_action_pressed("alt_interact"):
+		_alt_interact_buffer = true
+		_alt_interact_hold_duration += delta
+	else:
+		_alt_interact_buffer = false
+
+	if Input.is_action_just_released("alt_interact"):
+		_alt_interact_release_buffer = true
+
 func _gather():
+	if not is_multiplayer_authority():
+		return
+
 	movement = Vector3(
 		Input.get_axis("left", "right"),
 		Input.get_action_strength("jump"),
@@ -17,7 +45,19 @@ func _gather():
 
 	shift = Input.is_action_pressed("shift")
 
-	interact = Input.is_action_pressed("interact")
+	interact = _interact_buffer
+	_interact_buffer = false
+
+	alt_interact = _alt_interact_buffer
+	alt_interact_released = _alt_interact_release_buffer
+
+	if alt_interact_released:
+		alt_interact_hold_time = _alt_interact_hold_duration
+		_alt_interact_hold_duration = 0.0
+	elif not alt_interact:
+		alt_interact_hold_time = 0.0
+
+	_alt_interact_release_buffer = false
 
 func _exit_tree():
 	NetworkTime.before_tick_loop.disconnect(_gather)
