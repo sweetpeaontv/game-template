@@ -9,28 +9,32 @@ extends CharacterBody3D
 @onready var input: PlayerInput = $Input
 @onready var rollback_synchronizer: RollbackSynchronizer = $RollbackSynchronizer
 @onready var interact_action: RewindableAction = $InteractAction
-var interact_target_id: int = -1
+@onready var alt_interact_action: RewindableAction = $AltInteractAction
 
 # CAMERA NODES
 @onready var first_person_camera: FirstPersonCameraInput = $FirstPersonCameraInput
 @onready var third_person_camera: ThirdPersonCameraInput = $ThirdPersonCameraInput
 @onready var focus_sensor: Node3D = $FocusSensor
 
+# MULTIPLAYER VALUES/VARIABLES
 var peer_id: int = 0
 
+# CAMERA DEFAULT VALUES/VARIABLES
 enum CameraType { FIRST_PERSON, THIRD_PERSON }
 @onready var camera_type: CameraType = CameraType.FIRST_PERSON
 const ROTATION_INTERPOLATE_SPEED := 10
 var _previous_camera_basis: Basis = Basis.IDENTITY
 var current_camera: Node3D = null
 
+# MOVEMENT DEFAULT VALUES/VARIABLES
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
 @export var speed = WALK_SPEED
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var focus = null
-var holding = false
+# INTERACTION VARIABLES
+var focus: Node3D = null
+var holding: Node3D = null
 
 func _ready() -> void:
 	await get_tree().process_frame
@@ -38,6 +42,7 @@ func _ready() -> void:
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
 	interact_action.set_multiplayer_authority(peer_id)
+	alt_interact_action.set_multiplayer_authority(peer_id)
 
 	first_person_camera.set_multiplayer_authority(peer_id)
 	third_person_camera.set_multiplayer_authority(peer_id)
@@ -95,17 +100,33 @@ func _rollback_tick(_delta, tick, _is_fresh):
 
 	if input.interact and focus:
 		interact_action.set_active(true, tick)
-		SweetLogger.info("RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-	else:
-		interact_action.set_active(false, tick)
+		SweetLogger.info("interact RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
 	
 	match interact_action.get_status(tick):
 		RewindableAction.CONFIRMING:
-			SweetLogger.info("RewindableAction.CONFIRMING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+			SweetLogger.info("interact RewindableAction.CONFIRMING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
 			_handle_interact()
 		RewindableAction.CANCELLING:
-			SweetLogger.info("RewindableAction.CANCELLING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+			SweetLogger.info("interact RewindableAction.CANCELLING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
 			_handle_interact_cancelled()
+			interact_action.set_active(false, tick)
+		RewindableAction.ACTIVE:
+			pass
+		RewindableAction.INACTIVE:
+			pass
+
+	if holding and input.alt_interact_released:
+		alt_interact_action.set_active(true, tick)
+		SweetLogger.info("alt_interact RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+	
+	match alt_interact_action.get_status(tick):
+		RewindableAction.CONFIRMING:
+			SweetLogger.info("alt_interact RewindableAction.CONFIRMING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+			_handle_alt_interact()
+		RewindableAction.CANCELLING:
+			SweetLogger.info("alt_interact RewindableAction.CANCELLING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
+			_handle_alt_interact_cancelled()
+			alt_interact_action.set_active(false, tick)
 		RewindableAction.ACTIVE:
 			pass
 		RewindableAction.INACTIVE:
@@ -135,11 +156,20 @@ func _handle_interact() -> void:
 	if not focus or not focus.interactable:
 		return
 
-	holding = true
-	var data = InteractionTypes.PickupData.pickup()
-	focus.interactable.interact(peer_id, data)
+	focus.interactable.interact(peer_id, InteractionTypes.PickupData.pickup())
+	holding = focus
 
 func _handle_interact_cancelled() -> void:
+	pass
+
+func _handle_alt_interact() -> void:
+	if not holding:
+		return
+	
+	holding.interactable.interact(peer_id, InteractionTypes.PickupData.drop())
+	holding = null
+
+func _handle_alt_interact_cancelled() -> void:
 	pass
 
 func get_camera_basis() -> Basis:

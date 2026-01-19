@@ -44,33 +44,27 @@ func _pickup(interactor_peer_id: int) -> void:
 	holder_peer_id = interactor_peer_id
 
 	if parent is RigidBody3D:
-		parent.freeze = true
 		parent.collision_layer = 0
 		parent.collision_mask = 0
-
-	NetworkRollback.mutate(self, NetworkTime.tick)
-	NetworkRollback.mutate(parent, NetworkTime.tick)
 
 func _drop() -> void:
 	state = PickupState.FREE
 	holder_peer_id = 0
 
 	if parent is RigidBody3D:
-		parent.freeze = false
 		parent.collision_layer = original_collision_layer
 		parent.collision_mask = original_collision_mask
 
-	NetworkRollback.mutate(self, NetworkTime.tick)
-	NetworkRollback.mutate(parent, NetworkTime.tick)
-
-func _throw(throw_power: float = 0.0) -> void:
+func _throw(_throw_power: float = 0.0) -> void:
 	pass
 
 func _interact_physics_rollback_tick(_delta, _tick):
+	pass
 	if holder_peer_id != 0:
 		var holder = ServerGameManager._find_player(holder_peer_id)
 		if holder.has_node("HoldPoint"):
 			var hold_point = holder.get_node("HoldPoint")
-			parent.global_transform = hold_point.global_transform
+			parent.physics_state[0] = hold_point.global_transform.origin
+			NetworkRollback.mutate(parent, NetworkTime.tick)
 		else:
 			SweetLogger.error("Holder does not have a HoldPoint! That's not supposed to happen...", [], "Cube.gd", "_physics_rollback_tick")

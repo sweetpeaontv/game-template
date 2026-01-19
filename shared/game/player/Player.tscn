@@ -61,3 +61,7 @@ metadata/_custom_type_script = "uid://d350u8evihs1u"
 [node name="InteractAction" type="Node" parent="."]
 script = ExtResource("9_p8na1")
 metadata/_custom_type_script = "uid://chr4omg2hy3yu"
+
+[node name="AltInteractAction" type="Node" parent="."]
+script = ExtResource("9_p8na1")
+metadata/_custom_type_script = "uid://chr4omg2hy3yu"
