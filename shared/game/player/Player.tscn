@@ -27,7 +27,7 @@ billboard = 1
 [node name="Model" parent="." instance=ExtResource("2_3wsxe")]
 
 [node name="HoldPoint" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7282487, -0.691214)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -1.5)
 
 [node name="FirstPersonCameraInput" parent="." node_paths=PackedStringArray("rollback_synchronizer", "player") instance=ExtResource("5_14irj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.081, 0)

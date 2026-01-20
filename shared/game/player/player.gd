@@ -115,6 +115,9 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		RewindableAction.INACTIVE:
 			pass
 
+	if holding:
+		_update_hold_point()
+
 	if holding and input.alt_interact_released:
 		alt_interact_action.set_active(true, tick)
 		SweetLogger.info("alt_interact RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
@@ -156,7 +159,7 @@ func _handle_interact() -> void:
 	if not focus or not focus.interactable:
 		return
 
-	focus.interactable.interact(peer_id, InteractionTypes.PickupData.pickup())
+	focus.interactable.interact(self, InteractionTypes.PickupData.pickup())
 	holding = focus
 
 func _handle_interact_cancelled() -> void:
@@ -166,11 +169,19 @@ func _handle_alt_interact() -> void:
 	if not holding:
 		return
 	
-	holding.interactable.interact(peer_id, InteractionTypes.PickupData.drop())
+	holding.interactable.interact(self, InteractionTypes.PickupData.drop())
 	holding = null
 
 func _handle_alt_interact_cancelled() -> void:
 	pass
+
+func _update_hold_point() -> void:
+	var camera_basis: Basis = get_camera_basis()
+	var hold_offset = Vector3(0.0, 0.3, -1.5)
+	var camera_position = first_person_camera.global_position
+	var rotated_offset = camera_basis * hold_offset
+	hold_point.global_position = camera_position + rotated_offset
+	hold_point.transform.basis = camera_basis
 
 func get_camera_basis() -> Basis:
 	if camera_type == CameraType.FIRST_PERSON:
@@ -194,4 +205,5 @@ func setNameplate(player_name: String) -> void:
 
 # signals
 func _on_focus_hit(hit: Object) -> void:
+	SweetLogger.info("Player {0}: Focus hit: {1}", [peer_id, hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
 	focus = hit

@@ -31,13 +31,13 @@ func _get_label_text() -> String:
 		return interaction_label_text
 	return _get_interact_key_text()
 
-func interact(interactor_peer_id: int, _data: Variant = null) -> void:
+func interact(interactor: Node3D, _data: Variant = null) -> void:
 	"""Public method to trigger interaction - can be called by player controller."""
-	_interact(interactor_peer_id, _data)
+	_interact(interactor, _data)
 
-func _interact(_interactor_peer_id: int, _data: Variant = null) -> void:
+func _interact(_interactor: Node3D, _data: Variant = null) -> void:
 	''' Override this in subclasses for custom interaction logic '''
-	SweetLogger.info("{0} Interacting with {1} in _interact", ['Player_%d' % _interactor_peer_id, name])
+	SweetLogger.info("{0} Interacting with {1} in _interact", ['Player_%d' % _interactor.peer_id, name])
 
 func _interact_rollback_tick(_delta, _tick):
 	''' Override this in subclasses for custom rollback logic '''
@@ -45,6 +45,10 @@ func _interact_rollback_tick(_delta, _tick):
 
 func _interact_physics_rollback_tick(_delta, _tick):
 	''' Override this in subclasses for custom physics rollback logic '''
+	pass
+
+func _integrate_forces_logic(state: PhysicsDirectBodyState3D) -> void:
+	''' Override this in subclasses for custom integration logic '''
 	pass
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
