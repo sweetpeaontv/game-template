@@ -10,6 +10,3 @@ func _ready() -> void:
 
 func _physics_rollback_tick(_delta, _tick):
 	interactable._interact_physics_rollback_tick(_delta, _tick)
-
-func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-	interactable._integrate_forces_logic(state)

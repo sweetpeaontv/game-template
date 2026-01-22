@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+signal alt_interact_hold_duration_changed(duration: float)
+
 # BODY NODES
 @onready var nameplate := $Nameplate
 @onready var model := $Model
@@ -98,42 +100,29 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	else:
 		speed = WALK_SPEED
 
-	if input.interact and focus:
-		interact_action.set_active(true, tick)
-		SweetLogger.info("interact RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-	
-	match interact_action.get_status(tick):
-		RewindableAction.CONFIRMING:
-			SweetLogger.info("interact RewindableAction.CONFIRMING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-			_handle_interact()
-		RewindableAction.CANCELLING:
-			SweetLogger.info("interact RewindableAction.CANCELLING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-			_handle_interact_cancelled()
-			interact_action.set_active(false, tick)
-		RewindableAction.ACTIVE:
-			pass
-		RewindableAction.INACTIVE:
-			pass
+	_process_rewindable_action(
+		interact_action,
+		input.interact and focus,
+		tick,
+		"interact",
+		_handle_interact,
+		_handle_interact_cancelled
+	)
 
 	if holding:
 		_update_hold_point()
+		
+	if input.alt_interact:
+		alt_interact_hold_duration_changed.emit(input._alt_interact_hold_duration)
 
-	if holding and input.alt_interact_released:
-		alt_interact_action.set_active(true, tick)
-		SweetLogger.info("alt_interact RewindableAction.ACTIVE current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-	
-	match alt_interact_action.get_status(tick):
-		RewindableAction.CONFIRMING:
-			SweetLogger.info("alt_interact RewindableAction.CONFIRMING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-			_handle_alt_interact()
-		RewindableAction.CANCELLING:
-			SweetLogger.info("alt_interact RewindableAction.CANCELLING current tick: {0}", [tick], "Player.gd", "_rollback_tick")
-			_handle_alt_interact_cancelled()
-			alt_interact_action.set_active(false, tick)
-		RewindableAction.ACTIVE:
-			pass
-		RewindableAction.INACTIVE:
-			pass
+	_process_rewindable_action(
+		alt_interact_action,
+		holding and input.alt_interact_released,
+		tick,
+		"alt_interact",
+		_handle_alt_interact,
+		_handle_alt_interact_cancelled
+	)
 
 	if is_on_floor():
 		velocity.y = 0
@@ -162,6 +151,10 @@ func _handle_interact() -> void:
 	focus.interactable.interact(self, InteractionTypes.PickupData.pickup())
 	holding = focus
 
+	if multiplayer.get_unique_id() == peer_id:
+		var pickup_hud = UIManager.show_ui("PickupHUD", {})
+		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+
 func _handle_interact_cancelled() -> void:
 	pass
 
@@ -169,12 +162,46 @@ func _handle_alt_interact() -> void:
 	if not holding:
 		return
 	
-	holding.interactable.interact(self, InteractionTypes.PickupData.drop())
+	if input.alt_interact_hold_time < 0.2:
+		holding.interactable.interact(self, InteractionTypes.PickupData.drop())
+	else:
+		var throw_power = input.alt_interact_hold_time * 10.0
+		holding.interactable.interact(self, InteractionTypes.PickupData.throw(throw_power))
+	
 	holding = null
+	UIManager.hide_ui("PickupHUD")
 
 func _handle_alt_interact_cancelled() -> void:
-	pass
+	SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
+	holding.interactable.set_pickup_state(holding.interactable.PickupState.FREE)
 
+func _process_rewindable_action(
+	action: RewindableAction,
+	should_activate: bool,
+	tick: int,
+	_action_name: String,
+	on_confirming: Callable,
+	on_cancelling: Callable
+) -> void:
+	if should_activate:
+		action.set_active(true, tick)
+		#SweetLogger.info("{0} RewindableAction.ACTIVE current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
+	
+	match action.get_status(tick):
+		RewindableAction.CONFIRMING:
+			#SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
+			on_confirming.call()
+		RewindableAction.CANCELLING:
+			#SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
+			on_cancelling.call()
+			action.set_active(false, tick)
+		RewindableAction.ACTIVE:
+			pass
+		RewindableAction.INACTIVE:
+			pass
+
+# quick and dirty solution to update the hold point position and rotation
+# could use a spring arm for better results
 func _update_hold_point() -> void:
 	var camera_basis: Basis = get_camera_basis()
 	var hold_offset = Vector3(0.0, 0.3, -1.5)
@@ -205,5 +232,4 @@ func setNameplate(player_name: String) -> void:
 
 # signals
 func _on_focus_hit(hit: Object) -> void:
-	SweetLogger.info("Player {0}: Focus hit: {1}", [peer_id, hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
 	focus = hit

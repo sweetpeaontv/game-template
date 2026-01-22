@@ -3,7 +3,7 @@ class_name Pickupable
 
 const PickupData = InteractionTypes.PickupData
 
-enum PickupState { FREE, HELD }
+enum PickupState { FREE, HELD, THROWN }
 
 var parent: Node3D = null
 var holder: Node3D = null
@@ -11,6 +11,7 @@ var holder: Node3D = null
 var pickup_state: PickupState = PickupState.FREE
 var original_collision_layer: int = 0
 var original_collision_mask: int = 0
+var pending_throw_velocity: Vector3 = Vector3.ZERO
 
 func _on_ready() -> void:
 	parent = get_parent()
@@ -39,30 +40,50 @@ func _interact(interactor: Node3D, data: Variant = null) -> void:
 		_:
 			SweetLogger.error("Invalid action: {0}", [action], "Pickupable.gd", "_interact")
 
+func set_pickup_state(state: PickupState) -> void:
+	pickup_state = state
+
 func _pickup(interactor: Node3D) -> void:
 	pickup_state = PickupState.HELD
 	holder = interactor
-
-	#if parent is RigidBody3D:
-		#parent.collision_layer = 0
-		#parent.collision_mask = 0
 
 func _drop() -> void:
 	pickup_state = PickupState.FREE
 	holder = null
 
-	#if parent is RigidBody3D:
-		#parent.collision_layer = original_collision_layer
-		#parent.collision_mask = original_collision_mask
-
 func _throw(_throw_power: float = 0.0) -> void:
-	pass
+	if not holder or not parent:
+		return
+
+	# pretty rudamentary solution to throw the item in the direction the player is looking
+	var throw_direction = Vector3.ZERO
+	if holder.has_method("get_camera_basis"):
+		var camera_basis = holder.get_camera_basis()
+		throw_direction = -camera_basis.z
+
+	pickup_state = PickupState.THROWN
+	holder = null
+
+	if parent is RigidBody3D:
+		# Re-enable collisions
+		parent.collision_layer = original_collision_layer
+		parent.collision_mask = original_collision_mask
+		
+		pending_throw_velocity = throw_direction.normalized() * _throw_power
+		NetworkRollback.mutate(self)
+		# Optional: Add a slight upward component for a more natural throw arc
+		# parent.linear_velocity += Vector3.UP * (_throw_power * 0.3)
 
 func _interact_physics_rollback_tick(_delta, _tick):
-	pass
-
-func _integrate_forces_logic(state: PhysicsDirectBodyState3D) -> void:
 	if pickup_state == PickupState.HELD and holder:
-		state.transform = holder.hold_point.global_transform
-		state.linear_velocity = Vector3.ZERO
-		state.angular_velocity = Vector3.ZERO
+		var test: Array = [
+			holder.hold_point.global_transform.origin,
+			holder.hold_point.global_transform.basis.get_rotation_quaternion(),
+			Vector3.ZERO, 
+			Vector3.ZERO, 
+			false
+		]
+		parent.set_state(test)
+	elif pending_throw_velocity != Vector3.ZERO:
+		parent.apply_central_impulse(pending_throw_velocity)
+		pending_throw_velocity = Vector3.ZERO

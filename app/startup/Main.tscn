@@ -10,6 +10,8 @@ script = ExtResource("1_bk4ef")
 
 [node name="Players" type="Node" parent="."]
 
+[node name="UI" type="Node" parent="."]
+
 [node name="PhysicsDriver3D" type="Node" parent="."]
 script = ExtResource("2_jgnv3")
 metadata/_custom_type_script = "uid://wr5ur5dqrkni"

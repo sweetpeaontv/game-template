@@ -21,7 +21,7 @@ shape = SubResource("BoxShape3D_who7n")
 [node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
 script = ExtResource("4_a5hvi")
 root = NodePath("..")
-state_properties = Array[String]([":physics_state"])
+state_properties = Array[String]([":physics_state", ":pending_velocity", "Pickupable:pending_throw_velocity"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
 [node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
