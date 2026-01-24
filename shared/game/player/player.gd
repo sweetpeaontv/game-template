@@ -1,6 +1,8 @@
 extends CharacterBody3D
 
 signal alt_interact_hold_duration_changed(duration: float)
+signal focused_interactable(interactable: Interactable)
+signal unfocused_interactable(interactable: Interactable)
 
 # BODY NODES
 @onready var nameplate := $Nameplate
@@ -38,6 +40,8 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var focus: Node3D = null
 var holding: Node3D = null
 
+# INIT
+#===================================================================================#
 func _ready() -> void:
 	await get_tree().process_frame
 
@@ -81,7 +85,10 @@ func _setup() -> void:
 	else:
 		model.visible = true
 		nameplate.visible = true
+#===================================================================================#
 
+# PLAYER LOOP
+#===================================================================================#
 func _rollback_tick(_delta, tick, _is_fresh):
 	if not input:
 		push_error("Player: Input node not found!")
@@ -89,7 +96,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 
 	var camera_basis = get_camera_basis()
 
-	if camera_basis != _previous_camera_basis:
+	if get_camera_basis() != _previous_camera_basis:
 		_previous_camera_basis = camera_basis
 		rotate_player_model(_delta)
 
@@ -111,7 +118,8 @@ func _rollback_tick(_delta, tick, _is_fresh):
 
 	if holding:
 		_update_hold_point()
-		
+	
+	# updates pickup hold duration HUD
 	if input.alt_interact:
 		alt_interact_hold_duration_changed.emit(input._alt_interact_hold_duration)
 
@@ -140,24 +148,28 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	velocity *= NetworkTime.physics_factor
 	move_and_slide()
 	velocity /= NetworkTime.physics_factor
+#===================================================================================#
 
-func _process(_delta: float) -> void:
-	pass
-
+# INTERACT ACTION
+#===================================================================================#
 func _handle_interact() -> void:
-	if not focus or not focus.interactable:
+	if not focus or not focus is Interactable:
 		return
 
-	focus.interactable.interact(self, InteractionTypes.PickupData.pickup())
-	holding = focus
+	focus.interact(self, InteractionTypes.PickupData.pickup())
+	holding = focus.parent
 
 	if multiplayer.get_unique_id() == peer_id:
 		var pickup_hud = UIManager.show_ui("PickupHUD", {})
+		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP
 		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
 
 func _handle_interact_cancelled() -> void:
 	pass
+#===================================================================================#
 
+# ALT INTERACT ACTION
+#===================================================================================#
 func _handle_alt_interact() -> void:
 	if not holding:
 		return
@@ -174,7 +186,10 @@ func _handle_alt_interact() -> void:
 func _handle_alt_interact_cancelled() -> void:
 	SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
 	holding.interactable.set_pickup_state(holding.interactable.PickupState.FREE)
+#===================================================================================#
 
+# PROCESS REWINDABLE ACTION
+#===================================================================================#
 func _process_rewindable_action(
 	action: RewindableAction,
 	should_activate: bool,
@@ -199,7 +214,28 @@ func _process_rewindable_action(
 			pass
 		RewindableAction.INACTIVE:
 			pass
+#===================================================================================#
+# SETTERS
+#===================================================================================#
+func setNameplate(player_name: String) -> void:
+	if nameplate:
+		nameplate.text = player_name
+	else:
+		push_warning("Player: Cannot set nameplate - nameplate node not initialized")
+#===================================================================================#
 
+# GETTERS
+#===================================================================================#
+func get_camera_basis() -> Basis:
+	if camera_type == CameraType.FIRST_PERSON:
+		return first_person_camera.camera_basis
+	elif camera_type == CameraType.THIRD_PERSON:
+		return third_person_camera.camera_basis
+	return Basis.IDENTITY
+#===================================================================================#
+
+# HELPERS
+#===================================================================================#
 # quick and dirty solution to update the hold point position and rotation
 # could use a spring arm for better results
 func _update_hold_point() -> void:
@@ -210,26 +246,27 @@ func _update_hold_point() -> void:
 	hold_point.global_position = camera_position + rotated_offset
 	hold_point.transform.basis = camera_basis
 
-func get_camera_basis() -> Basis:
-	if camera_type == CameraType.FIRST_PERSON:
-		return first_person_camera.camera_basis
-	elif camera_type == CameraType.THIRD_PERSON:
-		return third_person_camera.camera_basis
-	return Basis.IDENTITY
-
 func rotate_player_model(delta: float) -> void:
 	var camera_basis: Basis = get_camera_basis()
 
 	var head_forward = camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
+#===================================================================================#
 
-func setNameplate(player_name: String) -> void:
-	if nameplate:
-		nameplate.text = player_name
-	else:
-		push_warning("Player: Cannot set nameplate - nameplate node not initialized")
-
-# signals
+# SIGNALS
+#===================================================================================#
 func _on_focus_hit(hit: Object) -> void:
-	focus = hit
+	SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
+	var new_focus = hit if hit is Interactable else null
+
+	if focus and focus != new_focus:
+		unfocused_interactable.emit(focus)
+		focus.on_focus_exit(self)
+
+	if new_focus and new_focus != focus:
+		focused_interactable.emit(new_focus)
+		new_focus.on_focus_enter(self)
+	
+	focus = new_focus
+#===================================================================================#

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bovlhbyu43rpa"]
+
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://shared/game/components/interactable/Interactable.tscn" id="1_uv7uo"]
+[ext_resource type="Script" uid="uid://cv8d1b4idv7y0" path="res://shared/game/components/interactable/interactions/openable/Openable.gd" id="2_e23xe"]
+
+[node name="Openable" instance=ExtResource("1_uv7uo")]
+script = ExtResource("2_e23xe")
+is_open = false
+animation_duration = 0.5
+animation_ease = 2
+animation_trans = 7
+
+[node name="InteractionLabel" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.627547, 0)

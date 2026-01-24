@@ -5,7 +5,6 @@ const PickupData = InteractionTypes.PickupData
 
 enum PickupState { FREE, HELD, THROWN }
 
-var parent: Node3D = null
 var holder: Node3D = null
 
 var pickup_state: PickupState = PickupState.FREE
@@ -14,11 +13,6 @@ var original_collision_mask: int = 0
 var pending_throw_velocity: Vector3 = Vector3.ZERO
 
 func _on_ready() -> void:
-	parent = get_parent()
-	if not parent:
-		SweetLogger.error("Parent node not found! That's not supposed to happen...", [], "Pickupable.gd", "_on_ready")
-		return
-
 	if parent is RigidBody3D:
 		original_collision_layer = parent.collision_layer
 		original_collision_mask = parent.collision_mask
@@ -46,6 +40,8 @@ func set_pickup_state(state: PickupState) -> void:
 func _pickup(interactor: Node3D) -> void:
 	pickup_state = PickupState.HELD
 	holder = interactor
+	# could remove collision layer from self to prevent focus sensor from detecting it while carried...
+	# undecided if I want player to be able to take items from other players...
 
 func _drop() -> void:
 	pickup_state = PickupState.FREE

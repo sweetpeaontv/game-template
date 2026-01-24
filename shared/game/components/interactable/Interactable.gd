@@ -1,13 +1,19 @@
-extends Node3D
+extends Area3D
 class_name Interactable
 
 @onready var label: Label3D = $InteractionLabel
+
 @export var interaction_label_text: String = ""
+@export var parent: Node3D = null
 
 func _ready() -> void:
 	label.visible = false
+	parent = get_parent()
 	# haven't found a more elegant way to do this
-	get_parent().collision_layer |= LayerDefs.PHYSICS_LAYERS_3D["INTERACTABLE"]
+	if self is Area3D:
+		self.collision_layer = LayerDefs.PHYSICS_LAYERS_3D["INTERACTABLE"]
+	else:
+		SweetLogger.error("No focus area found for interactable {0}", [name], "Interactable.gd", "_ready")
 	_on_ready()
 
 func _on_ready() -> void:
@@ -47,23 +53,19 @@ func _interact_physics_rollback_tick(_delta, _tick):
 	''' Override this in subclasses for custom physics rollback logic '''
 	pass
 
-func _integrate_forces_logic(state: PhysicsDirectBodyState3D) -> void:
-	''' Override this in subclasses for custom integration logic '''
-	pass
-
-func _on_area_3d_body_entered(body: Node3D) -> void:
-	if not body is CharacterBody3D:
+func on_focus_enter(focuser: Node3D) -> void:
+	if not focuser is CharacterBody3D:
 		return
-
+	
 	var my_id = multiplayer.get_unique_id()
-	if body.peer_id == my_id:
-		label.text = _get_interact_key_text()
+	if focuser.peer_id == my_id:
+		label.text = _get_label_text()
 		label.visible = true
 
-func _on_area_3d_body_exited(body: Node3D) -> void:
-	if not body is CharacterBody3D:
+func on_focus_exit(focuser: Node3D) -> void:
+	if not focuser is CharacterBody3D:
 		return
-
+	
 	var my_id = multiplayer.get_unique_id()
-	if body.peer_id == my_id:
+	if focuser.peer_id == my_id:
 		label.visible = false

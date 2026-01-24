@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3 uid="uid://btyr81q5i50hy"]
+
+[ext_resource type="Script" uid="uid://chmtc1smh2004" path="res://shared/game/items/door/Door.gd" id="1_r4pci"]
+[ext_resource type="PackedScene" uid="uid://dexmm3dgmvqf" path="res://shared/game/items/door/door-model.glb" id="2_a6vmt"]
+[ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="3_a6vmt"]
+[ext_resource type="PackedScene" uid="uid://bovlhbyu43rpa" path="res://shared/game/components/interactable/interactions/openable/Openable.tscn" id="4_yify6"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_a6vmt"]
+data = PackedVector3Array(0.39999998, 1.9, 0, 0.5, 0, 0, 0.39999998, 0, 0, 0.39999998, 1.9, 0, 0.5, 2, 0, 0.5, 0, 0, 0.5, 2, 0, 0.39999998, 1.9, 0, -0.5, 2, 0, -0.5, 2, 0, 0.39999998, 1.9, 0, -0.39999998, 1.9, 0, -0.5, 2, 0, -0.39999998, 1.9, 0, -0.39999998, 0, 0, -0.5, 2, 0, -0.39999998, 0, 0, -0.5, 0, 0, -0.39999998, 0, -0.099999994, -0.5, 2, -0.099999994, -0.5, 0, -0.099999994, -0.39999998, 1.9, -0.099999994, -0.5, 2, -0.099999994, -0.39999998, 0, -0.099999994, -0.5, 2, -0.099999994, -0.39999998, 1.9, -0.099999994, 0.5, 2, -0.099999994, 0.5, 2, -0.099999994, -0.39999998, 1.9, -0.099999994, 0.39999998, 1.9, -0.099999994, 0.5, 2, -0.099999994, 0.39999998, 1.9, -0.099999994, 0.39999998, 0, -0.099999994, 0.5, 2, -0.099999994, 0.39999998, 0, -0.099999994, 0.5, 0, -0.099999994, 0.39999998, 0, 0, 0.5, 0, -0.099999994, 0.39999998, 0, -0.099999994, 0.39999998, 0, 0, 0.5, 0, 0, 0.5, 0, -0.099999994, -0.5, 0, 0, -0.5, 2, -0.099999994, -0.5, 2, 0, -0.5, 0, 0, -0.5, 0, -0.099999994, -0.5, 2, -0.099999994, -0.39999998, 0, 0, -0.5, 0, -0.099999994, -0.5, 0, 0, -0.39999998, 0, 0, -0.39999998, 0, -0.099999994, -0.5, 0, -0.099999994, 0.5, 2, 0, 0.5, 0, -0.099999994, 0.5, 0, 0, 0.5, 2, 0, 0.5, 2, -0.099999994, 0.5, 0, -0.099999994, -0.5, 2, 0, 0.5, 2, -0.099999994, 0.5, 2, 0, -0.5, 2, 0, -0.5, 2, -0.099999994, 0.5, 2, -0.099999994, -0.39999998, 0, 0, -0.39999998, 1.9, -0.099999994, -0.39999998, 0, -0.099999994, -0.39999998, 0, 0, -0.39999998, 1.9, 0, -0.39999998, 1.9, -0.099999994, 0.39999998, 1.9, 0, 0.39999998, 0, -0.099999994, 0.39999998, 1.9, -0.099999994, 0.39999998, 1.9, 0, 0.39999998, 0, 0, 0.39999998, 0, -0.099999994, -0.39999998, 1.9, 0, 0.39999998, 1.9, -0.099999994, -0.39999998, 1.9, -0.099999994, -0.39999998, 1.9, 0, 0.39999998, 1.9, 0, 0.39999998, 1.9, -0.099999994)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yify6"]
+resource_local_to_scene = true
+size = Vector3(0.2, 0.1, 0.2)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_yify6"]
+points = PackedVector3Array(0, -0.9499999, -0.025000043, 0, -0.9499999, 0.024995144, 0, 0.9499999, -0.025000043, 0.8, -0.9499999, -0.025000043, 0.8, -0.9499999, 0.024995144, 0, 0.9499999, 0.02500004, 0.8, 0.9499999, -0.025000043, 0.8, 0.9499999, 0.02500004)
+
+[node name="Door" type="Node3D"]
+script = ExtResource("1_r4pci")
+
+[node name="door-model" parent="." instance=ExtResource("2_a6vmt")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="door-model/DoorFrame" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorFrame/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_a6vmt")
+
+[node name="Openable" parent="door-model/DoorPivot" index="0" instance=ExtResource("4_yify6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, -0.9499999, 0.050000012)
+
+[node name="InteractionLabel" parent="door-model/DoorPivot/Openable" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3244841, 0.9064138, -0.040596545)
+
+[node name="FocusCollisionShape" parent="door-model/DoorPivot/Openable" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28348094, 0.9546266, -0.04812315)
+shape = SubResource("BoxShape3D_yify6")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="door-model/DoorPivot/Door" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorPivot/Door/RigidBody3D"]
+shape = SubResource("ConvexPolygonShape3D_yify6")
+
+[node name="StateSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
+script = ExtResource("3_a6vmt")
+root = NodePath("..")
+properties = Array[String](["door-model/DoorPivot/Openable:is_open"])
+metadata/_custom_type_script = "uid://3lbngqcexe0l"
+
+[editable path="door-model"]
+[editable path="door-model/DoorPivot/Openable"]
