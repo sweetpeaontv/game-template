@@ -31,6 +31,11 @@ func _get_interact_key_text() -> String:
 	# fallback
 	return "error"
 
+func get_interaction_type() -> int:
+	''' Override this in subclasses to return the InteractionType enum value '''
+	SweetLogger.error("Function must be overridden in subclass", [], "Interactable.gd", "get_interaction_type")
+	return -1
+
 func _get_label_text() -> String:
 	"""Override this to customize the label text."""
 	if interaction_label_text != "":

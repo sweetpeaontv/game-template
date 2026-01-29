@@ -26,7 +26,7 @@ var _ui_scenes := {
 }
 
 # Dictionary to track currently active UI instances
-# Key: ui_name, Value: Node instance
+# Key: ui_name, Value: { node: Node, signal_connections: Array[SignalConnection] }
 var _active_ui := {}
 
 # Container reference (will be set to a CanvasLayer or Control node)
@@ -43,7 +43,7 @@ func set_container(container: Node) -> void:
 	"""Set a custom container for UI elements."""
 	_ui_container = container
 
-func show_ui(ui_name: String, data: Dictionary = {}) -> Node:
+func show_ui(ui_name: String, data: Dictionary = {}, signal_connections: Array[SignalConnections] = []) -> Node:
 	"""
 	Shows a UI element by name. Returns the instantiated node.
 	If the UI is already shown, returns the existing instance.
@@ -68,7 +68,7 @@ func show_ui(ui_name: String, data: Dictionary = {}) -> Node:
 		instance.setup(data)
 	
 	_ui_container.add_child(instance)
-	_active_ui[ui_name] = instance
+	_active_ui[ui_name] = { "node": instance, "signal_connections": signal_connections }
 	
 	ui_shown.emit(ui_name)
 	return instance
@@ -83,8 +83,12 @@ func hide_ui(ui_name: String, destroy: bool = true) -> void:
 	"""
 	if not _active_ui.has(ui_name):
 		return
+
+	var instance = _active_ui[ui_name]["node"]
+	var signal_connections = _active_ui[ui_name]["signal_connections"]
 	
-	var instance = _active_ui[ui_name]
+	for connection in signal_connections:
+		connection.disconnect_signal()
 	
 	if destroy:
 		instance.queue_free()

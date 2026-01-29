@@ -34,6 +34,9 @@ func _interact(interactor: Node3D, data: Variant = null) -> void:
 		_:
 			SweetLogger.error("Invalid action: {0}", [action], "Pickupable.gd", "_interact")
 
+func get_interaction_type() -> int:
+	return InteractionTypes.InteractionType.PICKUPABLE
+
 func set_pickup_state(state: PickupState) -> void:
 	pickup_state = state
 

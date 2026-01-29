@@ -109,7 +109,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 
 	_process_rewindable_action(
 		interact_action,
-		input.interact and focus,
+		input.interact_released and focus,
 		tick,
 		"interact",
 		_handle_interact,
@@ -156,13 +156,14 @@ func _handle_interact() -> void:
 	if not focus or not focus is Interactable:
 		return
 
-	focus.interact(self, InteractionTypes.PickupData.pickup())
-	holding = focus.parent
-
-	if multiplayer.get_unique_id() == peer_id:
-		var pickup_hud = UIManager.show_ui("PickupHUD", {})
-		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP
-		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+	var interaction_type = focus.get_interaction_type()
+	match interaction_type:
+		InteractionTypes.InteractionType.PICKUPABLE:
+			_handle_pickup()
+		InteractionTypes.InteractionType.OPENABLE:
+			focus.interact(self, InteractionTypes.OpenData.toggle())
+		_:
+			SweetLogger.error("Invalid interaction type: {0}", [interaction_type], "Player.gd", "_handle_interact")
 
 func _handle_interact_cancelled() -> void:
 	pass
@@ -186,6 +187,36 @@ func _handle_alt_interact() -> void:
 func _handle_alt_interact_cancelled() -> void:
 	SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
 	holding.interactable.set_pickup_state(holding.interactable.PickupState.FREE)
+#===================================================================================#
+
+# PICKUP ACTION
+#===================================================================================#
+func _handle_pickup() -> void:
+	focus.interact(self, InteractionTypes.PickupData.pickup())
+	holding = focus.parent
+
+	if multiplayer.get_unique_id() == peer_id:
+		#var signal_connections = [
+		#	SignalConnections.new(self, alt_interact_hold_duration_changed, )
+		#]
+		var pickup_hud = UIManager.show_ui("PickupHUD", {})
+		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP
+		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+
+func _handle_let_go() -> void:
+	if not holding:
+		return
+
+	if input.alt_interact_hold_time < 0.2:
+		holding.interactable.interact(self, InteractionTypes.PickupData.drop())
+	else:
+		var throw_power = input.alt_interact_hold_time * 10.0
+		holding.interactable.interact(self, InteractionTypes.PickupData.throw(throw_power))
+
+	holding = null
+	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
+	UIManager.hide_ui("PickupHUD")
+	
 #===================================================================================#
 
 # PROCESS REWINDABLE ACTION
@@ -257,7 +288,7 @@ func rotate_player_model(delta: float) -> void:
 # SIGNALS
 #===================================================================================#
 func _on_focus_hit(hit: Object) -> void:
-	SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
+	#SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
 	var new_focus = hit if hit is Interactable else null
 
 	if focus and focus != new_focus:

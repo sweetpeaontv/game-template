@@ -4,7 +4,9 @@ class_name Openable
 signal opened()
 signal closed()
 
-@export var is_open: bool = false
+enum OpenState { CLOSED, OPEN }
+
+@export var open_state: OpenState = OpenState.CLOSED
 @export var animation_duration: float = 0.5
 @export var animation_ease: Tween.EaseType = Tween.EASE_IN_OUT
 @export var animation_trans: Tween.TransitionType = Tween.TRANS_CUBIC
@@ -15,26 +17,42 @@ var animation_targets: Dictionary = {}
 var _current_tween: Tween
 
 func _interact(interactor: Node3D, data: Variant = null) -> void:
-	toggle()
+	if not data is InteractionTypes.OpenData:
+		SweetLogger.error("Invalid data type: {0}", [data.get_class()], "Openable.gd", "_interact")
+		return
+
+	var action = data.action
+	match action:
+		InteractionTypes.OpenData.Action.TOGGLE:
+			toggle()
+		InteractionTypes.OpenData.Action.OPEN:
+			open()
+		InteractionTypes.OpenData.Action.CLOSE:
+			close()
+		_:
+			SweetLogger.error("Invalid action: {0}", [action], "Openable.gd", "_interact")
+
+func get_interaction_type() -> int:
+	return InteractionTypes.InteractionType.OPENABLE
 
 func toggle() -> void:
-	is_open = !is_open
+	open_state = OpenState.OPEN if open_state == OpenState.CLOSED else OpenState.CLOSED
 	_animate()
-	
-	if is_open:
-		opened.emit()
-	else:
-		closed.emit()
+
+	#if open_state == OpenState.OPEN:
+	#	opened.emit()
+	#else:
+	#	closed.emit()
 
 func open() -> void:
-	if not is_open:
-		is_open = true
+	if open_state == OpenState.CLOSED:
+		open_state = OpenState.OPEN
 		_animate()
 		opened.emit()
 
 func close() -> void:
-	if is_open:
-		is_open = false
+	if open_state == OpenState.OPEN:
+		open_state = OpenState.CLOSED
 		_animate()
 		closed.emit()
 
@@ -63,5 +81,5 @@ func _animate() -> void:
 	# Animate all registered targets
 	for node in animation_targets:
 		var config = animation_targets[node]
-		var target_rotation = config["open"] if is_open else config["closed"]
+		var target_rotation = config["open"] if open_state == OpenState.OPEN else config["closed"]
 		_current_tween.tween_property(node, "rotation", target_rotation, config["duration"])

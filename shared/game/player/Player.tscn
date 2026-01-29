@@ -56,7 +56,7 @@ metadata/_custom_type_script = "uid://dour8fehaaugp"
 script = ExtResource("4_fvl6w")
 root = NodePath("..")
 state_properties = Array[String]([":global_transform", "Model:transform"])
-input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "FirstPersonCameraInput:camera_basis", "ThirdPersonCameraInput:camera_basis"])
+input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:interact_released", "Input:interact_hold_time", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "FirstPersonCameraInput:camera_basis", "ThirdPersonCameraInput:camera_basis"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
 [node name="InteractAction" type="Node" parent="."]

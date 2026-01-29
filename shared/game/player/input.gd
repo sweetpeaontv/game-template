@@ -5,8 +5,13 @@ var movement: Vector3 = Vector3.ZERO
 var shift: bool = false
 
 # INTERACT
+var interact_released: bool = false
 var interact: bool = false
+var interact_hold_time: float = 0.0
+
+var _interact_release_buffer: bool = false
 var _interact_buffer: bool = false
+var _interact_hold_duration: float = 0.0
 
 # ALT INTERACT
 var alt_interact_released: bool = false
@@ -23,6 +28,12 @@ func _ready():
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("interact"):
 		_interact_buffer = true
+		_interact_hold_duration += delta
+	else:
+		_interact_buffer = false
+
+	if Input.is_action_just_released("interact"):
+		_interact_release_buffer = true
 
 	if Input.is_action_pressed("alt_interact"):
 		_alt_interact_buffer = true
@@ -45,9 +56,19 @@ func _gather():
 
 	shift = Input.is_action_pressed("shift")
 
+	# Interact Hold + One off release
 	interact = _interact_buffer
-	_interact_buffer = false
+	interact_released = _interact_release_buffer
 
+	if interact_released:
+		interact_hold_time = _interact_hold_duration
+		_interact_hold_duration = 0.0
+	elif not interact:
+		interact_hold_time = 0.0
+
+	_interact_release_buffer = false
+
+	# Alt Interact Hold + One off release
 	alt_interact = _alt_interact_buffer
 	alt_interact_released = _alt_interact_release_buffer
 
@@ -58,6 +79,7 @@ func _gather():
 		alt_interact_hold_time = 0.0
 
 	_alt_interact_release_buffer = false
+
 
 func _exit_tree():
 	NetworkTime.before_tick_loop.disconnect(_gather)

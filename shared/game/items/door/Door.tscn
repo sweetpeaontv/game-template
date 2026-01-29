@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://btyr81q5i50hy"]
+[gd_scene load_steps=7 format=3 uid="uid://btyr81q5i50hy"]
 
 [ext_resource type="Script" uid="uid://chmtc1smh2004" path="res://shared/game/items/door/Door.gd" id="1_r4pci"]
 [ext_resource type="PackedScene" uid="uid://dexmm3dgmvqf" path="res://shared/game/items/door/door-model.glb" id="2_a6vmt"]
-[ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="3_a6vmt"]
 [ext_resource type="PackedScene" uid="uid://bovlhbyu43rpa" path="res://shared/game/components/interactable/interactions/openable/Openable.tscn" id="4_yify6"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_a6vmt"]
@@ -23,6 +22,7 @@ script = ExtResource("1_r4pci")
 [node name="StaticBody3D" type="StaticBody3D" parent="door-model/DoorFrame" index="0"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorFrame/StaticBody3D"]
+visible = false
 shape = SubResource("ConcavePolygonShape3D_a6vmt")
 
 [node name="Openable" parent="door-model/DoorPivot" index="0" instance=ExtResource("4_yify6")]
@@ -39,12 +39,6 @@ shape = SubResource("BoxShape3D_yify6")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorPivot/Door/RigidBody3D"]
 shape = SubResource("ConvexPolygonShape3D_yify6")
-
-[node name="StateSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
-script = ExtResource("3_a6vmt")
-root = NodePath("..")
-properties = Array[String](["door-model/DoorPivot/Openable:is_open"])
-metadata/_custom_type_script = "uid://3lbngqcexe0l"
 
 [editable path="door-model"]
 [editable path="door-model/DoorPivot/Openable"]
