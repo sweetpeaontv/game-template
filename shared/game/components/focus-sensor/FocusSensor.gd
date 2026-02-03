@@ -1,6 +1,8 @@
 extends Node3D
 
-# THIS SHOULD PROBABLY BE REWORKED TO USE ROLLBACKSYNCHRONIZER
+# THIS COULD PROBABLY BE REWORKED TO USE ROLLBACKSYNCHRONIZER
+# SHOULD IT?
+# The input itself for camera_basis is already synced, so maybe not necessary
 signal focus_hit(hit: Object)
 
 @export var actor: CharacterBody3D

@@ -216,7 +216,6 @@ func _handle_let_go() -> void:
 	holding = null
 	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
 	UIManager.hide_ui("PickupHUD")
-	
 #===================================================================================#
 
 # PROCESS REWINDABLE ACTION

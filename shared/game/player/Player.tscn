@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://btr4l7o8r7pij"]
+[gd_scene format=3 uid="uid://btr4l7o8r7pij"]
 
 [ext_resource type="Script" uid="uid://xethu4nx0h3i" path="res://shared/game/player/player.gd" id="1_wv0h6"]
 [ext_resource type="PackedScene" uid="uid://cg6uw4vpjuqvj" path="res://shared/game/player/models/char.glb" id="2_3wsxe"]
@@ -13,56 +13,55 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_e8u23"]
 size = Vector3(0.3, 1.27, 0.7)
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" unique_id=960148084]
 script = ExtResource("1_wv0h6")
-speed = null
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=463233780]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.65, 0)
 shape = SubResource("BoxShape3D_e8u23")
 
-[node name="Nameplate" type="Label3D" parent="."]
+[node name="Nameplate" type="Label3D" parent="." unique_id=170431164]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 1.47989, 0)
 billboard = 1
 
-[node name="Model" parent="." instance=ExtResource("2_3wsxe")]
+[node name="Model" parent="." unique_id=2012743885 instance=ExtResource("2_3wsxe")]
 
-[node name="HoldPoint" type="Node3D" parent="."]
+[node name="HoldPoint" type="Node3D" parent="." unique_id=613500319]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -1.5)
 
-[node name="FirstPersonCameraInput" parent="." node_paths=PackedStringArray("rollback_synchronizer", "player") instance=ExtResource("5_14irj")]
+[node name="FirstPersonCameraInput" parent="." unique_id=692505654 node_paths=PackedStringArray("rollback_synchronizer", "player") instance=ExtResource("5_14irj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.081, 0)
 rollback_synchronizer = NodePath("../RollbackSynchronizer")
 player = NodePath("..")
 
-[node name="ThirdPersonCameraInput" parent="." node_paths=PackedStringArray("rollback_synchronizer", "player") instance=ExtResource("6_14irj")]
+[node name="ThirdPersonCameraInput" parent="." unique_id=964750769 node_paths=PackedStringArray("rollback_synchronizer", "player") instance=ExtResource("6_14irj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.981233, 0)
 rollback_synchronizer = NodePath("../RollbackSynchronizer")
 player = NodePath("..")
 
-[node name="FocusSensor" parent="." node_paths=PackedStringArray("actor") instance=ExtResource("7_3wsxe")]
+[node name="FocusSensor" parent="." unique_id=259698692 node_paths=PackedStringArray("actor") instance=ExtResource("7_3wsxe")]
 actor = NodePath("..")
 
-[node name="Input" type="Node" parent="."]
+[node name="Input" type="Node" parent="." unique_id=1543579157]
 script = ExtResource("5_k0llr")
 
-[node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
+[node name="TickInterpolator" type="Node" parent="." unique_id=2048179783 node_paths=PackedStringArray("root")]
 script = ExtResource("6_k0llr")
 root = NodePath("..")
 properties = Array[String]([":global_transform", "Model:global_transform"])
 metadata/_custom_type_script = "uid://dour8fehaaugp"
 
-[node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
+[node name="RollbackSynchronizer" type="Node" parent="." unique_id=782878301 node_paths=PackedStringArray("root")]
 script = ExtResource("4_fvl6w")
 root = NodePath("..")
 state_properties = Array[String]([":global_transform", "Model:transform"])
 input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:interact_released", "Input:interact_hold_time", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "FirstPersonCameraInput:camera_basis", "ThirdPersonCameraInput:camera_basis"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
-[node name="InteractAction" type="Node" parent="."]
+[node name="InteractAction" type="Node" parent="." unique_id=706151609]
 script = ExtResource("9_p8na1")
 metadata/_custom_type_script = "uid://chr4omg2hy3yu"
 
-[node name="AltInteractAction" type="Node" parent="."]
+[node name="AltInteractAction" type="Node" parent="." unique_id=1978069642]
 script = ExtResource("9_p8na1")
 metadata/_custom_type_script = "uid://chr4omg2hy3yu"
