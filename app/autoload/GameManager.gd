@@ -4,13 +4,13 @@ GameManager - Client-side game state management
 
 Manages client connection state (MAIN_MENU, IDLE, CONNECTING, LOADING)
 and receives server-authoritative game state updates (IN_LOBBY, PLAYING, ENDING)
-from ServerGameManager for UI display.
+from ServerManager for UI display.
 """
 
 signal session_state_changed(state: SessionState)
 
 # Client states (managed locally)
-# Server states (IN_LOBBY, PLAYING, ENDING) are received from ServerGameManager via RPC
+# Server states (IN_LOBBY, PLAYING, ENDING) are received from ServerManager via RPC
 enum SessionState { MAIN_MENU, IDLE, CONNECTING, IN_LOBBY, LOADING, PLAYING, ENDING }
 var state := SessionState.MAIN_MENU
 var script_name: String = "GameManager"
@@ -19,8 +19,8 @@ var is_verbose: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	if ServerGameManager:
-		ServerGameManager.game_state_changed.connect(_on_server_game_state_changed)
+	if ServerManager:
+		ServerManager.game_state_changed.connect(_on_server_game_state_changed)
 
 	# Connect to Gnet signals for client-side connection state
 	Gnet.connection_succeeded.connect(_on_gnet_connection_succeeded)
@@ -37,11 +37,11 @@ func _set_state(new_state: SessionState) -> void:
 	session_state_changed.emit(state)
 
 func _start_game() -> void:
-	"""Start hosting a game. Delegates to ServerGameManager."""
-	if ServerGameManager:
-		ServerGameManager.start_server()
+	"""Start hosting a game. Delegates to ServerManager."""
+	if ServerManager:
+		ServerManager.start_server()
 	else:
-		push_error("GameManager: ServerGameManager not initialized")
+		push_error("GameManager: ServerManager not initialized")
 
 func _join_game() -> void:
 	# Join lobby with gnet
@@ -52,7 +52,7 @@ func _on_gnet_connection_succeeded() -> void:
 	"""Called when connection to game succeeds. Handles client-side state."""
 	if is_verbose:
 		SweetLogger.info("_on_gnet_connection_succeeded called, is_server: {0}", [multiplayer.is_server()], script_name, "_on_gnet_connection_succeeded")
-	# ServerGameManager handles server-side connection logic
+	# ServerManager handles server-side connection logic
 	# Client: wait for host to send RPC
 	if not multiplayer.is_server():
 		if is_verbose:
@@ -66,21 +66,21 @@ func _on_gnet_connection_failed(_reason: String) -> void:
 func _on_scene_ready(scene_name: String) -> void:
 	"""Called when a scene is ready. Client notifies server when GameWorld is ready."""
 	if scene_name == "GameWorld":
-		# Client: notify server that we're ready (ServerGameManager handles server-side)
-		if not multiplayer.is_server() and ServerGameManager:
+		# Client: notify server that we're ready (ServerManager handles server-side)
+		if not multiplayer.is_server() and ServerManager:
 			if is_verbose:
 				SweetLogger.info("Client GameWorld ready, notifying server", [], script_name, "_on_scene_ready")
-			ServerGameManager._notify_client_ready.rpc_id(1)
+			ServerManager._notify_client_ready.rpc_id(1)
 
 func launch_game() -> void:
 	"""
 	Host launches the game for all connected players (opens doors, unlocks full game).
-	Delegates to ServerGameManager.
+	Delegates to ServerManager.
 	"""
-	if ServerGameManager:
-		ServerGameManager.launch_game()
+	if ServerManager:
+		ServerManager.launch_game()
 	else:
-		push_warning("GameManager: ServerGameManager not initialized")
+		push_warning("GameManager: ServerManager not initialized")
 
 
 func _on_server_game_state_changed(new_state: int) -> void:

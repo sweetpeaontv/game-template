@@ -42,7 +42,7 @@ signal scene_ready(scene_name)
 
 var _scenes := {
 	"HomeMenu": preload("res://app/ui/screens/home/HomeMenu.tscn"),
-	"GameWorld": preload("res://shared/game/worlds/GameWorld.tscn"),
+	"GameWorld": preload("res://app/game/worlds/GameWorld.tscn"),
 }
 
 var _pending_scene_name: String = ""

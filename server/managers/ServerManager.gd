@@ -1,6 +1,6 @@
 extends Node
 """
-ServerGameManager - Server-authoritative game logic
+ServerManager - Server-authoritative game logic
 
 Handles all server-side game management:
 - Server startup orchestration
@@ -11,7 +11,7 @@ Handles all server-side game management:
 """
 
 # Player scene path
-const PLAYER_SCENE_PATH := "res://shared/game/player/Player.tscn"
+const PLAYER_SCENE_PATH := "res://app/game/player/Player.tscn"
 
 # Server-authoritative game states
 enum GameState { IN_LOBBY, PLAYING, ENDING }
@@ -23,10 +23,12 @@ signal game_state_changed(new_state: GameState)
 # Track player spawn acknowledgments from clients (for late joiners)
 # Format: {client_peer_id: {player_peer_id: true}}
 var _player_spawn_acks: Dictionary = {}
-var script_name: String = "ServerGameManager"
+var script_name: String = "ServerManager"
 
+# INIT
+#===================================================================================#
 func _ready() -> void:
-	name = "ServerGameManager"
+	name = "ServerManager"
 	set_process_mode(Node.PROCESS_MODE_ALWAYS)  # Always process, even when paused
 	_connect_signals()
 
@@ -42,7 +44,10 @@ func _connect_signals() -> void:
 	# Connect to SceneManager for scene ready
 	if SceneManager:
 		SceneManager.scene_ready.connect(_on_scene_ready)
+#===================================================================================#
 
+# GNET SIGNALS
+#===================================================================================#
 func _on_gnet_connection_succeeded() -> void:
 	"""Handle connection succeeded. Server loads world for itself and any connected clients."""
 	if not multiplayer.is_server():
@@ -77,7 +82,10 @@ func _on_gnet_spawn_requested(peer_id: int) -> void:
 		return
 
 	handle_spawn_request(peer_id)
+#===================================================================================#
 
+# SCENE MANAGER SIGNALS
+#===================================================================================#
 func _on_scene_ready(scene_name: String) -> void:
 	"""Handle scene ready. Server-only: spawns players and sets state."""
 	if not multiplayer.is_server():
@@ -95,7 +103,7 @@ func _on_scene_ready(scene_name: String) -> void:
 			connected_peers = [1]  # Spawn host if no peers in list yet
 
 		if not SpawnManager:
-			push_error("ServerGameManager: SpawnManager autoload not found!")
+			push_error("ServerManager: SpawnManager autoload not found!")
 			return
 
 		var players_data: Array = []
@@ -108,9 +116,10 @@ func _on_scene_ready(scene_name: String) -> void:
 			SweetLogger.info("players_data: {0}", [players_data], script_name, "_on_scene_ready")
 		# Spawn all players and broadcast to all clients
 		spawn_players(players_data, [], false)
+#===================================================================================#
 
-## SERVER STATE MANAGEMENT ##
-
+# SERVER STATE MANAGEMENT
+#===================================================================================#
 func _set_game_state(new_state: GameState) -> void:
 	"""Set server-authoritative game state and broadcast to all clients."""
 	if game_state == new_state:
@@ -128,9 +137,10 @@ func _set_game_state(new_state: GameState) -> void:
 func get_game_state() -> GameState:
 	"""Get current server-authoritative game state."""
 	return game_state
+#===================================================================================#
 
-## SERVER STARTUP ##
-
+# SERVER STARTUP
+#===================================================================================#
 func start_server(options: Dictionary = {}) -> bool:
 	"""
 	Start the server. Orchestrates server startup via Gnet.
@@ -145,9 +155,44 @@ func start_server(options: Dictionary = {}) -> bool:
 	if is_verbose:
 		SweetLogger.info("Starting server...", [], script_name, "start_server")
 	return Gnet.host_game(options)
+#===================================================================================#
 
-## PLAYER SPAWNING (AUTHORITATIVE) ##
+# PLAYER GETTERS
+#===================================================================================#
+func _find_player(peer_id: int) -> Node:
+	"""Find existing player node for peer_id in PlayersContainer."""
+	var players_container = _get_players_container()
+	if not players_container:
+		return null
 
+	# Players are direct children named "Player_%d"
+	return players_container.get_node_or_null("Player_%d" % peer_id)
+
+func _get_players_container() -> Node:
+	"""Gets the Players node from the Main scene."""
+	var main = get_tree().root.get_node_or_null("Main")
+	if main:
+		return main.get_node_or_null("Players")
+	return null
+
+func _find_all_players(players_container: Node) -> Array:
+	"""
+	Find all player nodes in PlayersContainer.
+	Returns array of dictionaries with 'player' (CharacterBody3D) and 'peer_id'.
+	"""
+	var players = []
+
+	# Players are direct children of PlayersContainer
+	for child in players_container.get_children():
+		var peer_id = child.peer_id
+		if peer_id != 0:
+			players.append({"player": child, "peer_id": peer_id})
+
+	return players
+#===================================================================================#
+
+# PLAYER SPAWNING (AUTHORITATIVE)
+#===================================================================================#
 func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks: bool = false) -> void:
 	"""
 	Unified function to spawn players on server and send RPCs to clients.
@@ -165,7 +210,7 @@ func spawn_players(players: Array, target_peer_ids: Array = [], initialize_acks:
 		spawn_players(all_players, [new_client_id], true)
 	"""
 	if not multiplayer.is_server():
-		push_warning("ServerGameManager: spawn_players called on client")
+		push_warning("ServerManager: spawn_players called on client")
 		return
 
 	if not multiplayer.has_multiplayer_peer():
@@ -246,12 +291,12 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	# Load and instantiate player scene
 	var player_scene = load(PLAYER_SCENE_PATH)
 	if not player_scene:
-		push_error("ServerGameManager: Failed to load player scene: " + PLAYER_SCENE_PATH)
+		push_error("ServerManager: Failed to load player scene: " + PLAYER_SCENE_PATH)
 		return
 
 	var player = player_scene.instantiate()
 	if not player:
-		push_error("ServerGameManager: Failed to instantiate player scene")
+		push_error("ServerManager: Failed to instantiate player scene")
 		return
 
 	if is_verbose:
@@ -264,7 +309,7 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 
 	var players_container = _get_players_container()
 	if not players_container:
-		push_error("ServerGameManager: PlayersContainer not found")
+		push_error("ServerManager: PlayersContainer not found")
 		return
 
 	# Use force_readable_name=true for multiplayer replication
@@ -283,26 +328,10 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 
 	if is_verbose:
 		SweetLogger.info("Spawned player {0} at {1}", [peer_id, spawn_position], script_name, "_spawn_player_impl")
+#===================================================================================#
 
-func _find_player(peer_id: int) -> Node:
-	"""Find existing player node for peer_id in PlayersContainer."""
-	var players_container = _get_players_container()
-	if not players_container:
-		return null
-
-	# Players are direct children named "Player_%d"
-	return players_container.get_node_or_null("Player_%d" % peer_id)
-
-func _get_players_container() -> Node:
-	"""Gets the Players node from the Main scene."""
-	var main = get_tree().root.get_node_or_null("Main")
-	if main:
-		return main.get_node_or_null("Players")
-	return null
-
-
-## SERVER RPC HANDLERS ##
-
+# SERVER RPC HANDLERS
+#===================================================================================#
 @rpc("any_peer", "call_remote", "reliable")
 func _notify_client_ready() -> void:
 	"""
@@ -353,21 +382,6 @@ func _notify_client_ready() -> void:
 		if is_verbose:
 			SweetLogger.info("Spawning existing players {0} to new client {1}", [all_players_data, client_peer_id], script_name, "_notify_client_ready")
 		spawn_players(all_players_data, [client_peer_id], true)
-
-func _find_all_players(players_container: Node) -> Array:
-	"""
-	Find all player nodes in PlayersContainer.
-	Returns array of dictionaries with 'player' (CharacterBody3D) and 'peer_id'.
-	"""
-	var players = []
-
-	# Players are direct children of PlayersContainer
-	for child in players_container.get_children():
-		var peer_id = child.peer_id
-		if peer_id != 0:
-			players.append({"player": child, "peer_id": peer_id})
-
-	return players
 
 @rpc("any_peer", "call_remote", "reliable")
 func _player_spawned_ack(player_peer_id: int) -> void:
@@ -427,7 +441,7 @@ func _start_game_for_all() -> void:
 	"""RPC called by host to start the game (unlock doors, full gameplay)."""
 	# Transition from IN_LOBBY (limited area) to PLAYING (full game)
 	if game_state != GameState.IN_LOBBY:
-		push_warning("ServerGameManager: Can only start game from IN_LOBBY state")
+		push_warning("ServerManager: Can only start game from IN_LOBBY state")
 		return
 
 	_set_game_state(GameState.PLAYING)
@@ -453,11 +467,11 @@ func _load_gameworld_for_peer() -> void:
 		SweetLogger.info("_load_gameworld_for_peer RPC received on client", [], script_name, "_load_gameworld_for_peer")
 
 	if not GameManager:
-		push_error("ServerGameManager: GameManager not available on client")
+		push_error("ServerManager: GameManager not available on client")
 		return
 
 	if not SceneManager:
-		push_error("ServerGameManager: SceneManager not available on client")
+		push_error("ServerManager: SceneManager not available on client")
 		return
 
 	if is_verbose:
@@ -474,7 +488,7 @@ func _sync_game_state(server_state: int) -> void:
 		return
 
 	# Map server GameState enum to GameManager SessionState enum
-	# ServerGameManager.GameState: IN_LOBBY=0, PLAYING=1, ENDING=2
+	# ServerManager.GameState: IN_LOBBY=0, PLAYING=1, ENDING=2
 	# GameManager.SessionState: IN_LOBBY=3, PLAYING=5, ENDING=6
 	match server_state:
 		0:  # IN_LOBBY
@@ -483,9 +497,10 @@ func _sync_game_state(server_state: int) -> void:
 			GameManager._set_state(GameManager.SessionState.PLAYING)
 		2:  # ENDING
 			GameManager._set_state(GameManager.SessionState.ENDING)
+#===================================================================================#
 
-## SERVER PEER CONNECTION HANDLING ##
-
+# SERVER PEER CONNECTION HANDLING
+#===================================================================================#
 func handle_peer_connected(peer_id: int, current_game_state: GameState) -> void:
 	"""Handle peer connection. Called when a peer connects."""
 	if not multiplayer.is_server():
@@ -509,16 +524,17 @@ func handle_spawn_request(peer_id: int) -> void:
 		return
 
 	if not SpawnManager:
-		push_error("ServerGameManager: SpawnManager autoload not found!")
+		push_error("ServerManager: SpawnManager autoload not found!")
 		return
 
 	var spawn_index = peer_id - 1  # peer_id 1 = index 0
 	var spawn_position = SpawnManager.get_spawn_point(spawn_index)
 	var players_data = [{"peer_id": peer_id, "position": spawn_position}]
 	spawn_players(players_data, [], false)
+#===================================================================================#
 
-## GAME LAUNCH CONTROL ##
-
+# GAME LAUNCH CONTROL
+#===================================================================================#
 func launch_game() -> void:
 	"""
 	Host launches the game for all connected players (opens doors, unlocks full game).
@@ -526,16 +542,17 @@ func launch_game() -> void:
 	Players are already in GameWorld in limited area, this unlocks the full game.
 	"""
 	if not multiplayer.has_multiplayer_peer():
-		push_warning("ServerGameManager: Cannot launch - no active connection")
+		push_warning("ServerManager: Cannot launch - no active connection")
 		return
 
 	if not multiplayer.is_server():
-		push_warning("ServerGameManager: Only host can launch game")
+		push_warning("ServerManager: Only host can launch game")
 		return
 
 	if game_state != GameState.IN_LOBBY:
-		push_warning("ServerGameManager: Can only launch from IN_LOBBY state")
+		push_warning("ServerManager: Can only launch from IN_LOBBY state")
 		return
 
 	# Unlock game for all clients via RPC (no scene change needed)
 	_start_game_for_all.rpc()
+#===================================================================================#
