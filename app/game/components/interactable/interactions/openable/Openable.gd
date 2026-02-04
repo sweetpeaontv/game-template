@@ -7,6 +7,7 @@ signal closed()
 enum OpenState { CLOSED, OPEN }
 
 @export var open_state: OpenState = OpenState.CLOSED
+var state_changed: bool = false
 @export var animation_duration: float = 0.5
 @export var animation_ease: Tween.EaseType = Tween.EASE_IN_OUT
 @export var animation_trans: Tween.TransitionType = Tween.TRANS_CUBIC
@@ -36,8 +37,12 @@ func get_interaction_type() -> int:
 	return InteractionTypes.InteractionType.OPENABLE
 
 func toggle() -> void:
+	SweetLogger.info("Toggle called: {0}", [open_state], "Openable.gd", "toggle")
 	open_state = OpenState.OPEN if open_state == OpenState.CLOSED else OpenState.CLOSED
+	state_changed = true
+	SweetLogger.info("State changed: {0}", [open_state], "Openable.gd", "toggle")
 	_animate()
+	NetworkRollback.mutate(self)
 
 	#if open_state == OpenState.OPEN:
 	#	opened.emit()
@@ -83,3 +88,18 @@ func _animate() -> void:
 		var config = animation_targets[node]
 		var target_rotation = config["open"] if open_state == OpenState.OPEN else config["closed"]
 		_current_tween.tween_property(node, "rotation", target_rotation, config["duration"])
+
+func _snap_to_state() -> void:
+	"""Apply target rotations immediately (for rollback; no tween)."""
+	if animation_targets.is_empty():
+		return
+	for node in animation_targets:
+		var config = animation_targets[node]
+		var target_rotation = config["open"] if open_state == OpenState.OPEN else config["closed"]
+		node.rotation = target_rotation
+
+# necessary to ensure that the position of the object is correct for all clients including late joiners
+func _rollback_tick(_delta, _tick, _is_fresh):
+	if state_changed:
+		_snap_to_state()
+		state_changed = false

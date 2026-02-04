@@ -164,7 +164,9 @@ func _handle_interact() -> void:
 			focus.interact(self, InteractionTypes.OpenData.toggle())
 		_:
 			SweetLogger.error("Invalid interaction type: {0}", [interaction_type], "Player.gd", "_handle_interact")
-
+	
+	focus = null
+	
 func _handle_interact_cancelled() -> void:
 	pass
 #===================================================================================#
@@ -234,10 +236,10 @@ func _process_rewindable_action(
 	
 	match action.get_status(tick):
 		RewindableAction.CONFIRMING:
-			#SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
+			SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_confirming.call()
 		RewindableAction.CANCELLING:
-			#SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
+			SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_cancelling.call()
 			action.set_active(false, tick)
 		RewindableAction.ACTIVE:
