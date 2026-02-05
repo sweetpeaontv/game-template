@@ -26,7 +26,7 @@ func _ready():
 	NetworkTime.before_tick_loop.connect(_gather)
 
 func _process(delta: float) -> void:
-	if Input.is_action_just_pressed("interact"):
+	if Input.is_action_pressed("interact"):
 		_interact_buffer = true
 		_interact_hold_duration += delta
 	else:

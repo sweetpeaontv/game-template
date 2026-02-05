@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://btr4l7o8r7pij"]
 
-[ext_resource type="Script" uid="uid://xethu4nx0h3i" path="res://shared/game/player/player.gd" id="1_wv0h6"]
-[ext_resource type="PackedScene" uid="uid://cg6uw4vpjuqvj" path="res://shared/game/player/models/char.glb" id="2_3wsxe"]
+[ext_resource type="Script" uid="uid://xethu4nx0h3i" path="res://app/game/player/player.gd" id="1_wv0h6"]
+[ext_resource type="PackedScene" uid="uid://cg6uw4vpjuqvj" path="res://app/game/player/models/char.glb" id="2_3wsxe"]
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="4_fvl6w"]
-[ext_resource type="PackedScene" uid="uid://craadyjtmmxuj" path="res://shared/game/cameras/FirstPersonCamera.tscn" id="5_14irj"]
-[ext_resource type="Script" uid="uid://bfnfkubk6xhwg" path="res://shared/game/player/input.gd" id="5_k0llr"]
-[ext_resource type="PackedScene" uid="uid://b6koxp16wqff0" path="res://shared/game/cameras/ThirdPersonCamera.tscn" id="6_14irj"]
+[ext_resource type="PackedScene" uid="uid://craadyjtmmxuj" path="res://app/game/cameras/FirstPersonCamera.tscn" id="5_14irj"]
+[ext_resource type="Script" uid="uid://bfnfkubk6xhwg" path="res://app/game/player/input.gd" id="5_k0llr"]
+[ext_resource type="PackedScene" uid="uid://b6koxp16wqff0" path="res://app/game/cameras/ThirdPersonCamera.tscn" id="6_14irj"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="6_k0llr"]
-[ext_resource type="PackedScene" uid="uid://ba2fkje1sw238" path="res://shared/game/components/focus-sensor/FocusSensor.tscn" id="7_3wsxe"]
+[ext_resource type="PackedScene" uid="uid://ba2fkje1sw238" path="res://app/game/components/focus-sensor/FocusSensor.tscn" id="7_3wsxe"]
 [ext_resource type="Script" uid="uid://chr4omg2hy3yu" path="res://addons/netfox/rewindable-action.gd" id="9_p8na1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_e8u23"]
@@ -56,6 +56,7 @@ script = ExtResource("4_fvl6w")
 root = NodePath("..")
 state_properties = Array[String]([":global_transform", "Model:transform"])
 input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:interact_released", "Input:interact_hold_time", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "FirstPersonCameraInput:camera_basis", "ThirdPersonCameraInput:camera_basis"])
+enable_input_broadcast = false
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
 [node name="InteractAction" type="Node" parent="." unique_id=706151609]

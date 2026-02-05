@@ -11,7 +11,7 @@ signal focus_hit(hit: Object)
 var last_hit: Object = null
 
 # needs to be improved to prevent constant raycasting, should only raycast after camera transform changes etc
-func _physics_process(_delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not actor:
 		return
 

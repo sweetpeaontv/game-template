@@ -37,6 +37,8 @@ const SPRINT_SPEED = 8.0
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 # INTERACTION VARIABLES
+const INTERACTION_COOLDOWN := 0.05  # 50ms in seconds
+var _last_interact_time: float = 0.0
 var focus: Node3D = null
 var holding: Node3D = null
 
@@ -156,6 +158,7 @@ func _handle_interact() -> void:
 	if not focus or not focus is Interactable:
 		return
 
+	_last_interact_time = NetworkTime.time
 	var interaction_type = focus.get_interaction_type()
 	match interaction_type:
 		InteractionTypes.InteractionType.PICKUPABLE:
@@ -164,8 +167,6 @@ func _handle_interact() -> void:
 			focus.interact(self, InteractionTypes.OpenData.toggle())
 		_:
 			SweetLogger.error("Invalid interaction type: {0}", [interaction_type], "Player.gd", "_handle_interact")
-	
-	focus = null
 	
 func _handle_interact_cancelled() -> void:
 	pass
@@ -289,7 +290,6 @@ func rotate_player_model(delta: float) -> void:
 # SIGNALS
 #===================================================================================#
 func _on_focus_hit(hit: Object) -> void:
-	#SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
 	var new_focus = hit if hit is Interactable else null
 
 	if focus and focus != new_focus:
