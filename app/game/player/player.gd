@@ -152,6 +152,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	velocity *= NetworkTime.physics_factor
 	move_and_slide()
 	velocity /= NetworkTime.physics_factor
+	#_log_collisions()
 #===================================================================================#
 
 # INTERACT ACTION
@@ -274,6 +275,23 @@ func get_camera_basis() -> Basis:
 
 # HELPERS
 #===================================================================================#
+func _log_collisions() -> void:
+	var count := get_slide_collision_count()
+	if count == 0:
+		return
+	for i in count:
+		var collision := get_slide_collision(i)
+		if collision == null:
+			continue
+		var collider = collision.get_collider()
+		if collider == null:
+			continue
+		SweetLogger.info(
+			"Colliding with: {0} (type: {1})",
+			[collider.name, collider.get_class()],
+			"Player.gd",
+			"_log_collisions"
+		)
 # quick and dirty solution to update the hold point position and rotation
 # could use a spring arm for better results
 func _update_hold_point() -> void:

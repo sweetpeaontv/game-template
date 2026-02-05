@@ -15,13 +15,15 @@ animation_trans = 7
 [node name="InteractionLabel" parent="." index="0" unique_id=211142206]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.627547, 0)
 
-[node name="RollbackSynchronizer" type="Node" parent="." index="2" unique_id=367096572 node_paths=PackedStringArray("root")]
+[node name="AnimatableBody3D" type="AnimatableBody3D" parent="." index="2" unique_id=577083347]
+
+[node name="RollbackSynchronizer" type="Node" parent="." index="3" unique_id=367096572 node_paths=PackedStringArray("root")]
 script = ExtResource("3_afm5q")
 root = NodePath("..")
 state_properties = Array[String](["RewindableStateMachine:state"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
-[node name="RewindableStateMachine" type="Node" parent="." index="3" unique_id=1888479538]
+[node name="RewindableStateMachine" type="Node" parent="." index="4" unique_id=1888479538]
 script = ExtResource("4_aob3t")
 metadata/_custom_type_script = "uid://byrgwv2o7hstx"
 
