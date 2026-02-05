@@ -4,6 +4,8 @@ class_name Openable
 signal opened()
 signal closed()
 
+const IS_VERBOSE := false
+
 @export var animation_duration: float = 0.5
 @export var animation_ease: Tween.EaseType = Tween.EASE_IN_OUT
 @export var animation_trans: Tween.TransitionType = Tween.TRANS_CUBIC
@@ -41,7 +43,8 @@ func get_interaction_type() -> int:
 
 func toggle() -> void:
 	var target: StringName = &"Open" if state_machine.state == &"Close" else &"Close"
-	SweetLogger.info("Transitioning to: {0}", [target], "Openable.gd", "toggle")
+	if IS_VERBOSE:
+		SweetLogger.info("Transitioning to: {0}", [target], "Openable.gd", "toggle")
 	if state_machine.transition(target):
 		NetworkRollback.mutate(self)
 

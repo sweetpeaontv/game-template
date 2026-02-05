@@ -4,6 +4,8 @@ signal alt_interact_hold_duration_changed(duration: float)
 signal focused_interactable(interactable: Interactable)
 signal unfocused_interactable(interactable: Interactable)
 
+const IS_VERBOSE := false
+
 # BODY NODES
 @onready var nameplate := $Nameplate
 @onready var model := $Model
@@ -188,7 +190,8 @@ func _handle_alt_interact() -> void:
 	UIManager.hide_ui("PickupHUD")
 
 func _handle_alt_interact_cancelled() -> void:
-	SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
+	if IS_VERBOSE:
+		SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
 	holding.interactable.set_pickup_state(holding.interactable.PickupState.FREE)
 #===================================================================================#
 
@@ -237,10 +240,12 @@ func _process_rewindable_action(
 	
 	match action.get_status(tick):
 		RewindableAction.CONFIRMING:
-			SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
+			if IS_VERBOSE:
+				SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_confirming.call()
 		RewindableAction.CANCELLING:
-			SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
+			if IS_VERBOSE:
+				SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_cancelling.call()
 			action.set_active(false, tick)
 		RewindableAction.ACTIVE:
@@ -290,6 +295,8 @@ func rotate_player_model(delta: float) -> void:
 # SIGNALS
 #===================================================================================#
 func _on_focus_hit(hit: Object) -> void:
+	if IS_VERBOSE:
+		SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
 	var new_focus = hit if hit is Interactable else null
 
 	if focus and focus != new_focus:

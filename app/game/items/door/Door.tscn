@@ -35,13 +35,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3244841, 0.9064138, -0.0405
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.082016096, 0.9378343, -0.04812315)
 shape = SubResource("BoxShape3D_dxduq")
 
-[node name="RollbackSynchronizer" parent="door-model/DoorPivot/Openable" index="2" unique_id=367096572]
-state_properties = Array[String](["RewindableStateMachine:state"])
-
-[node name="RewindableStateMachine" parent="door-model/DoorPivot/Openable" index="3" unique_id=1888479538]
-state = &""
-
-[node name="RigidBody3D" type="RigidBody3D" parent="door-model/DoorPivot/Door" parent_id_path=PackedInt32Array(669855069, 550313583) index="0" unique_id=402366663]
+[node name="RigidBody3D" type="StaticBody3D" parent="door-model/DoorPivot/Door" parent_id_path=PackedInt32Array(669855069, 550313583) index="0" unique_id=1255232223]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorPivot/Door/RigidBody3D" unique_id=1379958309]
 shape = SubResource("ConvexPolygonShape3D_yify6")

@@ -11,13 +11,13 @@
 [ext_resource type="Script" uid="uid://chr4omg2hy3yu" path="res://addons/netfox/rewindable-action.gd" id="9_p8na1"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_e8u23"]
-size = Vector3(0.3, 1.27, 0.7)
+size = Vector3(0.3, 1.27, 0.30390626)
 
 [node name="Player" type="CharacterBody3D" unique_id=960148084]
 script = ExtResource("1_wv0h6")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=463233780]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.65, 0)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.0015624762, 0.65, 6.8298256e-11)
 shape = SubResource("BoxShape3D_e8u23")
 
 [node name="Nameplate" type="Label3D" parent="." unique_id=170431164]
