@@ -1,6 +1,8 @@
 extends Interactable
 class_name Pickupable
 
+signal pickupable_yanked()
+
 const PickupData = InteractionTypes.PickupData
 
 enum PickupState { FREE, HELD, THROWN }
@@ -42,6 +44,8 @@ func set_pickup_state(state: PickupState) -> void:
 
 func _pickup(interactor: Node3D) -> void:
 	pickup_state = PickupState.HELD
+	if holder and holder != interactor:
+		pickupable_yanked.emit()
 	holder = interactor
 	# could remove collision layer from self to prevent focus sensor from detecting it while carried...
 	# undecided if I want player to be able to take items from other players...

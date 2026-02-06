@@ -13,7 +13,7 @@ func _ready() -> void:
 	parent = get_parent()
 	# haven't found a more elegant way to do this
 	if self is Area3D:
-		self.collision_layer = LayerDefs.PHYSICS_LAYERS_3D["INTERACTABLE"]
+		self.collision_layer = LayerDefs.PHYSICS_LAYERS_3D["WORLD"] | LayerDefs.PHYSICS_LAYERS_3D["INTERACTABLE"]
 	else:
 		SweetLogger.error("No focus area found for interactable {0}", [name], "Interactable.gd", "_ready")
 	_on_ready()

@@ -200,6 +200,7 @@ func _handle_alt_interact_cancelled() -> void:
 #===================================================================================#
 func _handle_pickup() -> void:
 	focus.interact(self, InteractionTypes.PickupData.pickup())
+	focus.pickupable_yanked.connect(_on_pickupable_yanked)
 	holding = focus.parent
 
 	if multiplayer.get_unique_id() == peer_id:
@@ -209,6 +210,14 @@ func _handle_pickup() -> void:
 		var pickup_hud = UIManager.show_ui("PickupHUD", {})
 		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP
 		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+
+func _handle_object_yanked() -> void:
+	''' Called when another player takes an object from the player.'''
+	if not holding:
+		return
+
+	holding = null
+	UIManager.hide_ui("PickupHUD")
 
 func _handle_let_go() -> void:
 	if not holding:
@@ -220,6 +229,7 @@ func _handle_let_go() -> void:
 		var throw_power = input.alt_interact_hold_time * 10.0
 		holding.interactable.interact(self, InteractionTypes.PickupData.throw(throw_power))
 
+	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 	holding = null
 	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
 	UIManager.hide_ui("PickupHUD")
@@ -315,6 +325,7 @@ func rotate_player_model(delta: float) -> void:
 func _on_focus_hit(hit: Object) -> void:
 	if IS_VERBOSE:
 		SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
+	
 	var new_focus = hit if hit is Interactable else null
 
 	if focus and focus != new_focus:
@@ -326,4 +337,9 @@ func _on_focus_hit(hit: Object) -> void:
 		new_focus.on_focus_enter(self)
 	
 	focus = new_focus
+
+func _on_pickupable_yanked() -> void:
+	if not holding:
+		return
+	_handle_object_yanked()
 #===================================================================================#

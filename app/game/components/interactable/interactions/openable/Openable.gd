@@ -22,12 +22,12 @@ func _on_ready() -> void:
 	if state_machine.state == &"":
 		state_machine.state = &"Close"
 
-func _interact(interactor: Node3D, data: Variant = null) -> void:
-	if not data is InteractionTypes.OpenData:
-		SweetLogger.error("Invalid data type: {0}", [data.get_class()], "Openable.gd", "_interact")
+func _interact(_interactor: Node3D, _data: Variant = null) -> void:
+	if not _data is InteractionTypes.OpenData:
+		SweetLogger.error("Invalid data type: {0}", [_data.get_class()], "Openable.gd", "_interact")
 		return
 
-	var action = data.action
+	var action = _data.action
 	match action:
 		InteractionTypes.OpenData.Action.TOGGLE:
 			toggle()

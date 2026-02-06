@@ -1,43 +1,44 @@
-[gd_scene load_steps=8 format=3 uid="uid://bpk6vmuacbrvy"]
+[gd_scene format=3 uid="uid://bpk6vmuacbrvy"]
 
-[ext_resource type="PackedScene" uid="uid://br5slp485xfc3" path="res://shared/game/items/cube/hand-cube.glb" id="1_81wnv"]
-[ext_resource type="Script" uid="uid://blgohumj1pvcx" path="res://shared/game/items/cube/Cube.gd" id="1_cfja5"]
-[ext_resource type="PackedScene" uid="uid://nuio21segrvp" path="res://shared/game/components/interactable/interactions/pickupable/Pickupable.tscn" id="2_cfja5"]
+[ext_resource type="PackedScene" uid="uid://br5slp485xfc3" path="res://app/game/items/cube/hand-cube.glb" id="1_81wnv"]
+[ext_resource type="Script" uid="uid://blgohumj1pvcx" path="res://app/game/items/cube/Cube.gd" id="1_cfja5"]
+[ext_resource type="PackedScene" uid="uid://nuio21segrvp" path="res://app/game/components/interactable/interactions/pickupable/Pickupable.tscn" id="2_cfja5"]
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="4_a5hvi"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="5_hkfd8"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_cfja5"]
-resource_local_to_scene = true
-size = Vector3(0.5, 0.5, 0.5)
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_1sgxm"]
+points = PackedVector3Array(1, 1, 1, 1, 1, -1, -1, 1, 1, 1, -1, 1, 1, -1, -1, -1, 1, -1, -1, -1, 1, -1, -1, -1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_who7n"]
 size = Vector3(0.5, 0.5, 0.5)
 
-[node name="Cube" type="RigidBody3D"]
+[node name="Cube" type="RigidBody3D" unique_id=1748285154]
 script = ExtResource("1_cfja5")
 metadata/_custom_type_script = "uid://bklxcdyxgbjg2"
 
-[node name="Pickupable" parent="." instance=ExtResource("2_cfja5")]
+[node name="Pickupable" parent="." unique_id=1810217294 instance=ExtResource("2_cfja5")]
 
-[node name="FocusCollisionShape" parent="Pickupable" index="2"]
-shape = SubResource("BoxShape3D_cfja5")
+[node name="FocusCollisionShape" parent="Pickupable" index="1" unique_id=1075540080]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_1sgxm")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=517207585]
 shape = SubResource("BoxShape3D_who7n")
 
-[node name="RollbackSynchronizer" type="Node" parent="." node_paths=PackedStringArray("root")]
+[node name="RollbackSynchronizer" type="Node" parent="." unique_id=1904365676 node_paths=PackedStringArray("root")]
 script = ExtResource("4_a5hvi")
 root = NodePath("..")
 state_properties = Array[String]([":physics_state", "Pickupable:pending_throw_velocity"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
-[node name="TickInterpolator" type="Node" parent="." node_paths=PackedStringArray("root")]
+[node name="TickInterpolator" type="Node" parent="." unique_id=753056867 node_paths=PackedStringArray("root")]
 script = ExtResource("5_hkfd8")
 root = NodePath("..")
 properties = Array[String]([":global_transform"])
 metadata/_custom_type_script = "uid://dour8fehaaugp"
 
-[node name="hand-cube" parent="." instance=ExtResource("1_81wnv")]
+[node name="hand-cube" parent="." unique_id=236484876 instance=ExtResource("1_81wnv")]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 
 [editable path="Pickupable"]
+[editable path="hand-cube"]

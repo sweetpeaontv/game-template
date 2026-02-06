@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://nuio21segrvp"]
+[gd_scene format=3 uid="uid://nuio21segrvp"]
 
-[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://shared/game/components/interactable/Interactable.tscn" id="1_qj817"]
-[ext_resource type="Script" uid="uid://urcg7nqs3mw4" path="res://shared/game/components/interactable/interactions/pickupable/Pickupable.gd" id="2_sve6c"]
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/Interactable.tscn" id="1_qj817"]
+[ext_resource type="Script" uid="uid://urcg7nqs3mw4" path="res://app/game/components/interactable/interactions/pickupable/Pickupable.gd" id="2_sve6c"]
 
-[node name="Pickupable" instance=ExtResource("1_qj817")]
+[node name="Pickupable" unique_id=481276386 instance=ExtResource("1_qj817")]
 script = ExtResource("2_sve6c")

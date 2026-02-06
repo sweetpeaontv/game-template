@@ -7,11 +7,10 @@
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_a6vmt"]
 data = PackedVector3Array(0.39999998, 1.9, 0, 0.5, 0, 0, 0.39999998, 0, 0, 0.39999998, 1.9, 0, 0.5, 2, 0, 0.5, 0, 0, 0.5, 2, 0, 0.39999998, 1.9, 0, -0.5, 2, 0, -0.5, 2, 0, 0.39999998, 1.9, 0, -0.39999998, 1.9, 0, -0.5, 2, 0, -0.39999998, 1.9, 0, -0.39999998, 0, 0, -0.5, 2, 0, -0.39999998, 0, 0, -0.5, 0, 0, -0.39999998, 0, -0.099999994, -0.5, 2, -0.099999994, -0.5, 0, -0.099999994, -0.39999998, 1.9, -0.099999994, -0.5, 2, -0.099999994, -0.39999998, 0, -0.099999994, -0.5, 2, -0.099999994, -0.39999998, 1.9, -0.099999994, 0.5, 2, -0.099999994, 0.5, 2, -0.099999994, -0.39999998, 1.9, -0.099999994, 0.39999998, 1.9, -0.099999994, 0.5, 2, -0.099999994, 0.39999998, 1.9, -0.099999994, 0.39999998, 0, -0.099999994, 0.5, 2, -0.099999994, 0.39999998, 0, -0.099999994, 0.5, 0, -0.099999994, 0.39999998, 0, 0, 0.5, 0, -0.099999994, 0.39999998, 0, -0.099999994, 0.39999998, 0, 0, 0.5, 0, 0, 0.5, 0, -0.099999994, -0.5, 0, 0, -0.5, 2, -0.099999994, -0.5, 2, 0, -0.5, 0, 0, -0.5, 0, -0.099999994, -0.5, 2, -0.099999994, -0.39999998, 0, 0, -0.5, 0, -0.099999994, -0.5, 0, 0, -0.39999998, 0, 0, -0.39999998, 0, -0.099999994, -0.5, 0, -0.099999994, 0.5, 2, 0, 0.5, 0, -0.099999994, 0.5, 0, 0, 0.5, 2, 0, 0.5, 2, -0.099999994, 0.5, 0, -0.099999994, -0.5, 2, 0, 0.5, 2, -0.099999994, 0.5, 2, 0, -0.5, 2, 0, -0.5, 2, -0.099999994, 0.5, 2, -0.099999994, -0.39999998, 0, 0, -0.39999998, 1.9, -0.099999994, -0.39999998, 0, -0.099999994, -0.39999998, 0, 0, -0.39999998, 1.9, 0, -0.39999998, 1.9, -0.099999994, 0.39999998, 1.9, 0, 0.39999998, 0, -0.099999994, 0.39999998, 1.9, -0.099999994, 0.39999998, 1.9, 0, 0.39999998, 0, 0, 0.39999998, 0, -0.099999994, -0.39999998, 1.9, 0, 0.39999998, 1.9, -0.099999994, -0.39999998, 1.9, -0.099999994, -0.39999998, 1.9, 0, 0.39999998, 1.9, 0, 0.39999998, 1.9, -0.099999994)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_dxduq"]
-resource_local_to_scene = true
-size = Vector3(0.6029297, 0.72476804, 0.2)
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_dxduq"]
+points = PackedVector3Array(0, -0.9499999, -0.025000043, 0, -0.9499999, 0.024995144, 0, 0.9499999, -0.025000043, 0.8, -0.9499999, -0.025000043, 0.8, -0.9499999, 0.024995144, 0, 0.9499999, 0.02500004, 0.8, 0.9499999, -0.025000043, 0.8, 0.9499999, 0.02500004)
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_yify6"]
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_wxibc"]
 points = PackedVector3Array(0, -0.9499999, -0.025000043, 0, -0.9499999, 0.024995144, 0, 0.9499999, -0.025000043, 0.8, -0.9499999, -0.025000043, 0.8, -0.9499999, 0.024995144, 0, 0.9499999, 0.02500004, 0.8, 0.9499999, -0.025000043, 0.8, 0.9499999, 0.02500004)
 
 [node name="Door" type="Node3D" unique_id=1058546239]
@@ -25,22 +24,22 @@ script = ExtResource("1_r4pci")
 visible = false
 shape = SubResource("ConcavePolygonShape3D_a6vmt")
 
-[node name="RemoteTransform3D" type="RemoteTransform3D" parent="door-model/DoorPivot" parent_id_path=PackedInt32Array(669855069, 267435152) index="0" unique_id=1809985594]
-remote_path = NodePath("../Openable/AnimatableBody3D/CollisionShape3D")
-
-[node name="Openable" parent="door-model/DoorPivot" parent_id_path=PackedInt32Array(669855069, 267435152) index="1" unique_id=372742309 instance=ExtResource("4_yify6")]
+[node name="Openable" parent="door-model/DoorPivot" parent_id_path=PackedInt32Array(669855069, 267435152) index="0" unique_id=372742309 instance=ExtResource("4_yify6")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, -0.9499999, 0.050000012)
 
-[node name="InteractionLabel" parent="door-model/DoorPivot/Openable" index="0" unique_id=211142206]
+[node name="RemoteTransform3D" parent="door-model/DoorPivot/Openable" index="0" unique_id=1036021493]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.95, -0.05)
+
+[node name="InteractionLabel" parent="door-model/DoorPivot/Openable" index="1" unique_id=211142206]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3244841, 0.9064138, -0.040596545)
 
-[node name="FocusCollisionShape" parent="door-model/DoorPivot/Openable" index="1" unique_id=1075540080]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.082016096, 0.9378343, -0.04812315)
-shape = SubResource("BoxShape3D_dxduq")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorPivot/Openable/AnimatableBody3D" parent_id_path=PackedInt32Array(372742309, 577083347) index="0" unique_id=1379958309]
+[node name="FocusCollisionShape" parent="door-model/DoorPivot/Openable" index="2" unique_id=1075540080]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.9499999, -0.050000012)
-shape = SubResource("ConvexPolygonShape3D_yify6")
+shape = SubResource("ConvexPolygonShape3D_dxduq")
+
+[node name="CollisionShape3D" parent="door-model/DoorPivot/Openable/AnimatableBody3D" parent_id_path=PackedInt32Array(372742309, 805990844) index="0" unique_id=1631186179]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.95, -0.05)
+shape = SubResource("ConvexPolygonShape3D_wxibc")
 
 [editable path="door-model"]
 [editable path="door-model/DoorPivot/Openable"]
