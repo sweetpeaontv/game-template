@@ -96,7 +96,7 @@ func spawn_late_joiner(client_peer_id: int) -> void:
 		SweetLogger.info("Spawning new player {0} to existing clients {1}", [new_player_data, existing_peers], SCRIPT_NAME, "spawn_late_joiner")
 	await spawn_players(new_player_data, existing_peers)
 
-	var all_players_data = get_existing_players_data()
+	var all_players_data = PlayerUtils.get_existing_players_data()
 	if not all_players_data.is_empty():
 		if IS_VERBOSE:
 			SweetLogger.info("Spawning existing players {0} to new client {1}", [all_players_data, client_peer_id], SCRIPT_NAME, "spawn_late_joiner")
@@ -108,7 +108,7 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	Used by both server (directly) and clients (via RPC).
 	"""
 	# Check if player already exists
-	var existing_player = _find_player(peer_id)
+	var existing_player = PlayerUtils.find_player(peer_id)
 	if existing_player:
 		if IS_VERBOSE:
 			SweetLogger.info("Player {0} already exists, updating position", [peer_id], SCRIPT_NAME, "_spawn_player_impl")
@@ -134,7 +134,7 @@ func _spawn_player_impl(peer_id: int, spawn_position: Vector3) -> void:
 	# Give player a unique name based on peer_id for multiplayer path resolution
 	player.name = "Player_%d" % peer_id
 
-	var players_container = _get_players_container()
+	var players_container = PlayerUtils.get_players_container()
 	if not players_container:
 		push_error("PlayerSpawner: Players container not found")
 		return
@@ -187,47 +187,3 @@ func _spawn_players_rpc(players_data: Array) -> void:
 
 		# Wait a frame for initialization
 		await get_tree().process_frame
-
-# PLAYER GETTERS
-#===================================================================================#
-func _find_player(peer_id: int) -> Node:
-	"""Find existing player node for peer_id in PlayersContainer."""
-	var players_container = _get_players_container()
-	if not players_container:
-		return null
-
-	# Players are direct children named "Player_%d"
-	return players_container.get_node_or_null("Player_%d" % peer_id)
-
-func _get_players_container() -> Node:
-	"""Gets the Players node from the Main scene."""
-	var main = get_tree().root.get_node_or_null("Main")
-	if main:
-		return main.get_node_or_null("Players")
-	return null
-
-func _find_all_players(players_container: Node) -> Array:
-	"""
-	Find all player nodes in PlayersContainer.
-	Returns array of dictionaries with 'player' (CharacterBody3D) and 'peer_id'.
-	"""
-	var players = []
-	for child in players_container.get_children():
-		var peer_id = child.peer_id
-		if peer_id != 0:
-			players.append({"player": child, "peer_id": peer_id})
-	return players
-
-func get_existing_players_data() -> Array:
-	"""Returns array of {peer_id, position} for all existing players (for late-join sync)."""
-	var players_container = _get_players_container()
-	if not players_container:
-		return []
-	var result: Array = []
-	for player_data in _find_all_players(players_container):
-		var player = player_data.player
-		var player_peer_id = player_data.peer_id
-		if player_peer_id != 0:
-			result.append({"peer_id": player_peer_id, "position": player.global_position})
-	return result
-#===================================================================================#
