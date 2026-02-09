@@ -8,6 +8,7 @@ const PickupData = InteractionTypes.PickupData
 enum PickupState { FREE, HELD, THROWN }
 
 var holder: Node3D = null
+var holder_id: int = 0
 
 var pickup_state: PickupState = PickupState.FREE
 var original_collision_layer: int = 0
@@ -47,12 +48,14 @@ func _pickup(interactor: Node3D) -> void:
 	if holder and holder != interactor:
 		pickupable_yanked.emit()
 	holder = interactor
+	holder_id = interactor.peer_id
 	# could remove collision layer from self to prevent focus sensor from detecting it while carried...
 	# undecided if I want player to be able to take items from other players...
 
 func _drop() -> void:
 	pickup_state = PickupState.FREE
 	holder = null
+	holder_id = 0
 
 func _throw(_throw_power: float = 0.0) -> void:
 	if not holder or not parent:
@@ -66,6 +69,7 @@ func _throw(_throw_power: float = 0.0) -> void:
 
 	pickup_state = PickupState.THROWN
 	holder = null
+	holder_id = 0
 
 	if parent is RigidBody3D:
 		# Re-enable collisions
@@ -78,6 +82,17 @@ func _throw(_throw_power: float = 0.0) -> void:
 		# parent.linear_velocity += Vector3.UP * (_throw_power * 0.3)
 
 func _interact_physics_rollback_tick(_delta, _tick):
+	# sort of a hacky fix for late joiners, not sure if this is the best way to do it
+	if pickup_state == PickupState.HELD and not holder and holder_id != 0:
+		var player = PlayerUtils.find_player(holder_id)
+		if player:
+			holder = player
+			# better to do this in the player script instead of here...
+			player.holding = parent
+		else:
+			# this is a bit troublesome because when a late joiner connects
+			# the player node may not be ready yet, so we need to wait for it to be ready...
+			SweetLogger.warning("Player {0} not found", [holder_id], "Pickupable.gd", "_interact_physics_rollback_tick")
 	if pickup_state == PickupState.HELD and holder:
 		var test: Array = [
 			holder.hold_point.global_transform.origin,
