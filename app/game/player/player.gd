@@ -18,8 +18,10 @@ const IS_VERBOSE := false
 @onready var alt_interact_action: RewindableAction = $AltInteractAction
 
 # CAMERA NODES
-@onready var first_person_camera: FirstPersonCameraInput = $FirstPersonCameraInput
-@onready var third_person_camera: ThirdPersonCameraInput = $ThirdPersonCameraInput
+@onready var camera_input: Node3D = $CameraInput
+@onready var camera_manager: CameraManager = $CameraManager
+@onready var camera_anchor_fp: Node3D = $CameraAnchorFP
+@onready var camera_anchor_tp: Node3D = $CameraAnchorTP
 @onready var focus_sensor: Node3D = $FocusSensor
 
 # MULTIPLAYER VALUES/VARIABLES
@@ -28,9 +30,7 @@ var peer_id: int = 0
 # CAMERA DEFAULT VALUES/VARIABLES
 enum CameraType { FIRST_PERSON, THIRD_PERSON }
 @onready var camera_type: CameraType = CameraType.FIRST_PERSON
-const ROTATION_INTERPOLATE_SPEED := 10
 var _previous_camera_basis: Basis = Basis.IDENTITY
-var current_camera: Node3D = null
 
 # MOVEMENT DEFAULT VALUES/VARIABLES
 const WALK_SPEED = 5.0
@@ -41,6 +41,7 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 # INTERACTION VARIABLES
 const INTERACTION_COOLDOWN := 0.05  # 50ms in seconds
 var _last_interact_time: float = 0.0
+# need to find a way to sync these properly
 var focus: Node3D = null
 var holding: Node3D = null
 
@@ -51,11 +52,11 @@ func _ready() -> void:
 
 	set_multiplayer_authority(1)
 	input.set_multiplayer_authority(peer_id)
+	camera_input.set_multiplayer_authority(peer_id)
 	interact_action.set_multiplayer_authority(peer_id)
 	alt_interact_action.set_multiplayer_authority(peer_id)
 
-	first_person_camera.set_multiplayer_authority(peer_id)
-	third_person_camera.set_multiplayer_authority(peer_id)
+	camera_manager.set_multiplayer_authority(peer_id)
 	focus_sensor.set_multiplayer_authority(peer_id)
 
 	rollback_synchronizer.enable_input_broadcast = true
@@ -70,25 +71,23 @@ func _setup() -> void:
 
 	var my_id = multiplayer.get_unique_id()
 
-	# Local Player setup - hide model and nameplate, set camera current
-	if peer_id == my_id:
-		if camera_type == CameraType.FIRST_PERSON:
-			var camera = get_node_or_null(first_person_camera.get_camera_path())
-			if camera:
-				camera.current = true
-				current_camera = camera
-			model.visible = false
-			nameplate.visible = false
-		elif camera_type == CameraType.THIRD_PERSON:
-			var camera = get_node_or_null(third_person_camera.get_camera_path())
-			if camera:
-				camera.current = true
-				current_camera = camera
-			model.visible = true
-			nameplate.visible = true
+	var is_local: bool= (peer_id == my_id)
+
+	if is_local:
+		UIManager.show_ui("Crosshair")
+		model.visible = (camera_type == CameraType.THIRD_PERSON)
+		nameplate.visible = false
 	else:
 		model.visible = true
 		nameplate.visible = true
+
+	camera_manager.bind_subject(
+		is_local,
+		camera_anchor_fp,
+		camera_anchor_tp,
+		CameraManager.RigType.FIRST_PERSON if camera_type == CameraType.FIRST_PERSON else CameraManager.RigType.THIRD_PERSON,
+		true
+	)
 #===================================================================================#
 
 # PLAYER LOOP
@@ -98,11 +97,11 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
-	var camera_basis = get_camera_basis()
+	var camera_basis: Basis = camera_input.camera_basis
 
-	if get_camera_basis() != _previous_camera_basis:
+	if camera_basis != _previous_camera_basis:
 		_previous_camera_basis = camera_basis
-		rotate_player_model(_delta)
+		rotate_player_model(_delta, camera_basis)
 
 	var direction = (camera_basis * transform.basis * Vector3(input.movement.x, 0, input.movement.z)).normalized()
 
@@ -276,11 +275,7 @@ func setNameplate(player_name: String) -> void:
 # GETTERS
 #===================================================================================#
 func get_camera_basis() -> Basis:
-	if camera_type == CameraType.FIRST_PERSON:
-		return first_person_camera.camera_basis
-	elif camera_type == CameraType.THIRD_PERSON:
-		return third_person_camera.camera_basis
-	return Basis.IDENTITY
+	return camera_manager.get_look_basis()
 #===================================================================================#
 
 # HELPERS
@@ -307,14 +302,15 @@ func _log_collisions() -> void:
 func _update_hold_point() -> void:
 	var camera_basis: Basis = get_camera_basis()
 	var hold_offset = Vector3(0.0, 0.3, -1.5)
-	var camera_position = first_person_camera.global_position
+
+	var cam := camera_manager.get_camera()
+	var camera_position := cam.global_position
+
 	var rotated_offset = camera_basis * hold_offset
 	hold_point.global_position = camera_position + rotated_offset
 	hold_point.transform.basis = camera_basis
 
-func rotate_player_model(delta: float) -> void:
-	var camera_basis: Basis = get_camera_basis()
-
+func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 	var head_forward = camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
@@ -323,8 +319,8 @@ func rotate_player_model(delta: float) -> void:
 # SIGNALS
 #===================================================================================#
 func _on_focus_hit(hit: Object) -> void:
-	if IS_VERBOSE:
-		SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
+	#if IS_VERBOSE:
+	SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
 	
 	var new_focus = hit if hit is Interactable else null
 

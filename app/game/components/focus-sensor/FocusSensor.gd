@@ -6,6 +6,7 @@ extends Node3D
 signal focus_hit(hit: Object)
 
 @export var actor: CharacterBody3D
+@export var camera_manager: Node3D
 @export var max_distance: float = 3.0
 
 var last_hit: Object = null
@@ -20,21 +21,19 @@ func _process(_delta: float) -> void:
 		focus_hit.emit(hit if hit else null)
 		last_hit = hit
 
-func _get_aim_ray() -> Array:
-	# Always use synced camera_basis for determinism
-	var camera_input = actor.get_node("FirstPersonCameraInput")
-	var camera_basis = camera_input.camera_basis
-	
-	# Camera position relative to player (from Player.tscn)
-	var origin = camera_input.global_position
-	var dir = -camera_basis.z
-	
-	return [origin, dir.normalized()]
+func _get_aim_origin() -> Vector3:
+	return camera_manager.get_camera().global_position
+
+func _get_aim_dir() -> Vector3:
+	return -camera_manager.get_look_basis().z
 
 func _query_focus_hit() -> Object:
-	var origin_dir := _get_aim_ray()
-	var origin: Vector3 = origin_dir[0]
-	var dir: Vector3 = origin_dir[1]
+	if not camera_manager:
+		SweetLogger.error('No camera manager present for FocusSensor', [], 'FocusSensor.gd', '_query_focus_hit')
+		return
+	
+	var origin: Vector3 = _get_aim_origin()
+	var dir: Vector3 = _get_aim_dir()
 
 	var to := origin + dir * max_distance
 

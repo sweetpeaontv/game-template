@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bfi1cthne7mhd"]
+
+[ext_resource type="Script" uid="uid://ck3dhv6jpays2" path="res://app/game/cameras/camera-input/CameraInput.gd" id="1_y6nww"]
+
+[node name="CameraInput" type="Node3D" unique_id=876401186]
+script = ExtResource("1_y6nww")

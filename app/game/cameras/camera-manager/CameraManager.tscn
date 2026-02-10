@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://fw8tdtgk64bf"]
+
+[ext_resource type="Script" uid="uid://dqefadb0resw3" path="res://app/game/cameras/camera-manager/CameraManager.gd" id="1_nme0w"]
+[ext_resource type="Script" uid="uid://dmvhb6x87jjp0" path="res://app/game/cameras/camera-manager/Camera.gd" id="2_iaa2s"]
+
+[node name="CameraManager" type="Node3D" unique_id=348133072]
+script = ExtResource("1_nme0w")
+
+[node name="Rigs" type="Node3D" parent="." unique_id=1795618038]
+
+[node name="FirstPerson" type="Node3D" parent="Rigs" unique_id=1306034645]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/FirstPerson" unique_id=1240429989]
+
+[node name="CameraMount" type="Node3D" parent="Rigs/FirstPerson/RigRoot" unique_id=1671121612]
+
+[node name="CameraRotation" type="Node3D" parent="Rigs/FirstPerson/RigRoot/CameraMount" unique_id=244594672]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Rigs/FirstPerson/RigRoot/CameraMount/CameraRotation" unique_id=1248577442]
+
+[node name="Camera3D" type="Camera3D" parent="Rigs/FirstPerson/RigRoot/CameraMount/CameraRotation/SpringArm3D" unique_id=690616913]
+script = ExtResource("2_iaa2s")
+
+[node name="ThirdPerson" type="Node3D" parent="Rigs" unique_id=1801151386]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/ThirdPerson" unique_id=1548813330]
+
+[node name="OrbitPivot" type="Node3D" parent="Rigs/ThirdPerson/RigRoot" unique_id=790479969]
+
+[node name="PitchPivot" type="Node3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot" unique_id=416126531]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot" unique_id=1014321098]
+
+[node name="Camera3D" type="Camera3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot/SpringArm3D" unique_id=83514013]
