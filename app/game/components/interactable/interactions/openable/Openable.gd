@@ -17,11 +17,25 @@ var _current_tween: Tween
 
 @onready var state_machine: RewindableStateMachine = $RewindableStateMachine
 
+# INIT
+#===================================================================================#
 func _on_ready() -> void:
 	state_machine.on_display_state_changed.connect(_on_display_state_changed)
 	if state_machine.state == &"":
 		state_machine.state = &"Close"
 
+	InteractableRegistries.openables.add_entry(key, self)
+#===================================================================================#
+
+# DESTRUCT
+#===================================================================================#
+func _exit_tree() -> void:
+	InteractableRegistries.openables.remove_entry(key)
+	super._exit_tree()
+#===================================================================================#
+
+# INTERACTION
+#===================================================================================#
 func _interact(_interactor: Node3D, _data: Variant = null) -> void:
 	if not _data is InteractionTypes.OpenData:
 		SweetLogger.error("Invalid data type: {0}", [_data.get_class()], "Openable.gd", "_interact")
@@ -57,7 +71,10 @@ func close() -> void:
 	if state_machine.transition(&"Close"):
 		NetworkRollback.mutate(self)
 		closed.emit()
+#===================================================================================#
 
+# ANIMATION / DISPLAY
+#===================================================================================#
 func add_animation_target(node: Node3D, open_rotation: Vector3, closed_rotation: Vector3, duration: float = -1.0) -> void:
 	"""Add a node to be animated when opening/closing.
 	If duration is -1, uses the default animation_duration."""
@@ -96,3 +113,4 @@ func _snap_to_state(to_open: bool) -> void:
 		var config = animation_targets[node]
 		var target_rotation: Vector3 = config["open"] if to_open else config["closed"]
 		node.rotation = target_rotation
+#===================================================================================#

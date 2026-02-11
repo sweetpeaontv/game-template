@@ -1,0 +1,509 @@
+[gd_scene format=4 uid="uid://cvl14edykthr5"]
+
+[ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/items/keypad/KeypadButton.tscn" id="1_k2c6y"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyns4"]
+resource_name = "Button"
+cull_mode = 2
+albedo_color = Color(0.5356064, 0.56861615, 0.6455441, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ky3t3"]
+_surfaces = [{
+"aabb": AABB(-0.033421244, 0, -0.03342124, 0.06684248, 0.013227951, 0.066842474),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_5gm0g"]
+resource_name = "keypad_Plane_009"
+_surfaces = [{
+"aabb": AABB(-0.033421244, 0, -0.03342124, 0.06684248, 0.013227951, 0.066842474),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_ky3t3")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ghnfc"]
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.066842474),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_uck6t"]
+resource_name = "keypad_Plane_010"
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.066842474),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_ghnfc")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_g35y8"]
+resource_name = "keypad_Plane_002"
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.066842474),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_uck6t")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_jc0wr"]
+resource_name = "keypad_Plane_011"
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.066842474),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_g35y8")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_v367l"]
+_surfaces = [{
+"aabb": AABB(-0.033421244, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_531xh"]
+resource_name = "keypad_Plane_006"
+_surfaces = [{
+"aabb": AABB(-0.033421244, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_v367l")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_r0lp6"]
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_t71fe"]
+resource_name = "keypad_Plane_007"
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_r0lp6")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_4g1y7"]
+resource_name = "keypad_Plane_010"
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_t71fe")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_egnvb"]
+resource_name = "keypad_Plane_008"
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.06684248),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_4g1y7")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_1teho"]
+_surfaces = [{
+"aabb": AABB(-0.033421244, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_wbeph"]
+resource_name = "keypad_Plane_005"
+_surfaces = [{
+"aabb": AABB(-0.033421244, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_1teho")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_mhwax"]
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_e0j5l"]
+resource_name = "keypad_Plane_004"
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_mhwax")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_tvjyu"]
+resource_name = "keypad_Plane_006"
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_e0j5l")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_t8j18"]
+resource_name = "keypad_Plane_003"
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.06684248),
+"attribute_data": PackedByteArray("Bh344vjiBh344vjiBh0GHQYd+OIAAAAABh0GHQAA///44vjiAAD//wYd+OL/////+OIGHf/////44vji//8AAAYdBh3//wAA+OIGHQAAAAA="),
+"format": 34896613399,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEA"),
+"material": SubResource("StandardMaterial3D_qyns4"),
+"name": "Button",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 20,
+"vertex_data": PackedByteArray("Bh3///ji/7/44v//Bh3/v/ji///44v+/Bh3//wYd/78GHf//+OJaygAAAAAAAFrKBh3//wYdWsoAAAAA//9ayvji///44jGVAAAAAP//MZUGHf//+OIxlf//AAD//zGV+OL//wYdWsr//wAA//9ayvji///44lrK//8AAAAAWsoGHf//Bh3M6v//AAAAAMzq+OL//wYdzOoAAAAAAADM6v///3////9/////f////3+j3bfEo923xKPdt8Sj3bfE////f////3////9/////f0e7o11Hu6NdR7ujXUe7o13///9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_tvjyu")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lcur0"]
+resource_name = "Frame"
+cull_mode = 2
+albedo_color = Color(0.12657583, 0.12657583, 0.12657583, 1)
+roughness = 0.5
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_lcur0"]
+_surfaces = [{
+"aabb": AABB(-0.03342124, 0, -0.03342124, 0.06684248, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_s888n"]
+resource_name = "keypad_Plane_007"
+_surfaces = [{
+"aabb": AABB(-0.11505277, 0, -0.15894459, 0.23010553, 0.017882183, 0.31788918),
+"format": 34359742465,
+"index_count": 174,
+"index_data": PackedByteArray("AAABAAEAAAAAAAEAAAACAAEAAAADAAIABAACAAMAAQACAAQABQADAAAABQAAAAAABQAFAAAABAADAAYABQAGAAMABgAEAAQABQAGAAQABgAGAAQAAQABAAcAAQAHAAcAAQAEAAcABwAGAAUABwAHAAUABwAFAAUABQAEAAcACAAGAAUABwAEAAYACAAJAAYACgAJAAgABwALAAoACgALAAkABwAEAAsABAAEAAsABAALAAsACQAGAAYACQAJAAYABgAMAAQACwAJAAkACQANAAYABgANAAwACwALAAkABAAOAAsABAAMAA4ACwAPAAkACQAPAA0ACwAOAA8ADQAQAAwADAARAA4ADAAQABEADgASAA8ADgARABIADwATAA0ADQATABAADwASABMAFAARABAAFQARABQAFQASABEAFAAQABYAFgAQABMAFwASABUAFgATABcAFwATABIA"),
+"name": "Frame",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("yaDrPQAAAABfwiK+yaDrvQAAAABfwiK+yaDrvdChHDxfwiK+yaDrPdChHDxfwiK+yaDrvdChHDxLAJU9yaDrPQAAAABLAJU9yaDrPdChHDxLAJU9yaDrvQAAAABLAJU9yaDrPQAAAABfwiI+yaDrPdChHDxfwiI+yaDrvQAAAABfwiI+yaDrvdChHDxfwiI+yaDrvcb5cDxLAJU9yaDrPcb5cDxLAJU9yaDrvcb5cDxfwiI+yaDrPcb5cDxfwiI+ORXkvah9kjx9gJs9ORXkvah9kjxGgh8+ORXkPah9kjxGgh8+ORXkPah9kjx9gJs9kc/Zvah9kjxyFRs+kc/ZPah9kjxyFRs+kc/Zvah9kjwlWqQ9kc/ZPah9kjwlWqQ9")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_lcur0")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_scd2s"]
+resource_name = "keypad_Plane"
+_surfaces = [{
+"aabb": AABB(-0.11505277, 0, -0.15894459, 0.23010553, 0.017882183, 0.31788918),
+"attribute_data": PackedByteArray("AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAADpc6PwAAgD8Olzo/AACAPw6XOj8AAAAADpc6PwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAADpc6PwAAgD8AAAAAAACAPw6XOj8AAAAAAAAAAAAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAOlzo/AACAPw6XOj8AAIA/Dpc6PwAAAAAOlzo/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAIA/Dpc6PwAAAAAOlzo/AAAAAA6XOj8AAIA/Dpc6PwAAgD8Olzo/AAAAAA6XOj8AAAAADpc6PwAAgD8Olzo/nNwaPbb2eT8BKYM8ciU9P5zcGj1ZoEA//CiDPJxxfT8AKYM8cyU9P7jmez9yJT0/NlJ2P1igQD+45ns/nHF9PzZSdj+29nk/+yiDPJxxfT8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAAAACAPwAAAAAAAIA/AAAAAAAAgD8AAAAADpc6P/wogzyccX0/AAAAAAAAgD8BKYM8ciU9PwAAAAAAAIA/uOZ7P5xxfT8AAIA/AACAP/sogzyccX0/AACAPwAAgD+45ns/ciU9PwAAgD8Olzo/uOZ7P5xxfT8AAIA/Dpc6PwApgzxzJT0/AAAAAA6XOj+45ns/ciU9PwAAgD8Olzo/AAAAAA6XOj8AAAAADpc6PwAAgD8Olzo/"),
+"format": 34359742487,
+"index_count": 174,
+"index_data": PackedByteArray("AAABAAIAAgABAAMAAgADAAQAAAAFAAEABgAFAAAABgAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAFgAVABgAFgAYABkAGQAYABoAGQAaABsAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0AMAAxADIAMAAzADEANAA1ADYANAA3ADUAOAA5ADoAOAA7ADkAPAA9AD4APAA/AD0APgBAAEEAPgBBAEIAQgBBAEMAQgBDAEQARABFADwARABDAEUARgBHAEgARgBJAEcASgBLAEwASgBNAEsATgBPAFAATgBRAE8AUgBTAFQAUgBVAFMAVgBXAFgAVgBZAFcAWgBbAFwAWgBdAFsAXgBfAGAAXgBhAF8AYgBjAGQAYgBlAGMA"),
+"material": SubResource("StandardMaterial3D_lcur0"),
+"name": "Frame",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 102,
+"vertex_data": PackedByteArray("yaDrPQAAAABfwiK+yaDrvQAAAABfwiK+yaDrvQAAAABfwiK+yaDrvQAAAABLAJU9yaDrvQAAAABLAJU9yaDrPQAAAABfwiK+yaDrPQAAAABLAJU9yaDrPQAAAABLAJU9yaDrvQAAAABfwiK+yaDrvdChHDxLAJU9yaDrvQAAAABLAJU9yaDrvdChHDxfwiK+yaDrvQAAAABLAJU9yaDrvdChHDxfwiI+yaDrvQAAAABfwiI+yaDrvdChHDxLAJU9yaDrvQAAAABLAJU9yaDrPQAAAABLAJU9yaDrPQAAAABLAJU9yaDrvQAAAABLAJU9yaDrvdChHDxLAJU9yaDrvdChHDxfwiI+yaDrvdChHDxfwiI+yaDrvdChHDxLAJU9yaDrPdChHDxfwiI+yaDrPdChHDxfwiI+yaDrPdChHDxLAJU9yaDrPdChHDxLAJU9yaDrvdChHDxLAJU9yaDrPdChHDxfwiK+yaDrPdChHDxLAJU9yaDrvdChHDxfwiK+yaDrPQAAAABLAJU9yaDrPdChHDxfwiK+yaDrPQAAAABfwiK+yaDrPdChHDxLAJU9yaDrPQAAAABfwiI+yaDrPdChHDxLAJU9yaDrPQAAAABLAJU9yaDrPdChHDxfwiI+yaDrvQAAAABfwiI+yaDrPdChHDxfwiI+yaDrPQAAAABfwiI+yaDrvdChHDxfwiI+yaDrvQAAAABLAJU9yaDrPdChHDxLAJU9yaDrPQAAAABLAJU9yaDrvdChHDxLAJU9yaDrPQAAAABfwiK+yaDrvdChHDxfwiK+yaDrvQAAAABfwiK+yaDrPdChHDxfwiK+yaDrPQAAAABLAJU9yaDrvdChHDxLAJU9yaDrvQAAAABLAJU9yaDrPdChHDxLAJU9yaDrPdChHDxLAJU9yaDrvdChHDxLAJU9yaDrvdChHDxLAJU9yaDrPdChHDxLAJU9kc/Zvah9kjxyFRs+ORXkvah9kjx9gJs9kc/Zvah9kjwlWqQ9ORXkvah9kjxGgh8+ORXkvah9kjx9gJs9ORXkPah9kjx9gJs9kc/ZPah9kjwlWqQ9ORXkPah9kjxGgh8+kc/ZPah9kjxyFRs+ORXkvah9kjxGgh8+yaDrvdChHDxfwiI+yaDrPcb5cDxfwiI+yaDrPdChHDxfwiI+yaDrvcb5cDxfwiI+yaDrPdChHDxfwiI+yaDrPcb5cDxLAJU9yaDrPdChHDxLAJU9yaDrPcb5cDxfwiI+yaDrvdChHDxLAJU9yaDrvcb5cDxfwiI+yaDrvdChHDxfwiI+yaDrvcb5cDxLAJU9yaDrvcb5cDxLAJU9ORXkvah9kjxGgh8+yaDrvcb5cDxfwiI+ORXkvah9kjx9gJs9yaDrvcb5cDxfwiI+ORXkPah9kjxGgh8+yaDrPcb5cDxfwiI+ORXkvah9kjxGgh8+yaDrPcb5cDxfwiI+ORXkPah9kjx9gJs9yaDrPcb5cDxLAJU9ORXkPah9kjxGgh8+yaDrPcb5cDxLAJU9ORXkvah9kjx9gJs9yaDrvcb5cDxLAJU9ORXkPah9kjx9gJs9yaDrPdChHDxLAJU9yaDrvcb5cDxLAJU9yaDrvdChHDxLAJU9yaDrPcb5cDxLAJU9/3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////vwAA/3////+/AAD/f////78AAP9/////vwAA/3////+/AAD/f////78AAP9/////vwAA/3////+/AAD/f////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v////3////+/////f////7////9/////v////3////+/////f////7////9/////v////3////+/////f////7//f/9/////P/9//3////8//3//f////z//f/9/////P/9//3////8//3//f////z//f/9/////P/9//3////8//////////7//////////v/////////+//////////7//////////v/////////+//////////7//////////v/9///////+//3///////7//f///////v/9///////+//3///////7//f///////v/9////+//+//3///////7//f///////v/9///////+//3///////7//f///////v/9///////+//3///////7//f/9/////P/9//3////8//3//f////z//f/9/////P////3////+/////f////7////9/////v////3////+/AAD/f////78AAP9/////vwAA/3////+/AAD/f////7/CRMHEwcSd3cJEwcTBxJ3dwkTBxMHEnd3CRMHEwcSd3f9//7////+//3//v////7//f/+/////v/9//7////+/PLvBxMHEYKI8u8HEwcRgojy7wcTBxGCiPLvBxMHEYKL/v////v//v/+///////+//7///////7//v////v//v/////////+//////////7//////////v/////////+/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_s888n")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjsex"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_kjsex"]
+_surfaces = [{
+"aabb": AABB(-0.033421233, 0, -0.03342124, 0.066842474, 0.013227951, 0.06684248),
+"format": 34896613377,
+"index_count": 30,
+"index_data": PackedByteArray("AAABAAIAAQADAAIAAgADAAQAAgAEAAAAAQAFAAMAAAAEAAYABwAFAAEAAAAHAAEABwAGAAUAAAAGAAcA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("Bh3///jiAAD44v//Bh0AAPji///44gAA//8AAP//AAAAAAAA//8AAP//AAAAAAAAAAAAAAAAAAAGHf//Bh0AAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_bay6t"]
+resource_name = "keypad_Plane_008"
+_surfaces = [{
+"aabb": AABB(-0.10635293, 0.017882183, 0.08025006, 0.21270587, 1e-05, 0.07119893),
+"format": 34896613377,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAADAAEA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAAAP//AAD//wAAAAAAAP//AAD//wAAAAAAAAAAAAA=")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_kjsex")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_qx5g5"]
+resource_name = "keypad_Plane_002"
+_surfaces = [{
+"aabb": AABB(-0.10635293, 0.017882183, 0.08025006, 0.21270587, 1e-05, 0.07119893),
+"attribute_data": PackedByteArray("rQn1+VH2n8BR9vX5rQmfwA=="),
+"format": 34896613399,
+"index_count": 6,
+"index_data": PackedByteArray("AAABAAIAAAADAAEA"),
+"material": SubResource("StandardMaterial3D_kjsex"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 4,
+"vertex_data": PackedByteArray("AAAAAP///7///wAAAAD/v///AAD///+/AAAAAAAA/7////9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_bay6t")
+
+[node name="Keypad" type="Node3D" unique_id=438612277]
+
+[node name="keypad" type="Node3D" parent="." unique_id=1630286779]
+
+[node name="KeypadRoot" type="Node3D" parent="keypad" unique_id=1401501180]
+
+[node name="Buttons" type="Node3D" parent="keypad/KeypadRoot" unique_id=1586389322]
+
+[node name="Button1Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1146163727]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.11996389)
+
+[node name="Button1" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button1Pivot" unique_id=756642303]
+mesh = SubResource("ArrayMesh_5gm0g")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button1Pivot" unique_id=1163693650 instance=ExtResource("1_k2c6y")]
+label_text = "1"
+
+[node name="Button2Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1913696921]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.11996389)
+
+[node name="Button2" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button2Pivot" unique_id=1876566938]
+mesh = SubResource("ArrayMesh_uck6t")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button2Pivot" unique_id=219515660 instance=ExtResource("1_k2c6y")]
+label_text = "2"
+
+[node name="Button3Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=334095931]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.11996389)
+
+[node name="Button3" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button3Pivot" unique_id=1844430080]
+mesh = SubResource("ArrayMesh_jc0wr")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button3Pivot" unique_id=1402544149 instance=ExtResource("1_k2c6y")]
+label_text = "3"
+
+[node name="Button4Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=381397585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.043095052)
+
+[node name="Button4" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button4Pivot" unique_id=1035244591]
+mesh = SubResource("ArrayMesh_531xh")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button4Pivot" unique_id=1363436379 instance=ExtResource("1_k2c6y")]
+label_text = "4"
+
+[node name="Button5Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1022639047]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.043095052)
+
+[node name="Button5" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button5Pivot" unique_id=1924368401]
+mesh = SubResource("ArrayMesh_t71fe")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button5Pivot" unique_id=1753052890 instance=ExtResource("1_k2c6y")]
+label_text = "5"
+
+[node name="Button6Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1581120370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.043095052)
+
+[node name="Button6" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button6Pivot" unique_id=1480795902]
+mesh = SubResource("ArrayMesh_egnvb")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button6Pivot" unique_id=970771186 instance=ExtResource("1_k2c6y")]
+label_text = "6"
+
+[node name="Button7Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=455145056]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, 0.0337738)
+
+[node name="Button7" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button7Pivot" unique_id=760255362]
+mesh = SubResource("ArrayMesh_wbeph")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button7Pivot" unique_id=402408537 instance=ExtResource("1_k2c6y")]
+label_text = "7"
+
+[node name="Button8Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1895801357]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, 0.0337738)
+
+[node name="Button8" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button8Pivot" unique_id=339248376]
+mesh = SubResource("ArrayMesh_e0j5l")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button8Pivot" unique_id=2131232112 instance=ExtResource("1_k2c6y")]
+label_text = "8"
+
+[node name="Button9Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1865515901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, 0.0337738)
+
+[node name="Button9" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button9Pivot" unique_id=1673958482]
+mesh = SubResource("ArrayMesh_t8j18")
+skeleton = NodePath("")
+
+[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button9Pivot" unique_id=176948278 instance=ExtResource("1_k2c6y")]
+label_text = "9"
+
+[node name="Frame" type="MeshInstance3D" parent="keypad/KeypadRoot" unique_id=1861617831]
+mesh = SubResource("ArrayMesh_scd2s")
+skeleton = NodePath("")
+
+[node name="Screen" type="MeshInstance3D" parent="keypad/KeypadRoot" unique_id=109163630]
+mesh = SubResource("ArrayMesh_qx5g5")
+skeleton = NodePath("")

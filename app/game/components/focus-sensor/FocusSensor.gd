@@ -1,24 +1,34 @@
 extends Node3D
 
-# THIS COULD PROBABLY BE REWORKED TO USE ROLLBACKSYNCHRONIZER
-# SHOULD IT?
-# The input itself for camera_basis is already synced, so maybe not necessary
-signal focus_hit(hit: Object)
-
 @export var actor: CharacterBody3D
 @export var camera_manager: Node3D
 @export var max_distance: float = 3.0
 
 var last_hit: Object = null
 
+var focus_key: int = 0
+var focus: Interactable = null
+
 # needs to be improved to prevent constant raycasting, should only raycast after camera transform changes etc
-func _process(_delta: float) -> void:
+func _rollback_tick(_delta: float, _tick: int, _is_fresh: bool) -> void:
+	_handle_focus_sync()
+
 	if not actor:
 		return
 
+	if multiplayer.get_unique_id() != actor.peer_id:
+		return
+	
 	var hit = _query_focus_hit()
 	if hit != last_hit:
-		focus_hit.emit(hit if hit else null)
+		#SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "FocusSensor.gd", "_rollback_tick")
+		if last_hit and last_hit is Interactable:
+			last_hit.on_focus_exit(actor)
+		if hit and hit is Interactable:
+			hit.on_focus_enter(actor)
+
+		focus = hit if hit is Interactable else null
+		focus_key = hit.key if hit else 0
 		last_hit = hit
 
 func _get_aim_origin() -> Vector3:
@@ -47,4 +57,20 @@ func _query_focus_hit() -> Object:
 	if hit.is_empty():
 		return null
 
-	return hit.get("collider")
+	var collider = hit.get("collider")
+	if collider is Pickupable and (collider as Pickupable).holder == actor:
+		return null
+
+	return collider
+
+func query_focus_key() -> int:
+	var hit := _query_focus_hit()
+	if hit is Interactable:
+		return (hit as Interactable).key
+	return 0
+
+func _handle_focus_sync() -> void:
+	if focus_key != 0 and focus == null:
+		var new_focus = InteractableRegistries.interactables.get_entry(focus_key)
+		if new_focus:
+			focus = new_focus

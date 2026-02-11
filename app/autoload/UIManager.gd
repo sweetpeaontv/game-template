@@ -28,6 +28,7 @@ var _ui_scenes := {
 
 # Dictionary to track currently active UI instances
 # Key: ui_name, Value: { node: Node, signal_connections: Array[SignalConnection] }
+# undecided if signal_connections is needed, maybe if you only wanted certain ones disconnected when hiding?
 var _active_ui := {}
 
 # Container reference (will be set to a CanvasLayer or Control node)

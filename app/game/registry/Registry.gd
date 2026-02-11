@@ -10,11 +10,11 @@ var _data: Dictionary = {}
 func _init() -> void:
 	pass
 
-func add_entry(key: String, value: Variant) -> void:
+func add_entry(key: int, value: Variant) -> void:
 	_data[key] = value
 
-func get_entry(key: String) -> Variant:
+func get_entry(key: int) -> Variant:
 	return _data.get(key)
 
-func remove_entry(key: String) -> void:
+func remove_entry(key: int) -> void:
 	_data.erase(key)

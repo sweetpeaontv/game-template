@@ -31,6 +31,7 @@ DebugOverlay="*res://app/autoload/DebugOverlay.gd"
 ServerManager="*uid://bxh48l3apb3v3"
 GameManager="*res://app/autoload/GameManager.gd"
 PlayerUtils="*uid://b32oeabx7hvvc"
+InteractableRegistries="*uid://crgpneopih50b"
 SweetLogger="*res://app/autoload/SweetLogger.gd"
 EventBus="*res://app/autoload/EventBus.gd"
 SpawnManager="*uid://ljdti2hjik14"
@@ -41,6 +42,10 @@ NetworkTimeSynchronizer="*res://addons/netfox/network-time-synchronizer.gd"
 NetworkRollback="*res://addons/netfox/rollback/network-rollback.gd"
 NetworkEvents="*res://addons/netfox/network-events.gd"
 NetworkPerformance="*res://addons/netfox/network-performance.gd"
+
+[display]
+
+window/size/initial_position_type=0
 
 [editor_plugins]
 

@@ -1,8 +1,6 @@
 extends CharacterBody3D
 
 signal alt_interact_hold_duration_changed(duration: float)
-signal focused_interactable(interactable: Interactable)
-signal unfocused_interactable(interactable: Interactable)
 
 const IS_VERBOSE := false
 
@@ -39,11 +37,8 @@ const SPRINT_SPEED = 8.0
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 # INTERACTION VARIABLES
-const INTERACTION_COOLDOWN := 0.05  # 50ms in seconds
-var _last_interact_time: float = 0.0
-# need to find a way to sync these properly
-var focus: Node3D = null
-var holding: Node3D = null
+var holding_key: int = 0
+var holding: Interactable = null
 
 # INIT
 #===================================================================================#
@@ -64,9 +59,6 @@ func _ready() -> void:
 	_setup()
 
 func _setup() -> void:
-	# signal connections
-	focus_sensor.focus_hit.connect(_on_focus_hit)
-
 	setNameplate(str(peer_id))
 
 	var my_id = multiplayer.get_unique_id()
@@ -90,6 +82,12 @@ func _setup() -> void:
 	)
 #===================================================================================#
 
+# DESTRUCT
+#===================================================================================#
+func _exit_tree() -> void:
+	pass
+#===================================================================================#
+
 # PLAYER LOOP
 #===================================================================================#
 func _rollback_tick(_delta, tick, _is_fresh):
@@ -97,12 +95,13 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
-	var camera_basis: Basis = camera_input.camera_basis
+	_handle_holding_sync()
 
+	var camera_basis: Basis = camera_input.camera_basis
 	if camera_basis != _previous_camera_basis:
 		_previous_camera_basis = camera_basis
 		rotate_player_model(_delta, camera_basis)
-
+	
 	var direction = (camera_basis * transform.basis * Vector3(input.movement.x, 0, input.movement.z)).normalized()
 
 	if input.shift:
@@ -112,7 +111,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 
 	_process_rewindable_action(
 		interact_action,
-		input.interact_released and focus,
+		input.interact_released and focus_sensor.focus,
 		tick,
 		"interact",
 		_handle_interact,
@@ -157,16 +156,15 @@ func _rollback_tick(_delta, tick, _is_fresh):
 # INTERACT ACTION
 #===================================================================================#
 func _handle_interact() -> void:
-	if not focus or not focus is Interactable:
+	if not focus_sensor.focus or not focus_sensor.focus is Interactable:
 		return
 
-	_last_interact_time = NetworkTime.time
-	var interaction_type = focus.get_interaction_type()
+	var interaction_type = focus_sensor.focus.get_interaction_type()
 	match interaction_type:
 		InteractionTypes.InteractionType.PICKUPABLE:
 			_handle_pickup()
 		InteractionTypes.InteractionType.OPENABLE:
-			focus.interact(self, InteractionTypes.OpenData.toggle())
+			focus_sensor.focus.interact(self, InteractionTypes.OpenData.toggle())
 		_:
 			SweetLogger.error("Invalid interaction type: {0}", [interaction_type], "Player.gd", "_handle_interact")
 	
@@ -176,31 +174,39 @@ func _handle_interact_cancelled() -> void:
 
 # ALT INTERACT ACTION
 #===================================================================================#
+# needs to be generalized, as other interactables may have different alt interact data
+# currently only works for pickupables
 func _handle_alt_interact() -> void:
 	if not holding:
 		return
 	
 	if input.alt_interact_hold_time < 0.2:
-		holding.interactable.interact(self, InteractionTypes.PickupData.drop())
+		holding.interact(self, InteractionTypes.PickupData.drop())
 	else:
 		var throw_power = input.alt_interact_hold_time * 10.0
-		holding.interactable.interact(self, InteractionTypes.PickupData.throw(throw_power))
-	
+		var throw_direction = -get_camera_basis().z
+		holding.interact(self, InteractionTypes.PickupData.throw(throw_power, throw_direction))
+
+	holding_key = 0
+	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 	holding = null
+	NetworkRollback.mutate(self)
+	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
 	UIManager.hide_ui("PickupHUD")
 
 func _handle_alt_interact_cancelled() -> void:
 	if IS_VERBOSE:
 		SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
-	holding.interactable.set_pickup_state(holding.interactable.PickupState.FREE)
+	holding.set_pickup_state(holding.PickupState.FREE)
 #===================================================================================#
 
 # PICKUP ACTION
 #===================================================================================#
 func _handle_pickup() -> void:
-	focus.interact(self, InteractionTypes.PickupData.pickup())
-	focus.pickupable_yanked.connect(_on_pickupable_yanked)
-	holding = focus.parent
+	focus_sensor.focus.interact(self, InteractionTypes.PickupData.pickup())
+	focus_sensor.focus.pickupable_yanked.connect(_on_pickupable_yanked)
+	holding = focus_sensor.focus
+	holding_key = focus_sensor.focus.key
 
 	if multiplayer.get_unique_id() == peer_id:
 		#var signal_connections = [
@@ -212,24 +218,22 @@ func _handle_pickup() -> void:
 
 func _handle_object_yanked() -> void:
 	''' Called when another player takes an object from the player.'''
-	if not holding:
-		return
-
+	holding_key = 0
+	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 	holding = null
+	NetworkRollback.mutate(self)
 	UIManager.hide_ui("PickupHUD")
 
 func _handle_let_go() -> void:
-	if not holding:
-		return
-
 	if input.alt_interact_hold_time < 0.2:
-		holding.interactable.interact(self, InteractionTypes.PickupData.drop())
+		holding.interact(self, InteractionTypes.PickupData.drop())
 	else:
 		var throw_power = input.alt_interact_hold_time * 10.0
-		holding.interactable.interact(self, InteractionTypes.PickupData.throw(throw_power))
+		holding.interact(self, InteractionTypes.PickupData.throw(throw_power))
 
+	holding_key = 0
 	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
-	holding = null
+	NetworkRollback.mutate(self)
 	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
 	UIManager.hide_ui("PickupHUD")
 #===================================================================================#
@@ -275,7 +279,7 @@ func setNameplate(player_name: String) -> void:
 # GETTERS
 #===================================================================================#
 func get_camera_basis() -> Basis:
-	return camera_manager.get_look_basis()
+	return camera_input.camera_basis
 #===================================================================================#
 
 # HELPERS
@@ -297,14 +301,18 @@ func _log_collisions() -> void:
 			"Player.gd",
 			"_log_collisions"
 		)
+
 # quick and dirty solution to update the hold point position and rotation
 # could use a spring arm for better results
 func _update_hold_point() -> void:
-	var camera_basis: Basis = get_camera_basis()
+	var camera_basis: Basis = camera_input.camera_basis
 	var hold_offset = Vector3(0.0, 0.3, -1.5)
 
-	var cam := camera_manager.get_camera()
-	var camera_position := cam.global_position
+	var camera_position
+	if camera_type == CameraType.FIRST_PERSON:
+		camera_position = camera_anchor_fp.global_position
+	else:
+		camera_position = camera_anchor_tp.global_position
 
 	var rotated_offset = camera_basis * hold_offset
 	hold_point.global_position = camera_position + rotated_offset
@@ -314,28 +322,23 @@ func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 	var head_forward = camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
+
+func _handle_holding_sync() -> void:
+	if holding_key == 0 and holding != null:
+		holding = null
+	if holding_key != 0 and holding == null:
+		var new_holding = InteractableRegistries.pickupables.get_entry(holding_key)
+		if new_holding:
+			holding = new_holding
+			holding_key = new_holding.key if new_holding else 0
 #===================================================================================#
 
 # SIGNALS
 #===================================================================================#
-func _on_focus_hit(hit: Object) -> void:
-	#if IS_VERBOSE:
-	SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "Player.gd", "_on_focus_hit")
-	
-	var new_focus = hit if hit is Interactable else null
-
-	if focus and focus != new_focus:
-		unfocused_interactable.emit(focus)
-		focus.on_focus_exit(self)
-
-	if new_focus and new_focus != focus:
-		focused_interactable.emit(new_focus)
-		new_focus.on_focus_enter(self)
-	
-	focus = new_focus
-
 func _on_pickupable_yanked() -> void:
+	SweetLogger.info("Pickupable yanked, setting holding to null", [], "Player.gd", "_on_pickupable_yanked")
 	if not holding:
 		return
+	
 	_handle_object_yanked()
 #===================================================================================#

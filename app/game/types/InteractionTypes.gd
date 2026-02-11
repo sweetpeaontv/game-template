@@ -7,10 +7,12 @@ class PickupData extends InteractionTypes:
 	enum Action { PICKUP, DROP, THROW }
 	var action: Action
 	var throw_power: float = 0.0
+	var throw_direction: Vector3 = Vector3.ZERO
 
-	func _init(_action: Action, _throw_power: float = 0.0):
+	func _init(_action: Action, _throw_power: float = 0.0, _throw_direction: Vector3 = Vector3.ZERO):
 		action = _action
 		throw_power = _throw_power
+		throw_direction = _throw_direction
 
 	static func pickup() -> PickupData:
 		return PickupData.new(Action.PICKUP)
@@ -18,8 +20,8 @@ class PickupData extends InteractionTypes:
 	static func drop() -> PickupData:
 		return PickupData.new(Action.DROP)
 
-	static func throw(power: float = 0.0) -> PickupData:
-		return PickupData.new(Action.THROW, power)
+	static func throw(power: float = 0.0, direction: Vector3 = Vector3.ZERO) -> PickupData:
+		return PickupData.new(Action.THROW, power, direction)
 
 class OpenData extends InteractionTypes:
 	enum Action { TOGGLE, OPEN, CLOSE }

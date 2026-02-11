@@ -11,15 +11,23 @@ var holder: Node3D = null
 var holder_id: int = 0
 
 var pickup_state: PickupState = PickupState.FREE
-var original_collision_layer: int = 0
-var original_collision_mask: int = 0
 var pending_throw_velocity: Vector3 = Vector3.ZERO
 
+# INIT
+#===================================================================================#
 func _on_ready() -> void:
-	if parent is RigidBody3D:
-		original_collision_layer = parent.collision_layer
-		original_collision_mask = parent.collision_mask
+	InteractableRegistries.pickupables.add_entry(key, self)
+#===================================================================================#
 
+# DESTRUCT
+#===================================================================================#
+func _exit_tree() -> void:
+	InteractableRegistries.pickupables.remove_entry(key)
+	super._exit_tree()
+#===================================================================================#
+
+# INTERACTION
+#===================================================================================#
 func _interact(interactor: Node3D, data: Variant = null) -> void:
 	if not data is PickupData:
 		SweetLogger.error("Invalid data type: {0}", [data.get_class()], "Pickupable.gd", "_interact")
@@ -27,13 +35,14 @@ func _interact(interactor: Node3D, data: Variant = null) -> void:
 
 	var action = data.action
 	var throw_power = data.throw_power
+	var throw_direction = data.throw_direction
 	match action:
 		PickupData.Action.PICKUP:
 			_pickup(interactor)
 		PickupData.Action.DROP:
 			_drop()
 		PickupData.Action.THROW:
-			_throw(throw_power)
+			_throw(throw_power, throw_direction)
 		_:
 			SweetLogger.error("Invalid action: {0}", [action], "Pickupable.gd", "_interact")
 
@@ -49,59 +58,61 @@ func _pickup(interactor: Node3D) -> void:
 		pickupable_yanked.emit()
 	holder = interactor
 	holder_id = interactor.peer_id
-	# could remove collision layer from self to prevent focus sensor from detecting it while carried...
-	# undecided if I want player to be able to take items from other players...
+	NetworkRollback.mutate(self)
 
 func _drop() -> void:
 	pickup_state = PickupState.FREE
 	holder = null
 	holder_id = 0
+	NetworkRollback.mutate(self)
 
-func _throw(_throw_power: float = 0.0) -> void:
+func _throw(_throw_power: float = 0.0, _throw_direction: Vector3 = Vector3.ZERO) -> void:
 	if not holder or not parent:
 		return
-
-	# pretty rudamentary solution to throw the item in the direction the player is looking
-	var throw_direction = Vector3.ZERO
-	if holder.has_method("get_camera_basis"):
-		var camera_basis = holder.get_camera_basis()
-		throw_direction = -camera_basis.z
 
 	pickup_state = PickupState.THROWN
 	holder = null
 	holder_id = 0
 
-	if parent is RigidBody3D:
-		# Re-enable collisions
-		parent.collision_layer = original_collision_layer
-		parent.collision_mask = original_collision_mask
-		
-		pending_throw_velocity = throw_direction.normalized() * _throw_power
-		NetworkRollback.mutate(self)
-		# Optional: Add a slight upward component for a more natural throw arc
-		# parent.linear_velocity += Vector3.UP * (_throw_power * 0.3)
+	pending_throw_velocity = _throw_direction.normalized() * _throw_power
+	NetworkRollback.mutate(self)
+	# Optional: Add a slight upward component for a more natural throw arc
+	# parent.linear_velocity += Vector3.UP * (_throw_power * 0.3)
 
+#===================================================================================#
+
+# ROLLBACK
+#===================================================================================#
 func _interact_physics_rollback_tick(_delta, _tick):
-	# sort of a hacky fix for late joiners, not sure if this is the best way to do it
-	if pickup_state == PickupState.HELD and not holder and holder_id != 0:
+	_handle_holder_sync()
+	_handle_holder_point_transform()
+	_handle_throw_velocty()
+
+func _handle_holder_sync() -> void:
+	if holder_id == 0 and holder:
+		holder = null
+	elif not holder and holder_id != 0:
 		var player = PlayerUtils.find_player(holder_id)
 		if player:
 			holder = player
-			# better to do this in the player script instead of here...
-			player.holding = parent
 		else:
 			# this is a bit troublesome because when a late joiner connects
 			# the player node may not be ready yet, so we need to wait for it to be ready...
-			SweetLogger.warning("Player {0} not found", [holder_id], "Pickupable.gd", "_interact_physics_rollback_tick")
+			SweetLogger.warning("Player {0} not found", [holder_id], "Pickupable.gd", "_handle_holder_sync")
+
+func _handle_holder_point_transform() -> void:
 	if pickup_state == PickupState.HELD and holder:
-		var test: Array = [
+		var new_state: Array = [
 			holder.hold_point.global_transform.origin,
 			holder.hold_point.global_transform.basis.get_rotation_quaternion(),
 			Vector3.ZERO, 
 			Vector3.ZERO, 
 			false
 		]
-		parent.set_state(test)
-	elif pending_throw_velocity != Vector3.ZERO:
+		parent.set_state(new_state)
+
+func _handle_throw_velocty() -> void:
+	if pending_throw_velocity != Vector3.ZERO:
 		parent.apply_central_impulse(pending_throw_velocity)
 		pending_throw_velocity = Vector3.ZERO
+#===================================================================================#
