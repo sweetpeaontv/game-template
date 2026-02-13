@@ -60,7 +60,7 @@ func show_ui(ui_name: String, data: Dictionary = {}, signal_connections: Array[S
 	
 	# If already active, return existing instance
 	if _active_ui.has(ui_name):
-		return _active_ui[ui_name]
+		return _active_ui[ui_name]["node"]
 	
 	var packed: PackedScene = _ui_scenes[ui_name]
 	var instance = packed.instantiate()

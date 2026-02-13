@@ -210,6 +210,7 @@ func _handle_alt_interact_cancelled() -> void:
 
 # PICKUP ACTION
 #===================================================================================#
+# a bit sloppy but works
 func _handle_holding_sync() -> void:
 	if holding_key == 0 and holding != null:
 		holding = null
@@ -218,6 +219,8 @@ func _handle_holding_sync() -> void:
 		if new_holding:
 			holding = new_holding
 			holding_key = new_holding.key if new_holding else 0
+			if not holding.pickupable_yanked.is_connected(_on_pickupable_yanked):
+				holding.pickupable_yanked.connect(_on_pickupable_yanked)
 
 func _handle_pickup() -> void:
 	focus_sensor.focus.interact(self, InteractionTypes.PickupData.pickup())
@@ -230,14 +233,13 @@ func _handle_pickup() -> void:
 		#	SignalConnections.new(self, alt_interact_hold_duration_changed, )
 		#]
 		var pickup_hud = UIManager.show_ui("PickupHUD", {})
-		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP
-		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
 
 func _handle_object_yanked() -> void:
 	''' Called (outside of rollback loop) when another player takes an object from the player.'''
+	SweetLogger.info("Object yanked from player: {0}, setting holding to null", [peer_id], "Player.gd", "_handle_object_yanked")
 	holding_key = 0
 	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
-	holding = null
 	NetworkRollback.mutate(self)
 	UIManager.hide_ui("PickupHUD")
 
@@ -380,7 +382,6 @@ func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 # SIGNALS
 #===================================================================================#
 func _on_pickupable_yanked() -> void:
-	SweetLogger.info("Pickupable yanked, setting holding to null", [], "Player.gd", "_on_pickupable_yanked")
 	if not holding:
 		return
 	

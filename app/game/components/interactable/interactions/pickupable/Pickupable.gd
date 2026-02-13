@@ -54,7 +54,7 @@ func set_pickup_state(state: PickupState) -> void:
 
 func _pickup(interactor: Node3D) -> void:
 	pickup_state = PickupState.HELD
-	if holder and holder != interactor:
+	if holder_id != 0 and holder_id != interactor.peer_id:
 		pickupable_yanked.emit()
 	holder = interactor
 	holder_id = interactor.peer_id
