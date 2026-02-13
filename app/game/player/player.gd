@@ -39,6 +39,8 @@ var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 # INTERACTION VARIABLES
 var holding_key: int = 0
 var holding: Interactable = null
+var examining_key: int = 0
+var examining: Examinable = null
 
 # INIT
 #===================================================================================#
@@ -96,7 +98,8 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		return
 
 	_handle_holding_sync()
-
+	_handle_examine_sync()
+	
 	var camera_basis: Basis = camera_input.camera_basis
 	if camera_basis != _previous_camera_basis:
 		_previous_camera_basis = camera_basis
@@ -134,6 +137,9 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		_handle_alt_interact_cancelled
 	)
 
+	if input.escape_released:
+		_handle_escape()
+
 	if is_on_floor():
 		velocity.y = 0
 		if direction:
@@ -165,6 +171,8 @@ func _handle_interact() -> void:
 			_handle_pickup()
 		InteractionTypes.InteractionType.OPENABLE:
 			focus_sensor.focus.interact(self, InteractionTypes.OpenData.toggle())
+		InteractionTypes.InteractionType.EXAMINABLE:
+			_handle_examine()
 		_:
 			SweetLogger.error("Invalid interaction type: {0}", [interaction_type], "Player.gd", "_handle_interact")
 	
@@ -202,6 +210,15 @@ func _handle_alt_interact_cancelled() -> void:
 
 # PICKUP ACTION
 #===================================================================================#
+func _handle_holding_sync() -> void:
+	if holding_key == 0 and holding != null:
+		holding = null
+	if holding_key != 0 and holding == null:
+		var new_holding = InteractableRegistries.pickupables.get_entry(holding_key)
+		if new_holding:
+			holding = new_holding
+			holding_key = new_holding.key if new_holding else 0
+
 func _handle_pickup() -> void:
 	focus_sensor.focus.interact(self, InteractionTypes.PickupData.pickup())
 	focus_sensor.focus.pickupable_yanked.connect(_on_pickupable_yanked)
@@ -217,7 +234,7 @@ func _handle_pickup() -> void:
 		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
 
 func _handle_object_yanked() -> void:
-	''' Called when another player takes an object from the player.'''
+	''' Called (outside of rollback loop) when another player takes an object from the player.'''
 	holding_key = 0
 	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 	holding = null
@@ -236,6 +253,42 @@ func _handle_let_go() -> void:
 	NetworkRollback.mutate(self)
 	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
 	UIManager.hide_ui("PickupHUD")
+#===================================================================================#
+
+# EXAMINE ACTION
+#===================================================================================#
+func _handle_examine_sync() -> void:
+	if examining_key == 0 and examining != null:
+		examining = null
+	if examining_key != 0 and examining == null:
+		var new_examining = InteractableRegistries.examinables.get_entry(examining_key)
+		if new_examining:
+			examining = new_examining
+			examining_key = new_examining.key if new_examining else 0
+
+func _handle_examine() -> void:
+	focus_sensor.focus.interact(self, InteractionTypes.ExaminableData.examine())
+	examining = focus_sensor.focus
+	examining_key = focus_sensor.focus.key
+
+	if multiplayer.get_unique_id() == peer_id:
+		camera_manager.transition_to(CameraManager.RigType.EXAMINE, focus_sensor.focus.examine_camera_anchor)
+
+func _handle_examine_disengage() -> void:
+	examining.interact(self, InteractionTypes.ExaminableData.disengage())
+
+	examining = null
+	examining_key = 0
+	
+	if multiplayer.get_unique_id() == peer_id:
+		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON)
+#===================================================================================#
+
+# ESCAPE
+#===================================================================================#
+func _handle_escape() -> void:
+	if examining:
+		_handle_examine_disengage()
 #===================================================================================#
 
 # PROCESS REWINDABLE ACTION
@@ -322,15 +375,6 @@ func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 	var head_forward = camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
-
-func _handle_holding_sync() -> void:
-	if holding_key == 0 and holding != null:
-		holding = null
-	if holding_key != 0 and holding == null:
-		var new_holding = InteractableRegistries.pickupables.get_entry(holding_key)
-		if new_holding:
-			holding = new_holding
-			holding_key = new_holding.key if new_holding else 0
 #===================================================================================#
 
 # SIGNALS

@@ -6,7 +6,6 @@
 script = ExtResource("1_y5k86")
 
 [node name="InteractionLabel" type="Label3D" parent="." unique_id=211142206]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.355087, 0)
 visible = false
 billboard = 1
 no_depth_test = true

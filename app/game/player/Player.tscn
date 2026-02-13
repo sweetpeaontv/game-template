@@ -58,8 +58,8 @@ metadata/_custom_type_script = "uid://dour8fehaaugp"
 [node name="RollbackSynchronizer" type="Node" parent="." unique_id=782878301 node_paths=PackedStringArray("root")]
 script = ExtResource("4_fvl6w")
 root = NodePath("..")
-state_properties = Array[String]([":global_transform", "Model:transform", ":holding_key"])
-input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:interact_released", "Input:interact_hold_time", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "CameraInput:camera_basis", "FocusSensor:focus_key"])
+state_properties = Array[String]([":global_transform", "Model:transform", ":holding_key", ":examining_key"])
+input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:interact_released", "Input:interact_hold_time", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "Input:escape_released", "CameraInput:camera_basis", "FocusSensor:focus_key"])
 enable_input_broadcast = false
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 

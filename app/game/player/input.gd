@@ -22,6 +22,10 @@ var _alt_interact_release_buffer: bool = false
 var _alt_interact_buffer: bool = false
 var _alt_interact_hold_duration: float = 0.0
 
+# ESCAPE
+var escape_released: bool = false
+var _escape_release_buffer: bool = false
+
 func _ready():
 	NetworkTime.before_tick_loop.connect(_gather)
 
@@ -43,6 +47,9 @@ func _process(delta: float) -> void:
 
 	if Input.is_action_just_released("alt_interact"):
 		_alt_interact_release_buffer = true
+
+	if Input.is_action_just_released("escape"):
+		_escape_release_buffer = true
 
 func _gather():
 	if not is_multiplayer_authority():
@@ -80,6 +87,10 @@ func _gather():
 
 	_alt_interact_release_buffer = false
 
+	# Escape
+	escape_released = _escape_release_buffer
+
+	_escape_release_buffer = false
 
 func _exit_tree():
 	NetworkTime.before_tick_loop.disconnect(_gather)

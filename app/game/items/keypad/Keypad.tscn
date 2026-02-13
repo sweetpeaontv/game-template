@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://cvl14edykthr5"]
 
 [ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/items/keypad/KeypadButton.tscn" id="1_k2c6y"]
+[ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyns4"]
 resource_name = "Button"
@@ -402,6 +403,9 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_bay6t")
 
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ycede"]
+points = PackedVector3Array(0.11505277, 0.01470694, 0.15894459, 0.11505277, 0, 0.15894459, 0.11505277, 0.01470694, 0.072751075, 0.11135883, 0.017882183, 0.15573956, -0.11505277, 0.01470694, 0.15894459, -0.11505277, 0, 0.15894459, 0.11505277, 0, -0.15894459, 0.11135883, 0.017882183, 0.07592499, 0.11505277, 0.009558987, -0.15894459, -0.11138135, 0.017882183, 0.15573956, -0.11505277, 0.01470694, 0.072751075, -0.11505277, 0, -0.15894459, -0.11138135, 0.017882183, 0.07592499, -0.11505277, 0.009558987, -0.15894459)
+
 [node name="Keypad" type="Node3D" unique_id=438612277]
 
 [node name="keypad" type="Node3D" parent="." unique_id=1630286779]
@@ -507,3 +511,14 @@ skeleton = NodePath("")
 [node name="Screen" type="MeshInstance3D" parent="keypad/KeypadRoot" unique_id=109163630]
 mesh = SubResource("ArrayMesh_qx5g5")
 skeleton = NodePath("")
+
+[node name="Examinable" parent="." unique_id=2057239684 node_paths=PackedStringArray("examine_target") instance=ExtResource("2_c6fxj")]
+examine_target = NodePath("../keypad")
+
+[node name="FocusCollisionShape" parent="Examinable" index="1" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_ycede")
+
+[node name="AnchorPoint" parent="Examinable" index="2" unique_id=781110576]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[editable path="Examinable"]

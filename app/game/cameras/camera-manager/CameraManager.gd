@@ -4,6 +4,8 @@ class_name CameraManager
 enum RigType {
 	FIRST_PERSON,
 	THIRD_PERSON,
+	EXAMINE,
+	TRANSITION,
 }
 
 enum FollowMode {
@@ -14,6 +16,13 @@ enum FollowMode {
 @export var follow_speed: float = 12.0
 @export var rotate_speed: float = 12.0
 @export var active_rig: RigType = RigType.FIRST_PERSON
+
+var _previous_rig: RigType = active_rig
+var _transition_target: Node3D = null
+var _target_rig: RigType = RigType.EXAMINE
+var _transition_use_stored_transform := false
+var _transition_stored_transform := Transform3D()
+const EXAMINE_TRANSITION_THRESHOLD := 0.05
 
 # First-person rig refs
 @onready var _fp_root: Node3D = $Rigs/FirstPerson/RigRoot
@@ -27,13 +36,21 @@ enum FollowMode {
 @onready var _tp_pitch: Node3D = $Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot
 @onready var _tp_cam: Camera3D = $Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot/SpringArm3D/Camera3D
 
+# Examine rig refs
+@onready var _examine_root: Node3D = $Rigs/Examine/RigRoot
+@onready var _examine_cam: Camera3D = $Rigs/Examine/RigRoot/Camera3D
+
+# Transition rig refs
+@onready var _transition_root: Node3D = $Rigs/Transition/RigRoot
+@onready var _transition_cam: Camera3D = $Rigs/Transition/RigRoot/Camera3D
+
 # Active rig pointers
 var _active_root: Node3D
 var _active_yaw: Node3D
 var _active_pitch: Node3D
 var _active_cam: Camera3D
 
-var _target: Node3D
+var _follow_target: Node3D
 var _follow_mode: FollowMode = FollowMode.POSITION_ONLY
 
 var _fp_yaw_val := 0.0
@@ -67,18 +84,27 @@ func set_active_rig(rig: RigType, instant: bool = false) -> void:
 			_active_yaw = _tp_yaw
 			_active_pitch = _tp_pitch
 			_active_cam = _tp_cam
+		RigType.EXAMINE:
+			_active_root = _examine_root
+			_active_yaw = _examine_root
+			_active_pitch = _examine_root
+			_active_cam = _examine_cam
+		RigType.TRANSITION:
+			_active_root = _transition_root
+			_active_yaw = _transition_root
+			_active_pitch = _transition_root
+			_active_cam = _transition_cam
 
 	if _is_local:
 		_fp_cam.current = (rig == RigType.FIRST_PERSON)
 		_tp_cam.current = (rig == RigType.THIRD_PERSON)
-	else:
-		_fp_cam.current = false
-		_tp_cam.current = false
+		_examine_cam.current = (rig == RigType.EXAMINE)
+		_transition_cam.current = (rig == RigType.TRANSITION)
 
 	_apply_active_look()
 
-	if instant and _target != null:
-		_active_root.global_transform = _target.global_transform
+	if (rig == RigType.FIRST_PERSON or rig == RigType.THIRD_PERSON) and instant and _follow_target != null:
+		_active_root.global_transform = _follow_target.global_transform
 
 func _apply_active_look() -> void:
 	match active_rig:
@@ -88,6 +114,22 @@ func _apply_active_look() -> void:
 		RigType.THIRD_PERSON:
 			_active_yaw.rotation.y = _tp_yaw_val
 			_active_pitch.rotation.x = _tp_pitch_val
+#===================================================================================#
+
+# HELPERS
+#===================================================================================#
+func _build_fp_target_transform() -> Transform3D:
+	var origin := _fp_follow_anchor.global_position
+	# YXZ: yaw (Y) then pitch (X); matches CameraMount.y then CameraRotation.x
+	var new_basis := Basis.from_euler(Vector3(_fp_pitch_val, _fp_yaw_val, 0.0), EULER_ORDER_YXZ)
+	return Transform3D(new_basis, origin)
+
+func _build_tp_target_transform() -> Transform3D:
+	var origin := _tp_follow_anchor.global_position
+	if _tp_orbit_target != null:
+		origin = _tp_orbit_target.global_position + _tp_orbit_offset
+	var new_basis := Basis.from_euler(Vector3(_tp_pitch_val, _tp_yaw_val, 0.0), EULER_ORDER_YXZ)
+	return Transform3D(new_basis, origin)
 #===================================================================================#
 
 # API
@@ -113,6 +155,7 @@ func set_local_enabled(is_local: bool) -> void:
 	if not _is_local:
 		_fp_cam.current = false
 		_tp_cam.current = false
+		_examine_cam.current = false
 		set_process(false)
 		set_physics_process(false)
 		return
@@ -138,10 +181,10 @@ func set_mode(rig: RigType, instant: bool = false) -> void:
 				set_follow(_tp_follow_anchor, FollowMode.POSITION_ONLY, instant)
 
 func set_follow(target_anchor: Node3D, mode: FollowMode, instant: bool = false) -> void:
-	_target = target_anchor
+	_follow_target = target_anchor
 	_follow_mode = mode
-	if instant and _target != null:
-		_active_root.global_transform = _target.global_transform
+	if instant and _follow_target != null:
+		_active_root.global_transform = _follow_target.global_transform
 
 func set_look(yaw: float, pitch: float) -> void:
 	match active_rig:
@@ -173,23 +216,52 @@ func set_third_person_distance(distance: float) -> void:
 		arm.spring_length = distance
 #===================================================================================#
 
-func _apply_target_transform(_t: float) -> void:
-	if _target == null:
-		return
-	_active_root.global_transform = _target.global_transform
+# APPLICATION
+#===================================================================================#
+func transition_to(target_rig: RigType = RigType.EXAMINE, anchor: Node3D = null) -> void:
+	_previous_rig = active_rig
+	_transition_target = anchor
+	_target_rig = target_rig
+	# temp fix, looking for better solution
+	_transition_use_stored_transform = false
 
-func _process(delta: float) -> void:
+	match target_rig:
+		RigType.FIRST_PERSON:
+			_transition_use_stored_transform = true
+			_transition_stored_transform = _build_fp_target_transform()
+			_transition_target = null
+		RigType.THIRD_PERSON:
+			_transition_use_stored_transform = true
+			_transition_stored_transform = _build_tp_target_transform()
+			_transition_target = null
+		_:
+			_transition_target = anchor
+
+	if target_rig == RigType.EXAMINE:
+		_examine_root.global_transform = anchor.global_transform
+	
+	_transition_root.global_transform = _active_cam.global_transform
+
+	set_active_rig(RigType.TRANSITION, false)
+
+func _apply_target_transform(_t: float) -> void:
+	if _follow_target == null:
+		return
+	_active_root.global_transform = _follow_target.global_transform
+
+func _player_camera_process(delta: float) -> void:
+	'''Follow the player's FP/TP camera anchor.'''
 	if _tp_orbit_target != null:
 		_tp_root.global_position = _tp_orbit_target.global_position + _tp_orbit_offset
 	
-	if _target == null:
+	if _follow_target == null:
 		return
 
 	var t_pos := 1.0 - exp(-follow_speed * delta)
 	var t_rot := 1.0 - exp(-rotate_speed * delta)
 
 	var from := _active_root.global_transform
-	var to := _target.global_transform
+	var to := _follow_target.global_transform
 
 	from.origin = from.origin.lerp(to.origin, t_pos)
 
@@ -200,3 +272,46 @@ func _process(delta: float) -> void:
 		from.basis = Basis(q)
 
 	_active_root.global_transform = from
+
+func _examine_process(delta: float) -> void:
+	pass
+
+func _transition_process(delta: float) -> void:
+	var t_pos := 1.0 - exp(-follow_speed * delta)
+	var t_rot := 1.0 - exp(-rotate_speed * delta)
+
+	var from := _transition_root.global_transform
+	var to: Transform3D
+	var target_origin: Vector3
+	# temp fix, looking for better solution
+	if _transition_use_stored_transform:
+		to = _transition_stored_transform
+		target_origin = _transition_stored_transform.origin
+	else:
+		to = _transition_target.global_transform
+		target_origin = _transition_target.global_position
+
+	from.origin = from.origin.lerp(to.origin, t_pos)
+	var q_from := from.basis.get_rotation_quaternion()
+	var q_to := to.basis.get_rotation_quaternion()
+	if q_from.dot(q_to) < 0.0:
+		q_to = Quaternion(-q_to.x, -q_to.y, -q_to.z, -q_to.w)
+	from.basis = Basis(q_from.slerp(q_to, t_rot))
+
+	_transition_root.global_transform = from
+
+	var dist := _transition_root.global_position.distance_to(target_origin)
+	if dist < EXAMINE_TRANSITION_THRESHOLD:
+		set_active_rig(_target_rig, true)
+		_transition_target = null
+		_transition_use_stored_transform = false
+
+func _process(delta: float) -> void:
+	match active_rig:
+		RigType.EXAMINE:
+			_examine_process(delta)
+		RigType.TRANSITION:
+			_transition_process(delta)
+		_:
+			_player_camera_process(delta)
+#===================================================================================#

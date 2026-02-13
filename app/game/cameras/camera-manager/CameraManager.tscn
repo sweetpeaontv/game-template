@@ -32,3 +32,15 @@ script = ExtResource("2_iaa2s")
 [node name="SpringArm3D" type="SpringArm3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot" unique_id=1014321098]
 
 [node name="Camera3D" type="Camera3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot/SpringArm3D" unique_id=83514013]
+
+[node name="Examine" type="Node3D" parent="Rigs" unique_id=647511533]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/Examine" unique_id=2074037441]
+
+[node name="Camera3D" type="Camera3D" parent="Rigs/Examine/RigRoot" unique_id=1353361751]
+
+[node name="Transition" type="Node3D" parent="Rigs" unique_id=1040679237]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/Transition" unique_id=678398136]
+
+[node name="Camera3D" type="Camera3D" parent="Rigs/Transition/RigRoot" unique_id=1786282142]

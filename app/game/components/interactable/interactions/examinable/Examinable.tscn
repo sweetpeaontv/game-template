@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dcc3wecpvmb4f"]
+
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/Interactable.tscn" id="1_tevj5"]
+[ext_resource type="Script" uid="uid://77ei0x1sdypk" path="res://app/game/components/interactable/interactions/examinable/Examinable.gd" id="2_ckilk"]
+
+[node name="Examinable" unique_id=2057239684 node_paths=PackedStringArray("examine_camera_anchor") instance=ExtResource("1_tevj5")]
+script = ExtResource("2_ckilk")
+examine_camera_anchor = NodePath("AnchorPoint")
+
+[node name="AnchorPoint" type="Node3D" parent="." index="2" unique_id=781110576]
