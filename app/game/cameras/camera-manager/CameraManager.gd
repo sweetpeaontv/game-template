@@ -22,7 +22,7 @@ var _transition_target: Node3D = null
 var _target_rig: RigType = RigType.EXAMINE
 var _transition_use_stored_transform := false
 var _transition_stored_transform := Transform3D()
-const EXAMINE_TRANSITION_THRESHOLD := 0.05
+const EXAMINE_TRANSITION_THRESHOLD := 0.005
 
 # First-person rig refs
 @onready var _fp_root: Node3D = $Rigs/FirstPerson/RigRoot
@@ -114,22 +114,6 @@ func _apply_active_look() -> void:
 		RigType.THIRD_PERSON:
 			_active_yaw.rotation.y = _tp_yaw_val
 			_active_pitch.rotation.x = _tp_pitch_val
-#===================================================================================#
-
-# HELPERS
-#===================================================================================#
-func _build_fp_target_transform() -> Transform3D:
-	var origin := _fp_follow_anchor.global_position
-	# YXZ: yaw (Y) then pitch (X); matches CameraMount.y then CameraRotation.x
-	var new_basis := Basis.from_euler(Vector3(_fp_pitch_val, _fp_yaw_val, 0.0), EULER_ORDER_YXZ)
-	return Transform3D(new_basis, origin)
-
-func _build_tp_target_transform() -> Transform3D:
-	var origin := _tp_follow_anchor.global_position
-	if _tp_orbit_target != null:
-		origin = _tp_orbit_target.global_position + _tp_orbit_offset
-	var new_basis := Basis.from_euler(Vector3(_tp_pitch_val, _tp_yaw_val, 0.0), EULER_ORDER_YXZ)
-	return Transform3D(new_basis, origin)
 #===================================================================================#
 
 # API
@@ -225,14 +209,21 @@ func transition_to(target_rig: RigType = RigType.EXAMINE, anchor: Node3D = null)
 	# temp fix, looking for better solution
 	_transition_use_stored_transform = false
 
+	# this is still wrong. we need to find out why we aren't getting exact matches
 	match target_rig:
 		RigType.FIRST_PERSON:
 			_transition_use_stored_transform = true
-			_transition_stored_transform = _build_fp_target_transform()
+			_fp_root.global_transform = _fp_follow_anchor.global_transform
+			_fp_yaw.rotation.y = _fp_yaw_val
+			_fp_pitch.rotation.x = _fp_pitch_val
+			_transition_stored_transform = _fp_cam.global_transform
 			_transition_target = null
 		RigType.THIRD_PERSON:
 			_transition_use_stored_transform = true
-			_transition_stored_transform = _build_tp_target_transform()
+			_tp_root.global_transform = _tp_follow_anchor.global_transform
+			_tp_yaw.rotation.y = _tp_yaw_val
+			_tp_pitch.rotation.x = _tp_pitch_val
+			_transition_stored_transform = _tp_cam.global_transform
 			_transition_target = null
 		_:
 			_transition_target = anchor
@@ -277,8 +268,10 @@ func _examine_process(delta: float) -> void:
 	pass
 
 func _transition_process(delta: float) -> void:
-	var t_pos := 1.0 - exp(-follow_speed * delta)
-	var t_rot := 1.0 - exp(-rotate_speed * delta)
+	#var t_pos := 1.0 - exp(-follow_speed * delta)
+	#var t_rot := 1.0 - exp(-rotate_speed * delta)
+	var t_pos := clampf(follow_speed * delta, 0.0, 1.0)
+	var t_rot := clampf(rotate_speed * delta, 0.0, 1.0)
 
 	var from := _transition_root.global_transform
 	var to: Transform3D

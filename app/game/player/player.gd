@@ -233,7 +233,8 @@ func _handle_pickup() -> void:
 		#	SignalConnections.new(self, alt_interact_hold_duration_changed, )
 		#]
 		var pickup_hud = UIManager.show_ui("PickupHUD", {})
-		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP		
+		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
 
 func _handle_object_yanked() -> void:
 	''' Called (outside of rollback loop) when another player takes an object from the player.'''
