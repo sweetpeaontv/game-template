@@ -30,12 +30,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.081, 0)
 [node name="CameraAnchorTP" type="Node3D" parent="." unique_id=415840771]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65752614, 1.1880156, 1.1343875)
 
-[node name="CameraManager" parent="." unique_id=348133072 instance=ExtResource("2_smb4t")]
+[node name="CameraManager" parent="." unique_id=348133072 node_paths=PackedStringArray("player") instance=ExtResource("2_smb4t")]
+player = NodePath("..")
 
-[node name="CameraInput" parent="." unique_id=876401186 node_paths=PackedStringArray("camera_manager", "rollback_synchronizer", "player") instance=ExtResource("3_srn1g")]
+[node name="CameraInput" parent="." unique_id=876401186 node_paths=PackedStringArray("camera_manager", "rollback_synchronizer") instance=ExtResource("3_srn1g")]
 camera_manager = NodePath("../CameraManager")
 rollback_synchronizer = NodePath("../RollbackSynchronizer")
-player = NodePath("..")
 
 [node name="Model" parent="." unique_id=2012743885 instance=ExtResource("2_3wsxe")]
 

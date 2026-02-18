@@ -4,13 +4,14 @@ extends Node3D
 
 var camera_state: CameraManager.CameraState = CameraManager.CameraState.FIRST_PERSON
 
-@onready var camera := $"."
+@onready var camera_transform := $"."
 @export var player: CharacterBody3D
 
-# FOV
+# HEADBOB
 #===================================================================================#
-const BASE_FOV = 75.0
-const FOV_MULTIPLIER = 1.5
+const BOB_FREQ = 2.4
+const BOB_AMP = 0.08
+var t_bob: float = 0.0
 #===================================================================================#
 
 var peer_id: int = 0
@@ -24,30 +25,19 @@ func set_camera_state(curr_camera_state: CameraManager.CameraState) -> void:
 	camera_state = curr_camera_state
 #===================================================================================#
 
+# FIRST PERSON
+#===================================================================================#
+# headbob could be extracted into its own node (or perhaps CameraMount) instead of directly applying to the camera
+func _headbob(time) -> Vector3:
+	var pos = Vector3.ZERO
+	pos.y = sin(time * BOB_FREQ) * BOB_AMP
+	pos.x = cos(time * BOB_FREQ / 2) * BOB_AMP
+	return pos
+#===================================================================================#
+
 # PROCESSING
 #===================================================================================#
-func _fp_process(delta: float) -> void:	
-	var velocity_clamped = clamp(player.velocity.length(), 0.5, player.SPRINT_SPEED * 2)
-	var target_fov = BASE_FOV + FOV_MULTIPLIER * velocity_clamped
-	camera.fov = lerp(camera.fov, target_fov, delta * 8.0)
-
-func _tp_process(delta: float) -> void:
-	pass
-
-func _examine_process(delta: float) -> void:
-	pass
-
-func _transition_process(delta: float) -> void:
-	pass
-
 func _process(delta: float) -> void:
-	match camera_state:
-		CameraManager.CameraState.FIRST_PERSON:
-			_fp_process(delta)
-		CameraManager.CameraState.THIRD_PERSON:
-			_tp_process(delta)
-		CameraManager.CameraState.EXAMINE:
-			_examine_process(delta)
-		CameraManager.CameraState.TRANSITION:
-			_transition_process(delta)
+	t_bob += delta * player.velocity.length() * float(player.is_on_floor())
+	camera_transform.position = _headbob(t_bob)
 #===================================================================================#

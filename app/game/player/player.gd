@@ -284,7 +284,7 @@ func _handle_examine_disengage() -> void:
 	examining_key = 0
 	
 	if multiplayer.get_unique_id() == peer_id:
-		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON)
+		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON, camera_anchor_fp)
 #===================================================================================#
 
 # ESCAPE
