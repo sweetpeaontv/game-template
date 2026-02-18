@@ -97,9 +97,10 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
+	_handle_focus_sensor_sync()
 	_handle_holding_sync()
 	_handle_examine_sync()
-	
+
 	var camera_basis: Basis = camera_input.camera_basis
 	if camera_basis != _previous_camera_basis:
 		_previous_camera_basis = camera_basis
@@ -159,9 +160,23 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	#_log_collisions()
 #===================================================================================#
 
+# FOCUS SENSOR
+#===================================================================================#
+func _handle_focus_sensor_sync() -> void:
+	if focus_sensor.focus_key == 0 and focus_sensor.focus != null:
+		focus_sensor.focus.on_focus_exit(self)
+		focus_sensor.focus = null
+	if focus_sensor.focus_key != 0 and focus_sensor.focus == null:
+		var new_focus = InteractableRegistries.interactables.get_entry(focus_sensor.focus_key)
+		if new_focus:
+			focus_sensor.focus = new_focus
+			focus_sensor.focus.on_focus_enter(self)
+#===================================================================================#
+
 # INTERACT ACTION
 #===================================================================================#
 func _handle_interact() -> void:
+	SweetLogger.info("Interacting with {0}", [focus_sensor.focus.name], "Player.gd", "_handle_interact")
 	if not focus_sensor.focus or not focus_sensor.focus is Interactable:
 		return
 

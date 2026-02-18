@@ -4,32 +4,20 @@ extends Node3D
 @export var camera_manager: Node3D
 @export var max_distance: float = 3.0
 
-var last_hit: Object = null
-
 var focus_key: int = 0
 var focus: Interactable = null
 
-# needs to be improved to prevent constant raycasting, should only raycast after camera transform changes etc
-func _rollback_tick(_delta: float, _tick: int, _is_fresh: bool) -> void:
-	_handle_focus_sync()
+func _ready() -> void:
+	NetworkTime.before_tick_loop.connect(_gather)
 
-	if not actor:
-		return
+func _exit_tree() -> void:
+	NetworkTime.before_tick_loop.disconnect(_gather)
 
-	if multiplayer.get_unique_id() != actor.peer_id:
+func _gather() -> void:
+	if not actor or multiplayer.get_unique_id() != actor.peer_id:
 		return
-	
 	var hit = _query_focus_hit()
-	if hit != last_hit:
-		#SweetLogger.info("focus hit: {0}", [hit.name if hit else "null"], "FocusSensor.gd", "_rollback_tick")
-		if last_hit and last_hit is Interactable:
-			last_hit.on_focus_exit(actor)
-		if hit and hit is Interactable:
-			hit.on_focus_enter(actor)
-
-		focus = hit if hit is Interactable else null
-		focus_key = hit.key if hit else 0
-		last_hit = hit
+	focus_key = hit.key if hit and hit is Interactable else 0
 
 func _get_aim_origin() -> Vector3:
 	return camera_manager.get_camera().global_position
@@ -70,6 +58,8 @@ func query_focus_key() -> int:
 	return 0
 
 func _handle_focus_sync() -> void:
+	if focus_key == 0 and focus != null:
+		focus = null
 	if focus_key != 0 and focus == null:
 		var new_focus = InteractableRegistries.interactables.get_entry(focus_key)
 		if new_focus:
