@@ -41,12 +41,17 @@ func examine(_interactor: Node3D) -> void:
 	label.visible = false
 	examiners.append(_interactor)
 	examiner_ids.append(_interactor.peer_id)
+	# this could be extracted into a signal in a hub
+	if _interactor.peer_id == multiplayer.get_unique_id():
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_CONFINED)
 
 func disengage(_interactor: Node3D) -> void:
 	label.visible = true
 	examiners.erase(_interactor)
 	examiner_ids.erase(_interactor.peer_id)
-
+	# this could be extracted into a signal in a hub
+	if _interactor.peer_id == multiplayer.get_unique_id():
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 #===================================================================================#
 
 # GETTERS

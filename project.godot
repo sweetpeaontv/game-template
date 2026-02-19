@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+InputModeManager="*uid://caw04w04dmdm1"
 LayerDefs="*res://app/autoload/LayerDefs.gd"
 SceneManager="*res://app/autoload/SceneManager.gd"
 UIManager="*res://app/autoload/UIManager.gd"

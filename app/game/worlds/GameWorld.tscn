@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bpk6vmuacbrvy" path="res://app/game/items/cube/Cube.tscn" id="2_30h0s"]
 [ext_resource type="PackedScene" uid="uid://cvl14edykthr5" path="res://app/game/items/keypad/Keypad.tscn" id="2_c274h"]
 [ext_resource type="PackedScene" uid="uid://btyr81q5i50hy" path="res://app/game/items/door/Door.tscn" id="4_30h0s"]
+[ext_resource type="PackedScene" uid="uid://nnaa5dl8v4wu" path="res://app/game/items/plane/Plane.tscn" id="6_ad2w5"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_bfthn"]
 size = Vector2(15, 15)
@@ -68,3 +69,6 @@ script = ExtResource("2_5geq7")
 
 [node name="Door" parent="." unique_id=1619259476 instance=ExtResource("4_30h0s")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7489364, -4.7683716e-07, -1.9556003)
+
+[node name="Plane" parent="." unique_id=220405785 instance=ExtResource("6_ad2w5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.421864, 0.6310797, 0)

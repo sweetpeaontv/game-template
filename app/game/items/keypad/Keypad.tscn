@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/items/keypad/KeypadButton.tscn" id="1_k2c6y"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
+[ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/items/keypad/Screen.gdshader" id="2_ycede"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyns4"]
 resource_name = "Button"
@@ -356,6 +357,16 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_s888n")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rxuor"]
+render_priority = 0
+shader = ExtResource("2_ycede")
+shader_parameter/digit_count = 4
+shader_parameter/masks = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/intensity = 3.0
+shader_parameter/glow = 0.5
+shader_parameter/thickness = 0.08
+shader_parameter/gap = 0.12
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjsex"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_kjsex"]
@@ -509,6 +520,7 @@ mesh = SubResource("ArrayMesh_scd2s")
 skeleton = NodePath("")
 
 [node name="Screen" type="MeshInstance3D" parent="keypad/KeypadRoot" unique_id=109163630]
+material_override = SubResource("ShaderMaterial_rxuor")
 mesh = SubResource("ArrayMesh_qx5g5")
 skeleton = NodePath("")
 

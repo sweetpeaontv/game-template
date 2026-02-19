@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://nnaa5dl8v4wu"]
+
+[ext_resource type="PackedScene" uid="uid://cwhmfo2f3aphd" path="res://app/game/items/plane/plane1.glb" id="1_ufew7"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ufew7"]
+size = Vector3(50, 0.1, 4.45)
+
+[node name="Plane" type="Node3D" unique_id=220405785]
+
+[node name="plane1" parent="." unique_id=1773791243 instance=ExtResource("1_ufew7")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="plane1/PlaneRoot/Floor" parent_id_path=PackedInt32Array(1773791243, 880004871) index="0" unique_id=446480812]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="plane1/PlaneRoot/Floor/StaticBody3D" unique_id=1697377946]
+shape = SubResource("BoxShape3D_ufew7")
+
+[editable path="plane1"]

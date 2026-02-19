@@ -71,6 +71,8 @@ func _setup() -> void:
 		UIManager.show_ui("Crosshair")
 		model.visible = (camera_type == CameraType.THIRD_PERSON)
 		nameplate.visible = false
+
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 	else:
 		model.visible = true
 		nameplate.visible = true
@@ -176,7 +178,6 @@ func _handle_focus_sensor_sync() -> void:
 # INTERACT ACTION
 #===================================================================================#
 func _handle_interact() -> void:
-	SweetLogger.info("Interacting with {0}", [focus_sensor.focus.name], "Player.gd", "_handle_interact")
 	if not focus_sensor.focus or not focus_sensor.focus is Interactable:
 		return
 
