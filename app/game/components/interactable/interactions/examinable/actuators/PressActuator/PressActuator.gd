@@ -1,0 +1,3 @@
+extends ExamineActuator
+class_name PressActuator
+

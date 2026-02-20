@@ -31,13 +31,13 @@ func _fp_process(delta: float) -> void:
 	var target_fov = BASE_FOV + FOV_MULTIPLIER * velocity_clamped
 	camera.fov = lerp(camera.fov, target_fov, delta * 8.0)
 
-func _tp_process(delta: float) -> void:
+func _tp_process(_delta: float) -> void:
 	pass
 
-func _examine_process(delta: float) -> void:
+func _examine_process(_delta: float) -> void:
 	pass
 
-func _transition_process(delta: float) -> void:
+func _transition_process(_delta: float) -> void:
 	pass
 
 func _process(delta: float) -> void:

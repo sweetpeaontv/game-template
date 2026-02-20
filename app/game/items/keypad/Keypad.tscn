@@ -1,8 +1,65 @@
 [gd_scene format=4 uid="uid://cvl14edykthr5"]
 
 [ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/items/keypad/KeypadButton.tscn" id="1_k2c6y"]
+[ext_resource type="PackedScene" uid="uid://cvqj8c4edvdto" path="res://app/game/components/interactable/interactions/examinable/mediators/KeypadMediator/KeypadMediator.tscn" id="1_rxuor"]
+[ext_resource type="PackedScene" uid="uid://c364nmt4mly4v" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/ButtonControl.tscn" id="2_2es7a"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/items/keypad/Screen.gdshader" id="2_ycede"]
+[ext_resource type="Script" uid="uid://dpcx443cc80hx" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/data/ButtonEntry.gd" id="3_o11ma"]
+
+[sub_resource type="Resource" id="Resource_obdr8"]
+script = ExtResource("3_o11ma")
+id = &"1"
+area_path = NodePath("../Buttons/Button1Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_o11ma"]
+script = ExtResource("3_o11ma")
+id = &"2"
+area_path = NodePath("../Buttons/Button2Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_rh6i7"]
+script = ExtResource("3_o11ma")
+id = &"3"
+area_path = NodePath("../Buttons/Button3Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_t11dc"]
+script = ExtResource("3_o11ma")
+id = &"4"
+area_path = NodePath("../Buttons/Button4Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_lf0qj"]
+script = ExtResource("3_o11ma")
+id = &"5"
+area_path = NodePath("../Buttons/Button5Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_l3bsi"]
+script = ExtResource("3_o11ma")
+id = &"6"
+area_path = NodePath("../Buttons/Button6Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_ljr5l"]
+script = ExtResource("3_o11ma")
+id = &"7"
+area_path = NodePath("../Buttons/Button7Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_vmgt6"]
+script = ExtResource("3_o11ma")
+id = &"8"
+area_path = NodePath("../Buttons/Button8Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
+
+[sub_resource type="Resource" id="Resource_nx62p"]
+script = ExtResource("3_o11ma")
+id = &"9"
+area_path = NodePath("../Buttons/Button9Pivot/KeypadButton/Area3D")
+metadata/_custom_type_script = "uid://dpcx443cc80hx"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyns4"]
 resource_name = "Button"
@@ -419,113 +476,116 @@ points = PackedVector3Array(0.11505277, 0.01470694, 0.15894459, 0.11505277, 0, 0
 
 [node name="Keypad" type="Node3D" unique_id=438612277]
 
-[node name="keypad" type="Node3D" parent="." unique_id=1630286779]
+[node name="KeypadRoot" type="Node3D" parent="." unique_id=1401501180]
 
-[node name="KeypadRoot" type="Node3D" parent="keypad" unique_id=1401501180]
+[node name="KeypadMediator" parent="KeypadRoot" unique_id=1853250219 instance=ExtResource("1_rxuor")]
 
-[node name="Buttons" type="Node3D" parent="keypad/KeypadRoot" unique_id=1586389322]
+[node name="ButtonControl" parent="KeypadRoot" unique_id=1648321710 instance=ExtResource("2_2es7a")]
+buttons = Array[ExtResource("3_o11ma")]([SubResource("Resource_obdr8"), SubResource("Resource_o11ma"), SubResource("Resource_rh6i7"), SubResource("Resource_t11dc"), SubResource("Resource_lf0qj"), SubResource("Resource_l3bsi"), SubResource("Resource_ljr5l"), SubResource("Resource_vmgt6"), SubResource("Resource_nx62p")])
 
-[node name="Button1Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1146163727]
+[node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322]
+
+[node name="Button1Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1146163727]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.11996389)
 
-[node name="Button1" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button1Pivot" unique_id=756642303]
+[node name="Button1" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button1Pivot" unique_id=756642303]
 mesh = SubResource("ArrayMesh_5gm0g")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button1Pivot" unique_id=1163693650 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button1Pivot" unique_id=1163693650 instance=ExtResource("1_k2c6y")]
 label_text = "1"
 
-[node name="Button2Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1913696921]
+[node name="Button2Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1913696921]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.11996389)
 
-[node name="Button2" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button2Pivot" unique_id=1876566938]
+[node name="Button2" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button2Pivot" unique_id=1876566938]
 mesh = SubResource("ArrayMesh_uck6t")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button2Pivot" unique_id=219515660 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button2Pivot" unique_id=219515660 instance=ExtResource("1_k2c6y")]
 label_text = "2"
 
-[node name="Button3Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=334095931]
+[node name="Button3Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=334095931]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.11996389)
 
-[node name="Button3" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button3Pivot" unique_id=1844430080]
+[node name="Button3" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button3Pivot" unique_id=1844430080]
 mesh = SubResource("ArrayMesh_jc0wr")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button3Pivot" unique_id=1402544149 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button3Pivot" unique_id=1402544149 instance=ExtResource("1_k2c6y")]
 label_text = "3"
 
-[node name="Button4Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=381397585]
+[node name="Button4Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=381397585]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.043095052)
 
-[node name="Button4" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button4Pivot" unique_id=1035244591]
+[node name="Button4" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button4Pivot" unique_id=1035244591]
 mesh = SubResource("ArrayMesh_531xh")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button4Pivot" unique_id=1363436379 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button4Pivot" unique_id=1363436379 instance=ExtResource("1_k2c6y")]
 label_text = "4"
 
-[node name="Button5Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1022639047]
+[node name="Button5Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1022639047]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.043095052)
 
-[node name="Button5" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button5Pivot" unique_id=1924368401]
+[node name="Button5" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button5Pivot" unique_id=1924368401]
 mesh = SubResource("ArrayMesh_t71fe")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button5Pivot" unique_id=1753052890 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button5Pivot" unique_id=1753052890 instance=ExtResource("1_k2c6y")]
 label_text = "5"
 
-[node name="Button6Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1581120370]
+[node name="Button6Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1581120370]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.043095052)
 
-[node name="Button6" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button6Pivot" unique_id=1480795902]
+[node name="Button6" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button6Pivot" unique_id=1480795902]
 mesh = SubResource("ArrayMesh_egnvb")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button6Pivot" unique_id=970771186 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button6Pivot" unique_id=970771186 instance=ExtResource("1_k2c6y")]
 label_text = "6"
 
-[node name="Button7Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=455145056]
+[node name="Button7Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=455145056]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, 0.0337738)
 
-[node name="Button7" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button7Pivot" unique_id=760255362]
+[node name="Button7" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button7Pivot" unique_id=760255362]
 mesh = SubResource("ArrayMesh_wbeph")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button7Pivot" unique_id=402408537 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button7Pivot" unique_id=402408537 instance=ExtResource("1_k2c6y")]
 label_text = "7"
 
-[node name="Button8Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1895801357]
+[node name="Button8Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1895801357]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, 0.0337738)
 
-[node name="Button8" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button8Pivot" unique_id=339248376]
+[node name="Button8" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button8Pivot" unique_id=339248376]
 mesh = SubResource("ArrayMesh_e0j5l")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button8Pivot" unique_id=2131232112 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button8Pivot" unique_id=2131232112 instance=ExtResource("1_k2c6y")]
 label_text = "8"
 
-[node name="Button9Pivot" type="Node3D" parent="keypad/KeypadRoot/Buttons" unique_id=1865515901]
+[node name="Button9Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1865515901]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, 0.0337738)
 
-[node name="Button9" type="MeshInstance3D" parent="keypad/KeypadRoot/Buttons/Button9Pivot" unique_id=1673958482]
+[node name="Button9" type="MeshInstance3D" parent="KeypadRoot/Buttons/Button9Pivot" unique_id=1673958482]
 mesh = SubResource("ArrayMesh_t8j18")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="keypad/KeypadRoot/Buttons/Button9Pivot" unique_id=176948278 instance=ExtResource("1_k2c6y")]
+[node name="KeypadButton" parent="KeypadRoot/Buttons/Button9Pivot" unique_id=176948278 instance=ExtResource("1_k2c6y")]
 label_text = "9"
 
-[node name="Frame" type="MeshInstance3D" parent="keypad/KeypadRoot" unique_id=1861617831]
+[node name="Frame" type="MeshInstance3D" parent="KeypadRoot" unique_id=1861617831]
 mesh = SubResource("ArrayMesh_scd2s")
 skeleton = NodePath("")
 
-[node name="Screen" type="MeshInstance3D" parent="keypad/KeypadRoot" unique_id=109163630]
+[node name="Screen" type="MeshInstance3D" parent="KeypadRoot" unique_id=109163630]
 material_override = SubResource("ShaderMaterial_rxuor")
 mesh = SubResource("ArrayMesh_qx5g5")
 skeleton = NodePath("")
 
 [node name="Examinable" parent="." unique_id=2057239684 node_paths=PackedStringArray("examine_target") instance=ExtResource("2_c6fxj")]
-examine_target = NodePath("../keypad")
+examine_target = NodePath("../KeypadRoot")
 
 [node name="FocusCollisionShape" parent="Examinable" index="1" unique_id=1075540080]
 shape = SubResource("ConvexPolygonShape3D_ycede")
@@ -533,4 +593,13 @@ shape = SubResource("ConvexPolygonShape3D_ycede")
 [node name="AnchorPoint" parent="Examinable" index="2" unique_id=781110576]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
+[editable path="KeypadRoot/Buttons/Button1Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button2Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button3Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button4Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button5Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button6Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button7Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button8Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button9Pivot/KeypadButton"]
 [editable path="Examinable"]

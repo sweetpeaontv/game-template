@@ -26,12 +26,17 @@ var _actuators_by_id: Dictionary = {}	# StringName -> ExamineActuator
 var _routes: Dictionary = {}			# StringName -> Array[StringName]
 
 func _ready() -> void:
+	_on_ready()
 	_cache_nodes_from_paths()
 	_build_routes_from_routing_map()
 	_validate_setup()
 	_connect_controls()
 	if log_routes_on_ready:
 		_log_route_summary()
+
+func _on_ready() -> void:
+	# Override this in subclasses to perform any additional setup.
+	pass
 
 func _cache_nodes_from_paths() -> void:
 	_controls.clear()
@@ -88,8 +93,6 @@ func _build_routes_from_routing_map() -> void:
 		_routes[control_id] = targets
 
 func _validate_setup() -> void:
-	# Controls with no ID aren't inherently invalid (you might route some other way),
-	# but for ID-based routing they are almost always a mistake.
 	for c in _controls:
 		if c.control_id == &"":
 			push_warning("ExamineMediator: Control missing control_id at path: %s" % c.get_path())

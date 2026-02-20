@@ -1,6 +1,7 @@
 extends Node3D
 class_name ExamineControl
 
+# A `Control` is responsible for detecting user input and emitting signals when it happens.
 
 signal activated(control: ExamineControl, payload: Variant)
 signal value_changed(control: ExamineControl, value: Variant, payload: Variant)

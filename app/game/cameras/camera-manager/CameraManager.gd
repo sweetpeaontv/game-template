@@ -25,7 +25,6 @@ enum FollowMode {
 @export var rotate_speed: float = 20.0
 
 var _transition_target: Node3D = null
-var _transition_complete_pending: bool = false
 
 const TRANSITION_THRESHOLD := 0.025
 
@@ -274,7 +273,7 @@ func _player_camera_process(delta: float) -> void:
 	_update_player_rig_to_follow(delta)
 	_camera.global_transform = _active_player_rig_cam_transform.global_transform
 
-func _examine_process(delta: float) -> void:
+func _examine_process(_delta: float) -> void:
 	#_camera.global_transform = _examine_transform.global_transform
 	pass
 
@@ -302,7 +301,6 @@ func _transition_process(delta: float) -> void:
 
 	var dist := _camera.global_position.distance_to(target_origin)
 	if dist < TRANSITION_THRESHOLD:
-		# delay camera state change until next frame to prevent headbob jitter
 		set_camera_state(get_state_from_rig(active_rig))
 		_transition_target = null
 		return
