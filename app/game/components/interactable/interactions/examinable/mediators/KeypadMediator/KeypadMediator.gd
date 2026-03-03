@@ -1,3 +1,2 @@
 extends ExamineMediator
 class_name KeypadMediator
-

@@ -12,6 +12,8 @@ func _ready() -> void:
 
 	# go to start scene
 	call_deferred("_boot")
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _boot() -> void:
 	SceneManager.goto_scene(START_SCENE)

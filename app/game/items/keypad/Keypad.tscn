@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/items/keypad/Screen.gdshader" id="2_ycede"]
 [ext_resource type="Script" uid="uid://dpcx443cc80hx" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/data/ButtonEntry.gd" id="3_o11ma"]
+[ext_resource type="PackedScene" uid="uid://dqsv6jr6v1mbj" path="res://app/game/components/interactable/interactions/examinable/actuators/PressActuator/PressActuator.tscn" id="4_press"]
 
 [sub_resource type="Resource" id="Resource_obdr8"]
 script = ExtResource("3_o11ma")
@@ -418,11 +419,14 @@ shadow_mesh = SubResource("ArrayMesh_s888n")
 render_priority = 0
 shader = ExtResource("2_ycede")
 shader_parameter/digit_count = 4
-shader_parameter/masks = PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0)
-shader_parameter/intensity = 3.0
-shader_parameter/glow = 0.5
-shader_parameter/thickness = 0.08
-shader_parameter/gap = 0.12
+shader_parameter/display_aspect = 3.0
+shader_parameter/digit_spacing = 0.08
+shader_parameter/segment_thickness = 0.14
+shader_parameter/segment_softness = 0.02
+shader_parameter/on_color = Color(0.1, 1, 0.2, 1)
+shader_parameter/off_color = Color(0.02, 0.06, 0.02, 1)
+shader_parameter/emissive_strength = 6.0
+shader_parameter/digits = PackedInt32Array(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjsex"]
 
@@ -479,9 +483,30 @@ points = PackedVector3Array(0.11505277, 0.01470694, 0.15894459, 0.11505277, 0, 0
 [node name="KeypadRoot" type="Node3D" parent="." unique_id=1401501180]
 
 [node name="KeypadMediator" parent="KeypadRoot" unique_id=1853250219 instance=ExtResource("1_rxuor")]
+control_paths = Array[NodePath]([NodePath("../ButtonControl")])
+actuator_paths = Array[NodePath]([NodePath("../PressActuator")])
+routing_map = {
+"keypad_buttons": ["press"]
+}
+
+[node name="PressActuator" parent="KeypadRoot" unique_id=1158678369 node_paths=PackedStringArray("screen", "screen_label") instance=ExtResource("4_press")]
+screen = NodePath("../Screen")
+screen_label = NodePath("../Screen/Label3D")
+button_meshes = {
+&"1": NodePath("../Buttons/Button1Pivot"),
+&"2": NodePath("../Buttons/Button2Pivot"),
+&"3": NodePath("../Buttons/Button3Pivot"),
+&"4": NodePath("../Buttons/Button4Pivot"),
+&"5": NodePath("../Buttons/Button5Pivot"),
+&"6": NodePath("../Buttons/Button6Pivot"),
+&"7": NodePath("../Buttons/Button7Pivot"),
+&"8": NodePath("../Buttons/Button8Pivot"),
+&"9": NodePath("../Buttons/Button9Pivot")
+}
 
 [node name="ButtonControl" parent="KeypadRoot" unique_id=1648321710 instance=ExtResource("2_2es7a")]
 buttons = Array[ExtResource("3_o11ma")]([SubResource("Resource_obdr8"), SubResource("Resource_o11ma"), SubResource("Resource_rh6i7"), SubResource("Resource_t11dc"), SubResource("Resource_lf0qj"), SubResource("Resource_l3bsi"), SubResource("Resource_ljr5l"), SubResource("Resource_vmgt6"), SubResource("Resource_nx62p")])
+control_id = &"keypad_buttons"
 
 [node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322]
 
@@ -583,6 +608,10 @@ skeleton = NodePath("")
 material_override = SubResource("ShaderMaterial_rxuor")
 mesh = SubResource("ArrayMesh_qx5g5")
 skeleton = NodePath("")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Screen" unique_id=1273145400]
+transform = Transform3D(-0.49994993, -4.3864475e-08, -0.0070757074, -0.0070757074, 2.1621451e-08, 0.49994993, -4.355411e-08, 0.5, -2.224003e-08, 0, 0.02300775, 0.11825748)
+no_depth_test = true
 
 [node name="Examinable" parent="." unique_id=2057239684 node_paths=PackedStringArray("examine_target") instance=ExtResource("2_c6fxj")]
 examine_target = NodePath("../KeypadRoot")
