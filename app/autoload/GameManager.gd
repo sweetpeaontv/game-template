@@ -93,3 +93,7 @@ func _on_server_game_state_changed(new_state: int) -> void:
 			_set_state(SessionState.PLAYING)
 		2:  # ENDING
 			_set_state(SessionState.ENDING)
+
+func _disconnect_game() -> void:
+	Gnet.disconnect_game()
+	_set_state(SessionState.MAIN_MENU)

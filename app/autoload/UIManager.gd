@@ -22,6 +22,7 @@ signal ui_hidden(ui_name: String)
 
 # Registry of all available UI scenes
 var _ui_scenes := {
+	"EscMenu": preload("res://app/ui/screens/esc-menu/EscMenu.tscn"),
 	"PickupHUD": preload("res://app/ui/hud/contextual/pickup-hud/PickupHUD.tscn"),
 	"Crosshair": preload("res://app/ui/hud/crosshair/Crosshair.tscn")
 }

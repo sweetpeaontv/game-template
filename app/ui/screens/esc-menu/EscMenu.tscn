@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cfxhex3cmk2dx"]
+
+[ext_resource type="Script" uid="uid://bmlffuu484wls" path="res://app/ui/screens/esc-menu/EscMenu.gd" id="1_j0rpa"]
+
+[node name="EscMenu" type="Node2D" unique_id=1296310985]
+script = ExtResource("1_j0rpa")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=444024474]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer" unique_id=829205926]
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsButton" type="Button" parent="VBoxContainer" unique_id=501522773]
+layout_mode = 2
+text = "Settings"
+
+[node name="DisconnectButton" type="Button" parent="VBoxContainer" unique_id=871543809]
+layout_mode = 2
+text = "Disconnect"
+
+[node name="QuitButton" type="Button" parent="VBoxContainer" unique_id=1599202622]
+layout_mode = 2
+text = "Quit"

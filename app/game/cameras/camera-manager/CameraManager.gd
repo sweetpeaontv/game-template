@@ -43,6 +43,9 @@ var _examine_anchor_stack: Array[Node3D] = []
 @onready var active_rig: RigType = RigType.FIRST_PERSON
 @onready var camera_state: CameraState = CameraState.FIRST_PERSON
 
+# LOOK INPUT
+var _look_input_enabled: bool = true
+
 # First-person rig refs
 @onready var _fp_root: Node3D = $Rigs/FirstPerson/RigRoot
 @onready var _fp_yaw: Node3D = $Rigs/FirstPerson/RigRoot/CameraMount
@@ -141,6 +144,12 @@ func get_state_from_rig(rig: RigType) -> CameraState:
 			return CameraState.FIRST_PERSON
 #===================================================================================#
 
+# SETTERS
+#===================================================================================#
+func set_look_input_enabled(enabled: bool) -> void:
+	_look_input_enabled = enabled
+#===================================================================================#
+
 # API
 #===================================================================================#
 func bind_subject(
@@ -204,7 +213,7 @@ func set_follow(target_anchor: Node3D, mode: FollowMode, instant: bool = false) 
 			pass
 
 func add_look_delta(relative: Vector2) -> void:
-	if camera_state == CameraState.TRANSITION:
+	if not _look_input_enabled or camera_state == CameraState.TRANSITION:
 		return
 
 	if relative == Vector2.ZERO:

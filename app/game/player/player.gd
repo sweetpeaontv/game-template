@@ -42,6 +42,10 @@ var holding: Interactable = null
 var examining_key: int = 0
 var examining: Examinable = null
 
+# PLAYER STATUS
+enum PlayerStatus { LOADING, ESC, PLAYING, DISCONNECTED }
+var player_status: PlayerStatus = PlayerStatus.LOADING
+
 # INIT
 #===================================================================================#
 func _ready() -> void:
@@ -84,6 +88,8 @@ func _setup() -> void:
 		CameraManager.RigType.FIRST_PERSON if camera_type == CameraType.FIRST_PERSON else CameraManager.RigType.THIRD_PERSON,
 		true
 	)
+
+	player_status = PlayerStatus.PLAYING
 #===================================================================================#
 
 # DESTRUCT
@@ -102,6 +108,9 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	_handle_focus_sensor_sync()
 	_handle_holding_sync()
 	_handle_examine_sync()
+
+	if input.escape_released:
+		_handle_escape()
 
 	var camera_basis: Basis = camera_input.camera_basis
 	if camera_basis != _previous_camera_basis:
@@ -140,9 +149,6 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		_handle_alt_interact_cancelled
 	)
 
-	if input.escape_released:
-		_handle_escape()
-
 	if is_on_floor():
 		velocity.y = 0
 		if direction:
@@ -160,6 +166,19 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	move_and_slide()
 	velocity /= NetworkTime.physics_factor
 	#_log_collisions()
+
+func _playing_tick(_delta, tick, _is_fresh) -> void:
+	pass
+
+func _esc_tick(_delta, tick, _is_fresh) -> void:
+	pass
+
+func _loading_tick(_delta, tick, _is_fresh) -> void:
+	pass
+
+func _disconnected_tick(_delta, tick, _is_fresh) -> void:
+	pass
+
 #===================================================================================#
 
 # FOCUS SENSOR
@@ -306,8 +325,22 @@ func _handle_examine_disengage() -> void:
 # ESCAPE
 #===================================================================================#
 func _handle_escape() -> void:
+	SweetLogger.info("Escape pressed for player: {0}, player status: {1}", [peer_id, player_status], "Player.gd", "_handle_escape")
 	if examining:
 		_handle_examine_disengage()
+		return
+
+	if player_status == PlayerStatus.ESC:
+		player_status = PlayerStatus.PLAYING
+		UIManager.hide_ui("EscMenu")
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
+		camera_manager.set_look_input_enabled(true)
+		return
+
+	player_status = PlayerStatus.ESC
+	UIManager.show_ui("EscMenu")
+	InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
+	camera_manager.set_look_input_enabled(false)
 #===================================================================================#
 
 # PROCESS REWINDABLE ACTION
