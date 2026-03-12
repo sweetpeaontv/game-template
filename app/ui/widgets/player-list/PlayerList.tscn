@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://pitu4wov45xi"]
+
+[ext_resource type="Script" uid="uid://1id6wfq0neb6" path="res://app/ui/widgets/player-list/PlayerList.gd" id="1_kytt8"]
+
+[node name="PlayerList" type="Node2D" unique_id=1378582148]
+script = ExtResource("1_kytt8")
+
+[node name="PlayerContainer" type="VBoxContainer" parent="." unique_id=1030802404]
+offset_right = 40.0
+offset_bottom = 40.0

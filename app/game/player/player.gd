@@ -167,18 +167,6 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	velocity /= NetworkTime.physics_factor
 	#_log_collisions()
 
-func _playing_tick(_delta, tick, _is_fresh) -> void:
-	pass
-
-func _esc_tick(_delta, tick, _is_fresh) -> void:
-	pass
-
-func _loading_tick(_delta, tick, _is_fresh) -> void:
-	pass
-
-func _disconnected_tick(_delta, tick, _is_fresh) -> void:
-	pass
-
 #===================================================================================#
 
 # FOCUS SENSOR
@@ -325,22 +313,33 @@ func _handle_examine_disengage() -> void:
 # ESCAPE
 #===================================================================================#
 func _handle_escape() -> void:
-	SweetLogger.info("Escape pressed for player: {0}, player status: {1}", [peer_id, player_status], "Player.gd", "_handle_escape")
 	if examining:
 		_handle_examine_disengage()
 		return
 
+	var local_player = multiplayer.get_unique_id() == peer_id
+	
 	if player_status == PlayerStatus.ESC:
 		player_status = PlayerStatus.PLAYING
-		UIManager.hide_ui("EscMenu")
-		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
-		camera_manager.set_look_input_enabled(true)
+		if local_player:
+			_handle_resume_local()
 		return
 
 	player_status = PlayerStatus.ESC
+	if local_player:
+		_handle_esc_local()
+
+func _handle_esc_local() -> void:
+	SweetLogger.info("Escape pressed for player: {0}, player status: {1}", [peer_id, player_status], "Player.gd", "_handle_escape")
 	UIManager.show_ui("EscMenu")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
 	camera_manager.set_look_input_enabled(false)
+
+func _handle_resume_local() -> void:
+	SweetLogger.info("Escape released for player: {0}, player status: {1}", [peer_id, player_status], "Player.gd", "_handle_escape")
+	UIManager.hide_ui("EscMenu")
+	InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
+	camera_manager.set_look_input_enabled(true)
 #===================================================================================#
 
 # PROCESS REWINDABLE ACTION

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cfxhex3cmk2dx"]
 
 [ext_resource type="Script" uid="uid://bmlffuu484wls" path="res://app/ui/screens/esc-menu/EscMenu.gd" id="1_j0rpa"]
+[ext_resource type="PackedScene" uid="uid://pitu4wov45xi" path="res://app/ui/widgets/player-list/PlayerList.tscn" id="2_mxdk8"]
 
 [node name="EscMenu" type="Node2D" unique_id=1296310985]
 script = ExtResource("1_j0rpa")
@@ -24,3 +25,6 @@ text = "Disconnect"
 [node name="QuitButton" type="Button" parent="VBoxContainer" unique_id=1599202622]
 layout_mode = 2
 text = "Quit"
+
+[node name="PlayerList" parent="." unique_id=1378582148 instance=ExtResource("2_mxdk8")]
+position = Vector2(789, 10)
