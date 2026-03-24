@@ -110,7 +110,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	_handle_examine_sync()
 
 	if input.escape_released:
-		_handle_escape()
+		_handle_escape(tick, _is_fresh)
 
 	var camera_basis: Basis = camera_input.camera_basis
 	if camera_basis != _previous_camera_basis:
@@ -312,7 +312,7 @@ func _handle_examine_disengage() -> void:
 
 # ESCAPE
 #===================================================================================#
-func _handle_escape() -> void:
+func _handle_escape(tick: int, is_fresh: bool) -> void:
 	if examining:
 		_handle_examine_disengage()
 		return
@@ -321,22 +321,22 @@ func _handle_escape() -> void:
 	
 	if player_status == PlayerStatus.ESC:
 		player_status = PlayerStatus.PLAYING
-		if local_player:
-			_handle_resume_local()
+		if local_player and is_fresh:
+			_handle_resume_local(tick)
 		return
 
 	player_status = PlayerStatus.ESC
-	if local_player:
-		_handle_esc_local()
+	if local_player and is_fresh:
+		_handle_esc_local(tick)
 
-func _handle_esc_local() -> void:
-	SweetLogger.info("Escape pressed for player: {0}, player status: {1}", [peer_id, player_status], "Player.gd", "_handle_escape")
+func _handle_esc_local(tick: int) -> void:
+	SweetLogger.info("Escape pressed for player: {0}, player status: {1} at tick: {2}", [peer_id, player_status, tick], "Player.gd", "_handle_escape_local")
 	UIManager.show_ui("EscMenu")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
 	camera_manager.set_look_input_enabled(false)
 
-func _handle_resume_local() -> void:
-	SweetLogger.info("Escape released for player: {0}, player status: {1}", [peer_id, player_status], "Player.gd", "_handle_escape")
+func _handle_resume_local(tick: int) -> void:
+	SweetLogger.info("Escape released for player: {0}, player status: {1} at tick: {2} and is fresh: {3}", [peer_id, player_status, tick], "Player.gd", "_handle_resume_local")
 	UIManager.hide_ui("EscMenu")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 	camera_manager.set_look_input_enabled(true)
@@ -371,6 +371,7 @@ func _process_rewindable_action(
 		RewindableAction.INACTIVE:
 			pass
 #===================================================================================#
+
 # SETTERS
 #===================================================================================#
 func setNameplate(player_name: String) -> void:
