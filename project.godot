@@ -33,7 +33,6 @@ ServerManager="*uid://bxh48l3apb3v3"
 GameManager="*res://app/autoload/GameManager.gd"
 PlayerUtils="*uid://b32oeabx7hvvc"
 InteractableRegistries="*uid://crgpneopih50b"
-SweetLogger="*res://app/autoload/SweetLogger.gd"
 EventBus="*res://app/autoload/EventBus.gd"
 SpawnManager="*uid://ljdti2hjik14"
 WindowTiler="*res://addons/netfox.extras/window-tiler.gd"
@@ -50,7 +49,7 @@ window/size/initial_position_type=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/interactable_collision_tool/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg")
+enabled=PackedStringArray("res://addons/interactable_collision_tool/plugin.cfg", "res://addons/netfox.extras/plugin.cfg", "res://addons/netfox.internals/plugin.cfg", "res://addons/netfox/plugin.cfg", "res://addons/sweet_logger/plugin.cfg")
 
 [input]
 
