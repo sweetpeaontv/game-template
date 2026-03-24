@@ -1,7 +1,7 @@
 class_name InteractionTypes
 extends RefCounted
 
-enum InteractionType { PICKUPABLE, OPENABLE, EXAMINABLE, OPERABLE }
+enum InteractionType { PICKUPABLE, EXAMINABLE, OPERABLE }
 
 class PickupData extends InteractionTypes:
 	enum Action { PICKUP, DROP, THROW }
@@ -22,22 +22,6 @@ class PickupData extends InteractionTypes:
 
 	static func throw(power: float = 0.0, direction: Vector3 = Vector3.ZERO) -> PickupData:
 		return PickupData.new(Action.THROW, power, direction)
-
-class OpenData extends InteractionTypes:
-	enum Action { TOGGLE, OPEN, CLOSE }
-	var action: Action
-
-	func _init(_action: Action):
-		action = _action
-
-	static func toggle() -> OpenData:
-		return OpenData.new(Action.TOGGLE)
-
-	static func open() -> OpenData:
-		return OpenData.new(Action.OPEN)
-
-	static func close() -> OpenData:
-		return OpenData.new(Action.CLOSE)
 
 class OperableData extends InteractionTypes:
 	enum Action { TOGGLE, SET_STATE, NEXT_STATE, PREV_STATE }
