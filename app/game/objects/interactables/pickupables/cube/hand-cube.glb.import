@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://d2v28euqu51y5"
-path="res://.godot/imported/keypad.glb-3db281ed120cf3abf231648020e3569e.scn"
+uid="uid://br5slp485xfc3"
+path="res://.godot/imported/hand-cube.glb-ea9a81c1f25bd88596771149233249ee.scn"
 
 [deps]
 
-source_file="res://app/game/items/keypad/keypad.glb"
-dest_files=["res://.godot/imported/keypad.glb-3db281ed120cf3abf231648020e3569e.scn"]
+source_file="res://app/game/objects/interactables/pickupables/cube/hand-cube.glb"
+dest_files=["res://.godot/imported/hand-cube.glb-ea9a81c1f25bd88596771149233249ee.scn"]
 
 [params]
 

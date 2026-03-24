@@ -194,6 +194,8 @@ func _handle_interact() -> void:
 			_handle_pickup()
 		InteractionTypes.InteractionType.OPENABLE:
 			focus_sensor.focus.interact(self, InteractionTypes.OpenData.toggle())
+		InteractionTypes.InteractionType.OPERABLE:
+			focus_sensor.focus.interact(self, InteractionTypes.OperableData.toggle())
 		InteractionTypes.InteractionType.EXAMINABLE:
 			_handle_examine()
 		_:

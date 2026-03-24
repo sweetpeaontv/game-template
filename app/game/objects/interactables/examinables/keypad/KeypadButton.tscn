@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bv2gooj252qh2"]
 
-[ext_resource type="Script" uid="uid://beu3xbwoh6c4a" path="res://app/game/items/keypad/KeypadButton.gd" id="1_iir2a"]
+[ext_resource type="Script" uid="uid://beu3xbwoh6c4a" path="res://app/game/objects/interactables/examinables/keypad/KeypadButton.gd" id="1_iir2a"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_iir2a"]
 size = Vector3(0.07, 0.01, 0.07)

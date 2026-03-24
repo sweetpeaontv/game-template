@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bpk6vmuacbrvy"]
 
-[ext_resource type="PackedScene" uid="uid://br5slp485xfc3" path="res://app/game/items/cube/hand-cube.glb" id="1_81wnv"]
-[ext_resource type="Script" uid="uid://blgohumj1pvcx" path="res://app/game/items/cube/Cube.gd" id="1_cfja5"]
+[ext_resource type="PackedScene" uid="uid://br5slp485xfc3" path="res://app/game/objects/interactables/pickupables/cube/hand-cube.glb" id="1_81wnv"]
+[ext_resource type="Script" uid="uid://blgohumj1pvcx" path="res://app/game/objects/interactables/pickupables/cube/Cube.gd" id="1_cfja5"]
 [ext_resource type="PackedScene" uid="uid://nuio21segrvp" path="res://app/game/components/interactable/interactions/pickupable/Pickupable.tscn" id="2_cfja5"]
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="4_a5hvi"]
 [ext_resource type="Script" uid="uid://dour8fehaaugp" path="res://addons/netfox/tick-interpolator.gd" id="5_hkfd8"]

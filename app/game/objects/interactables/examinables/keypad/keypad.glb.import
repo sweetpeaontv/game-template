@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://duhdgtve5pxql"
-path="res://.godot/imported/hand-cube.glb-612e21c0a62bdb9c684b774b5b7973ca.scn"
+uid="uid://d2v28euqu51y5"
+path="res://.godot/imported/keypad.glb-6b664deaba43f30e30bed06bff9e0415.scn"
 
 [deps]
 
-source_file="res://app/game/items/cube-ps/hand-cube.glb"
-dest_files=["res://.godot/imported/hand-cube.glb-612e21c0a62bdb9c684b774b5b7973ca.scn"]
+source_file="res://app/game/objects/interactables/examinables/keypad/keypad.glb"
+dest_files=["res://.godot/imported/keypad.glb-6b664deaba43f30e30bed06bff9e0415.scn"]
 
 [params]
 
@@ -38,5 +38,5 @@ materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
 _subresources={}
-gltf/naming_version=1
+gltf/naming_version=2
 gltf/embedded_image_handling=1

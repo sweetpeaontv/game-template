@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://nnaa5dl8v4wu"]
 
-[ext_resource type="PackedScene" uid="uid://cwhmfo2f3aphd" path="res://app/game/items/plane/plane1.glb" id="1_ufew7"]
+[ext_resource type="PackedScene" uid="uid://cwhmfo2f3aphd" path="res://app/game/objects/props/plane/plane1.glb" id="1_ufew7"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ufew7"]
 size = Vector3(50, 0.1, 4.45)

@@ -1,10 +1,10 @@
 [gd_scene format=4 uid="uid://cvl14edykthr5"]
 
-[ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/items/keypad/KeypadButton.tscn" id="1_k2c6y"]
+[ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/objects/interactables/examinables/keypad/KeypadButton.tscn" id="1_k2c6y"]
 [ext_resource type="PackedScene" uid="uid://cvqj8c4edvdto" path="res://app/game/components/interactable/interactions/examinable/mediators/KeypadMediator/KeypadMediator.tscn" id="1_rxuor"]
 [ext_resource type="PackedScene" uid="uid://c364nmt4mly4v" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/ButtonControl.tscn" id="2_2es7a"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
-[ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/items/keypad/Screen.gdshader" id="2_ycede"]
+[ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
 [ext_resource type="Script" uid="uid://dpcx443cc80hx" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/data/ButtonEntry.gd" id="3_o11ma"]
 [ext_resource type="PackedScene" uid="uid://dqsv6jr6v1mbj" path="res://app/game/components/interactable/interactions/examinable/actuators/PressActuator/PressActuator.tscn" id="4_press"]
 
