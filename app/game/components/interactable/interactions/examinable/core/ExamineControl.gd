@@ -47,8 +47,5 @@ func reset() -> void:
 	_set_hovered(false)
 
 ## ---- Virtual-ish hooks (override in subclasses) ----------------------------
-## I’m not forcing an input strategy here (raycasts vs input_event). Your
-## concrete controls can implement either and call emit_* above.
-
 func can_interact() -> bool:
 	return is_enabled

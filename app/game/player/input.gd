@@ -30,6 +30,8 @@ func _ready():
 	NetworkTime.before_tick_loop.connect(_gather)
 
 func _process(delta: float) -> void:
+	# INTERACT
+	#===================================================================================#
 	if Input.is_action_pressed("interact"):
 		_interact_buffer = true
 		_interact_hold_duration += delta
@@ -38,7 +40,10 @@ func _process(delta: float) -> void:
 
 	if Input.is_action_just_released("interact"):
 		_interact_release_buffer = true
+	#===================================================================================#
 
+	# ALT INTERACT
+	#===================================================================================#
 	if Input.is_action_pressed("alt_interact"):
 		_alt_interact_buffer = true
 		_alt_interact_hold_duration += delta
@@ -47,9 +52,13 @@ func _process(delta: float) -> void:
 
 	if Input.is_action_just_released("alt_interact"):
 		_alt_interact_release_buffer = true
+	#===================================================================================#
 
+	# ESCAPE
+	#===================================================================================#
 	if Input.is_action_just_released("escape"):
 		_escape_release_buffer = true
+	#===================================================================================#
 
 func _gather():
 	if not is_multiplayer_authority():
@@ -91,6 +100,11 @@ func _gather():
 	escape_released = _escape_release_buffer
 
 	_escape_release_buffer = false
+
+func queue_escape_release() -> void:
+	if not is_multiplayer_authority():
+		return
+	_escape_release_buffer = true
 
 func _exit_tree():
 	NetworkTime.before_tick_loop.disconnect(_gather)

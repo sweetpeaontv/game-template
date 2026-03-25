@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+SweetLogger="*res://addons/sweet_logger/SweetLogger.gd"
 InputModeManager="*uid://caw04w04dmdm1"
 LayerDefs="*res://app/autoload/LayerDefs.gd"
 SceneManager="*res://app/autoload/SceneManager.gd"
@@ -33,7 +34,6 @@ ServerManager="*uid://bxh48l3apb3v3"
 GameManager="*res://app/autoload/GameManager.gd"
 PlayerUtils="*uid://b32oeabx7hvvc"
 InteractableRegistries="*uid://crgpneopih50b"
-SweetLogger="*res://app/autoload/SweetLogger.gd"
 EventBus="*res://app/autoload/EventBus.gd"
 SpawnManager="*uid://ljdti2hjik14"
 WindowTiler="*res://addons/netfox.extras/window-tiler.gd"

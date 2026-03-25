@@ -39,7 +39,7 @@ func _ready() -> void:
 	# Create a default container for UI if none is specified
 	_ui_container = CanvasLayer.new()
 	_ui_container.name = "UIManagerLayer"
-	_ui_container.layer = 100  # High layer to ensure UI is on top
+	_ui_container.layer = 100
 	add_child(_ui_container)
 
 func set_container(container: Node) -> void:

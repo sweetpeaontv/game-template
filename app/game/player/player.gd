@@ -1,7 +1,9 @@
 extends CharacterBody3D
 
+# SIGNALS
 signal alt_interact_hold_duration_changed(duration: float)
 
+# DEBUG
 const IS_VERBOSE := false
 
 # BODY NODES
@@ -105,24 +107,71 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		push_error("Player: Input node not found!")
 		return
 
+	# sync
 	_handle_focus_sensor_sync()
 	_handle_holding_sync()
 	_handle_examine_sync()
 
-	if input.escape_released:
-		_handle_escape(tick, _is_fresh)
+	# input
+	_handle_camera_rotation(_delta)
+	_handle_movement(_delta)
+	_handle_interactions(tick)
+	_handle_other_input(tick, _is_fresh)
 
-	var camera_basis: Basis = camera_input.camera_basis
-	if camera_basis != _previous_camera_basis:
-		_previous_camera_basis = camera_basis
-		rotate_player_model(_delta, camera_basis)
-	
-	var direction = (camera_basis * transform.basis * Vector3(input.movement.x, 0, input.movement.z)).normalized()
+	# apply
+	velocity *= NetworkTime.physics_factor
+	move_and_slide()
+	velocity /= NetworkTime.physics_factor
+	#_log_collisions()
+
+#===================================================================================#
+
+# LOCOMOTION
+# Player-driven walking/sprinting is gated here. Gravity, air physics, and
+# move_and_slide still run every tick so external forces and collisions apply.
+#===================================================================================#
+func _locomotion_input_allowed() -> bool:
+	return player_status == PlayerStatus.PLAYING and examining == null
+
+# HANDLE CAMERA ROTATION
+#===================================================================================#
+func _handle_camera_rotation(delta: float) -> void:
+	if camera_input.camera_basis != _previous_camera_basis:
+		_previous_camera_basis = camera_input.camera_basis
+		rotate_player_model(delta, camera_input.camera_basis)
+#===================================================================================#
+
+# HANDLE INPUT
+#===================================================================================#
+func _handle_movement(delta: float) -> void:
+	var move_input := input.movement
+	if not _locomotion_input_allowed():
+		move_input = Vector3.ZERO
+
+	var direction = (camera_input.camera_basis * transform.basis * Vector3(move_input.x, 0, move_input.z)).normalized()
 
 	if input.shift:
 		speed = SPRINT_SPEED
 	else:
 		speed = WALK_SPEED
+
+	if is_on_floor():
+		velocity.y = 0
+		if direction:
+			velocity.x = direction.x * speed
+			velocity.z = direction.z * speed
+		else:
+			velocity.x = lerp(velocity.x, direction.x * speed, delta * 7.0)
+			velocity.z = lerp(velocity.z, direction.z * speed, delta * 7.0)
+	else:
+		velocity.y -= gravity * delta
+		velocity.x = lerp(velocity.x, direction.x * speed, delta * 3.0)
+		velocity.z = lerp(velocity.z, direction.z * speed, delta * 3.0)
+
+func _handle_interactions(tick: int) -> void:
+	if not input:
+		push_error("Player: Input node not found!")
+		return
 
 	_process_rewindable_action(
 		interact_action,
@@ -135,7 +184,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 
 	if holding:
 		_update_hold_point()
-	
+
 	# updates pickup hold duration HUD
 	if input.alt_interact:
 		alt_interact_hold_duration_changed.emit(input._alt_interact_hold_duration)
@@ -149,24 +198,13 @@ func _rollback_tick(_delta, tick, _is_fresh):
 		_handle_alt_interact_cancelled
 	)
 
-	if is_on_floor():
-		velocity.y = 0
-		if direction:
-			velocity.x = direction.x * speed
-			velocity.z = direction.z * speed
-		else:
-			velocity.x = lerp(velocity.x, direction.x * speed, _delta * 7.0)
-			velocity.z = lerp(velocity.z, direction.z * speed, _delta * 7.0)
-	else:
-		velocity.y -= gravity * _delta
-		velocity.x = lerp(velocity.x, direction.x * speed, _delta * 3.0)
-		velocity.z = lerp(velocity.z, direction.z * speed, _delta * 3.0)
+func _handle_other_input(tick: int, is_fresh: bool) -> void:
+	if not input:
+		push_error("Player: Input node not found!")
+		return
 
-	velocity *= NetworkTime.physics_factor
-	move_and_slide()
-	velocity /= NetworkTime.physics_factor
-	#_log_collisions()
-
+	if input.escape_released:
+		_handle_escape(tick, is_fresh)
 #===================================================================================#
 
 # FOCUS SENSOR
@@ -237,13 +275,18 @@ func _handle_alt_interact_cancelled() -> void:
 func _handle_holding_sync() -> void:
 	if holding_key == 0 and holding != null:
 		holding = null
+		return
 	if holding_key != 0 and holding == null:
 		var new_holding = InteractableRegistries.pickupables.get_entry(holding_key)
-		if new_holding:
-			holding = new_holding
-			holding_key = new_holding.key if new_holding else 0
-			if not holding.pickupable_yanked.is_connected(_on_pickupable_yanked):
-				holding.pickupable_yanked.connect(_on_pickupable_yanked)
+
+		if not new_holding:
+			SweetLogger.error("New holding is null for player: {0}, holding key: {1}", [peer_id, holding_key], "Player.gd", "_handle_holding_sync")
+			return
+		
+		holding = new_holding
+		holding_key = new_holding.key if new_holding else 0
+		if not holding.pickupable_yanked.is_connected(_on_pickupable_yanked):
+			holding.pickupable_yanked.connect(_on_pickupable_yanked)
 
 func _handle_pickup() -> void:
 	focus_sensor.focus.interact(self, InteractionTypes.PickupData.pickup())
@@ -331,7 +374,9 @@ func _handle_escape(tick: int, is_fresh: bool) -> void:
 
 func _handle_esc_local(tick: int) -> void:
 	SweetLogger.info("Escape pressed for player: {0}, player status: {1} at tick: {2}", [peer_id, player_status, tick], "Player.gd", "_handle_escape_local")
-	UIManager.show_ui("EscMenu")
+	var esc_menu: Node = UIManager.show_ui("EscMenu")
+	if esc_menu and esc_menu.has_signal("resume_pressed"):
+		esc_menu.resume_pressed.connect(_on_esc_menu_resume_pressed, CONNECT_ONE_SHOT)
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
 	camera_manager.set_look_input_enabled(false)
 
@@ -340,6 +385,15 @@ func _handle_resume_local(tick: int) -> void:
 	UIManager.hide_ui("EscMenu")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 	camera_manager.set_look_input_enabled(true)
+
+func _on_esc_menu_resume_pressed() -> void:
+	if multiplayer.get_unique_id() != peer_id:
+		return
+	if player_status != PlayerStatus.ESC:
+		return
+	# player_status is rollback state: UI callbacks cannot set it reliably (snapshots overwrite it).
+	# Resume must go through the same input path as the escape key so ticks record/replay escape_released.
+	input.queue_escape_release()
 #===================================================================================#
 
 # PROCESS REWINDABLE ACTION

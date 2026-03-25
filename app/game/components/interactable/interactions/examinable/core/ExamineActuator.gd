@@ -26,5 +26,5 @@ func apply_value(_value: Variant, _payload: Variant = null) -> void:
 
 ## Optional: allow mediator to clear visuals/state on exit examine.
 func reset() -> void:
-	# Override if you need it.
+	# Override in subclasses.
 	pass

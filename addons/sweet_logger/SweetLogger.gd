@@ -4,10 +4,8 @@ extends Node
 ## All logs are prefixed with [peer_id]: to identify which instance is logging.
 ## Uses print_rich with colorized backgrounds for peer IDs and log types.
 
-# ============================================================================
 # COLORS
-# ============================================================================
-
+#===================================================================================#
 ## Log type configuration with background color, message background color, and contrast text color
 const LOG_TYPES = {
 	"log": {
@@ -70,31 +68,28 @@ const LOG_LINE_BG_COLOR = "#1a1a1a"
 
 ## Background color for the script/function name column
 const SCRIPT_FUNCTION_BG_COLOR = "#4a5a6a"
+#===================================================================================#
 
-# ============================================================================
 # WIDTHS
-# ============================================================================
-
+#===================================================================================#
 ## Column widths for alignment (in characters)
 const PEER_ID_COLUMN_WIDTH = 10
 const LOG_TYPE_COLUMN_WIDTH = 8
 const SCRIPT_FUNCTION_COLUMN_WIDTH = 40
+#===================================================================================#
 
-# ============================================================================
 # CONFIGURATION
-# ============================================================================
-
+#===================================================================================#
 ## Cache for peer ID colors to ensure consistency
 var _peer_color_cache: Dictionary = {}
 
 ## Enable/disable showing script name and function name in logs
 @export var SHOW_SCRIPT_NAME = true
 @export var SHOW_FUNCTION_NAME = true
+#===================================================================================#
 
-# ============================================================================
 # GETTERS
-# ============================================================================
-
+#===================================================================================#
 func _get_peer_id() -> String:
 	"""Get the current peer ID, or return a default identifier if not connected."""
 	if multiplayer == null:
@@ -133,10 +128,10 @@ func _get_peer_color_config(peer_id_str: String) -> Dictionary:
 	_peer_color_cache[peer_id_str] = color_config
 	return color_config
 
-# ============================================================================
-# FORMATTERS
-# ============================================================================
+#===================================================================================#
 
+# FORMATTERS
+#===================================================================================#
 func _format_message(message: String, args: Array = []) -> String:
 	"""Format message with optional arguments."""
 	if args.is_empty():
@@ -175,10 +170,10 @@ func _truncate_text(text: String, max_length: int) -> String:
 		return text
 	return text.substr(0, max_length)
 
-# ============================================================================
-# PRINT
-# ============================================================================
+#===================================================================================#
 
+# PRINT
+#===================================================================================#
 func _print_rich_log(peer_id_str: String, log_type: String, message: String, script_name: String = "", function_name: String = "") -> void:
 	"""Print a rich formatted log with peer ID and log type colors."""
 	var peer_color = _get_peer_color_config(peer_id_str)
@@ -236,10 +231,10 @@ func _print_rich_log(peer_id_str: String, log_type: String, message: String, scr
 
 	print_rich(wrapped_line)
 
-# ============================================================================
-# CALLERS
-# ============================================================================
+#===================================================================================#
 
+# CALLERS
+#===================================================================================#
 func log(message: String, args: Array = [], script_name: String = "", function_name: String = "") -> void:
 	"""Basic log function with peer_id prefix."""
 	var formatted = _format_message(message, args)
@@ -269,3 +264,4 @@ func debug(message: String, args: Array = [], script_name: String = "", function
 	var formatted = _format_message(message, args)
 	var peer_id_str = _get_peer_id()
 	_print_rich_log(peer_id_str, "debug", formatted, script_name, function_name)
+#===================================================================================#

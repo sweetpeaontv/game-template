@@ -1,5 +1,7 @@
 extends Node2D
 
+signal resume_pressed()
+
 @onready var resume_button: Button = $VBoxContainer/ResumeButton
 @onready var settings_button: Button = $VBoxContainer/SettingsButton
 @onready var disconnect_button: Button = $VBoxContainer/DisconnectButton
@@ -12,8 +14,7 @@ func _ready() -> void:
 	quit_button.pressed.connect(_on_quit_button_pressed)
 
 func _on_resume_button_pressed() -> void:
-	# this needs to do more for the player (set input mouse mode, camera.look_input)
-	UIManager.hide_ui("EscMenu")
+	resume_pressed.emit()
 
 func _on_settings_button_pressed() -> void:
 	pass
