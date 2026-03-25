@@ -343,6 +343,7 @@ func _handle_examine() -> void:
 	examining_key = focus_sensor.focus.key
 
 	if multiplayer.get_unique_id() == peer_id:
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_CONFINED)
 		camera_manager.transition_to(CameraManager.RigType.EXAMINE, focus_sensor.focus.examine_camera_anchor)
 
 func _handle_examine_disengage() -> void:
@@ -352,6 +353,7 @@ func _handle_examine_disengage() -> void:
 	examining_key = 0
 	
 	if multiplayer.get_unique_id() == peer_id:
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON, camera_anchor_fp)
 #===================================================================================#
 
