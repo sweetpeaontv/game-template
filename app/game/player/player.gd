@@ -122,6 +122,8 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	velocity *= NetworkTime.physics_factor
 	move_and_slide()
 	velocity /= NetworkTime.physics_factor
+
+	# debug
 	#_log_collisions()
 
 #===================================================================================#

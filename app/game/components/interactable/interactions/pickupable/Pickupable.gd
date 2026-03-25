@@ -13,6 +13,15 @@ var holder_id: int = 0
 var pickup_state: PickupState = PickupState.FREE
 var pending_throw_velocity: Vector3 = Vector3.ZERO
 
+# default values for _handle_holder_point_forces
+@export var spring_k: float = 50.0
+@export var damper_b: float = 10.0
+@export var drop_distance: float = 4.0
+
+# default angular dampening for parent body
+@export var held_parent_angular_damp: float = 5.0
+var original_parent_angular_damp: float = 1.0
+
 # INIT
 #===================================================================================#
 func _on_ready() -> void:
@@ -58,12 +67,22 @@ func _pickup(interactor: Node3D) -> void:
 		pickupable_yanked.emit()
 	holder = interactor
 	holder_id = interactor.peer_id
+
+	# dampens rotation when being held
+	original_parent_angular_damp = parent.angular_damp
+	parent.angular_damp = held_parent_angular_damp
+
 	NetworkRollback.mutate(self)
 
 func _drop() -> void:
+	parent.sleeping = false
 	pickup_state = PickupState.FREE
 	holder = null
 	holder_id = 0
+
+	# restores default angular damping
+	parent.angular_damp = original_parent_angular_damp
+
 	NetworkRollback.mutate(self)
 
 func _throw(_throw_power: float = 0.0, _throw_direction: Vector3 = Vector3.ZERO) -> void:
@@ -73,6 +92,9 @@ func _throw(_throw_power: float = 0.0, _throw_direction: Vector3 = Vector3.ZERO)
 	pickup_state = PickupState.THROWN
 	holder = null
 	holder_id = 0
+
+	# restores default angular damping
+	parent.angular_damp = original_parent_angular_damp
 
 	pending_throw_velocity = _throw_direction.normalized() * _throw_power
 	NetworkRollback.mutate(self)
@@ -85,7 +107,8 @@ func _throw(_throw_power: float = 0.0, _throw_direction: Vector3 = Vector3.ZERO)
 #===================================================================================#
 func _interact_physics_rollback_tick(_delta, _tick):
 	_handle_holder_sync()
-	_handle_holder_point_transform()
+	#_handle_holder_point_transform()
+	_handle_holder_point_forces(_delta)
 	_handle_throw_velocty()
 
 func _handle_holder_sync() -> void:
@@ -97,19 +120,41 @@ func _handle_holder_sync() -> void:
 			holder = player
 		else:
 			# this is a bit troublesome because when a late joiner connects
-			# the player node may not be ready yet, so we need to wait for it to be ready...
+			# the player node may not be ready yet, so we could wait for it to be ready...
 			SweetLogger.warning("Player {0} not found", [holder_id], "Pickupable.gd", "_handle_holder_sync")
 
+## Snaps the body to the hold point each tick (overrides physics / [member NetworkRigidBody3D.physics_state]).
 func _handle_holder_point_transform() -> void:
 	if pickup_state == PickupState.HELD and holder:
 		var new_state: Array = [
 			holder.hold_point.global_transform.origin,
 			holder.hold_point.global_transform.basis.get_rotation_quaternion(),
-			Vector3.ZERO, 
-			Vector3.ZERO, 
+			Vector3.ZERO,
+			Vector3.ZERO,
 			false
 		]
 		parent.set_state(new_state)
+
+## Drives the parent [RigidBody3D] toward [member holder]'s hold point with forces so the physics server integrates motion.
+func _handle_holder_point_forces(_delta: float) -> void:
+	if pickup_state != PickupState.HELD or not holder or not parent:
+		return
+
+	var body := parent as RigidBody3D
+	if not body:
+		return
+
+	var displacement = holder.hold_point.global_position - body.global_position
+	var dist = displacement.length()
+
+	if dist > drop_distance:
+		# drop
+		pass
+
+	var spring_force = displacement * spring_k
+	var damper_force = -body.linear_velocity * damper_b
+
+	body.apply_central_force(spring_force + damper_force)
 
 func _handle_throw_velocty() -> void:
 	if pending_throw_velocity != Vector3.ZERO:
