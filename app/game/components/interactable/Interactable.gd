@@ -53,12 +53,20 @@ func _interact_physics_rollback_tick(_delta, _tick):
 
 # FOCUS CHANGE
 #===================================================================================#
+func should_show_focus_label(focuser: Node3D) -> bool:
+	if not focuser is CharacterBody3D:
+		return false
+	
+	var my_id = multiplayer.get_unique_id()
+	if focuser.peer_id == my_id and not focuser.is_examining():
+		return true
+	return false
+
 func on_focus_enter(focuser: Node3D) -> void:
 	if not focuser is CharacterBody3D:
 		return
 	
-	var my_id = multiplayer.get_unique_id()
-	if focuser.peer_id == my_id:
+	if should_show_focus_label(focuser):
 		label.text = _get_label_text()
 		label.visible = true
 
@@ -68,6 +76,19 @@ func on_focus_exit(focuser: Node3D) -> void:
 	
 	var my_id = multiplayer.get_unique_id()
 	if focuser.peer_id == my_id:
+		label.visible = false
+
+## Call when focus stays on this interactable but per-player state (e.g. examining) changes.
+func refresh_focus_label(focuser: Node3D) -> void:
+	if not focuser is CharacterBody3D:
+		return
+	var my_id = multiplayer.get_unique_id()
+	if focuser.peer_id != my_id:
+		return
+	if should_show_focus_label(focuser):
+		label.text = _get_label_text()
+		label.visible = true
+	else:
 		label.visible = false
 #===================================================================================#
 

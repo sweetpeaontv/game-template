@@ -70,8 +70,8 @@ var _active_player_rig_pitch: Node3D
 var _active_player_rig_cam_transform: Node3D
 
 # Examine rig refs
-@onready var _examine_root: Node3D = $Rigs/Examine/RigRoot
-@onready var _examine_transform: Node3D = $Rigs/Examine/RigRoot/CameraTransform
+#@onready var _examine_root: Node3D = $Rigs/Examine/RigRoot
+#@onready var _examine_transform: Node3D = $Rigs/Examine/RigRoot/CameraTransform
 
 var _follow_target: Node3D
 var _follow_mode: FollowMode = FollowMode.POSITION_ONLY
@@ -242,6 +242,7 @@ func set_third_person_distance(distance: float) -> void:
 # APPLICATION
 #===================================================================================#
 func transition_to(target_rig: RigType = RigType.EXAMINE, anchor: Node3D = null) -> void:
+	#SweetLogger.info("Transitioning to rig: {0}, anchor: {1}", [target_rig, anchor], "CameraManager.gd", "transition_to")
 	match target_rig:
 		RigType.EXAMINE:
 			if anchor != null:

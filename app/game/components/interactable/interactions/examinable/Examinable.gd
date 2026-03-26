@@ -38,14 +38,18 @@ func _interact(_interactor: Node3D, _data: Variant = null) -> void:
 			disengage(_interactor)
 
 func examine(_interactor: Node3D) -> void:
-	label.visible = false
 	examiners.append(_interactor)
 	examiner_ids.append(_interactor.peer_id)
 
+	if _interactor.peer_id == multiplayer.get_unique_id():
+		label.visible = false
+
 func disengage(_interactor: Node3D) -> void:
-	label.visible = true
 	examiners.erase(_interactor)
 	examiner_ids.erase(_interactor.peer_id)
+
+	if _interactor.peer_id == multiplayer.get_unique_id():
+		label.visible = true
 #===================================================================================#
 
 # GETTERS

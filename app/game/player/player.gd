@@ -26,6 +26,7 @@ const IS_VERBOSE := false
 
 # MULTIPLAYER VALUES/VARIABLES
 var peer_id: int = 0
+var local_player: bool = false
 
 # CAMERA DEFAULT VALUES/VARIABLES
 enum CameraType { FIRST_PERSON, THIRD_PERSON }
@@ -71,9 +72,9 @@ func _setup() -> void:
 
 	var my_id = multiplayer.get_unique_id()
 
-	var is_local: bool= (peer_id == my_id)
+	local_player = (peer_id == my_id)
 
-	if is_local:
+	if local_player:
 		UIManager.show_ui("Crosshair")
 		model.visible = (camera_type == CameraType.THIRD_PERSON)
 		nameplate.visible = false
@@ -84,7 +85,7 @@ func _setup() -> void:
 		nameplate.visible = true
 
 	camera_manager.bind_subject(
-		is_local,
+		local_player,
 		camera_anchor_fp,
 		camera_anchor_tp,
 		CameraManager.RigType.FIRST_PERSON if camera_type == CameraType.FIRST_PERSON else CameraManager.RigType.THIRD_PERSON,
@@ -102,7 +103,7 @@ func _exit_tree() -> void:
 
 # PLAYER LOOP
 #===================================================================================#
-func _rollback_tick(_delta, tick, _is_fresh):
+func _rollback_tick(_delta, tick, is_fresh):
 	if not input:
 		push_error("Player: Input node not found!")
 		return
@@ -115,8 +116,9 @@ func _rollback_tick(_delta, tick, _is_fresh):
 	# input
 	_handle_camera_rotation(_delta)
 	_handle_movement(_delta)
-	_handle_interactions(tick)
-	_handle_other_input(tick, _is_fresh)
+	_handle_interactions(tick, is_fresh)
+	# maybe comes before interactions? or conditionally? could be a race condition based on input close together
+	_handle_other_input(tick, is_fresh)
 
 	# apply
 	velocity *= NetworkTime.physics_factor
@@ -135,7 +137,7 @@ func _rollback_tick(_delta, tick, _is_fresh):
 func _locomotion_input_allowed() -> bool:
 	return player_status == PlayerStatus.PLAYING and examining == null
 
-# HANDLE CAMERA ROTATION
+# CAMERA ROTATION
 #===================================================================================#
 func _handle_camera_rotation(delta: float) -> void:
 	if camera_input.camera_basis != _previous_camera_basis:
@@ -143,7 +145,7 @@ func _handle_camera_rotation(delta: float) -> void:
 		rotate_player_model(delta, camera_input.camera_basis)
 #===================================================================================#
 
-# HANDLE INPUT
+# INPUT
 #===================================================================================#
 func _handle_movement(delta: float) -> void:
 	var move_input := input.movement
@@ -170,7 +172,7 @@ func _handle_movement(delta: float) -> void:
 		velocity.x = lerp(velocity.x, direction.x * speed, delta * 3.0)
 		velocity.z = lerp(velocity.z, direction.z * speed, delta * 3.0)
 
-func _handle_interactions(tick: int) -> void:
+func _handle_interactions(tick: int, is_fresh: bool) -> void:
 	if not input:
 		push_error("Player: Input node not found!")
 		return
@@ -179,6 +181,7 @@ func _handle_interactions(tick: int) -> void:
 		interact_action,
 		input.interact_released and focus_sensor.focus,
 		tick,
+		is_fresh,
 		"interact",
 		_handle_interact,
 		_handle_interact_cancelled
@@ -195,6 +198,7 @@ func _handle_interactions(tick: int) -> void:
 		alt_interact_action,
 		holding and input.alt_interact_released,
 		tick,
+		is_fresh,
 		"alt_interact",
 		_handle_alt_interact,
 		_handle_alt_interact_cancelled
@@ -211,6 +215,9 @@ func _handle_other_input(tick: int, is_fresh: bool) -> void:
 
 # FOCUS SENSOR
 #===================================================================================#
+func is_focused() -> bool:
+	return focus_sensor.is_focused()
+
 func _handle_focus_sensor_sync() -> void:
 	if focus_sensor.focus_key == 0 and focus_sensor.focus != null:
 		focus_sensor.focus.on_focus_exit(self)
@@ -224,22 +231,22 @@ func _handle_focus_sensor_sync() -> void:
 
 # INTERACT ACTION
 #===================================================================================#
-func _handle_interact() -> void:
+func _handle_interact(is_fresh: bool) -> void:
 	if not focus_sensor.focus or not focus_sensor.focus is Interactable:
 		return
 
 	var interaction_type = focus_sensor.focus.get_interaction_type()
 	match interaction_type:
 		InteractionTypes.InteractionType.PICKUPABLE:
-			_handle_pickup()
+			_handle_pickup(is_fresh)
 		InteractionTypes.InteractionType.OPERABLE:
 			focus_sensor.focus.interact(self, InteractionTypes.OperableData.toggle())
 		InteractionTypes.InteractionType.EXAMINABLE:
-			_handle_examine()
+			_handle_examine(is_fresh)
 		_:
 			SweetLogger.error("Invalid interaction type: {0}", [interaction_type], "Player.gd", "_handle_interact")
 	
-func _handle_interact_cancelled() -> void:
+func _handle_interact_cancelled(_is_fresh: bool) -> void:
 	pass
 #===================================================================================#
 
@@ -265,7 +272,7 @@ func _handle_alt_interact() -> void:
 	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
 	UIManager.hide_ui("PickupHUD")
 
-func _handle_alt_interact_cancelled() -> void:
+func _handle_alt_interact_cancelled(_is_fresh: bool) -> void:
 	if IS_VERBOSE:
 		SweetLogger.info("cancelling alt_interact, setting pickup state to FREE", [], "Player.gd", "_handle_alt_interact_cancelled")
 	holding.set_pickup_state(holding.PickupState.FREE)
@@ -290,13 +297,13 @@ func _handle_holding_sync() -> void:
 		if not holding.pickupable_yanked.is_connected(_on_pickupable_yanked):
 			holding.pickupable_yanked.connect(_on_pickupable_yanked)
 
-func _handle_pickup() -> void:
+func _handle_pickup(is_fresh: bool) -> void:
 	focus_sensor.focus.interact(self, InteractionTypes.PickupData.pickup())
 	focus_sensor.focus.pickupable_yanked.connect(_on_pickupable_yanked)
 	holding = focus_sensor.focus
 	holding_key = focus_sensor.focus.key
 
-	if multiplayer.get_unique_id() == peer_id:
+	if local_player and is_fresh:
 		#var signal_connections = [
 		#	SignalConnections.new(self, alt_interact_hold_duration_changed, )
 		#]
@@ -337,22 +344,26 @@ func _handle_examine_sync() -> void:
 			examining = new_examining
 			examining_key = new_examining.key if new_examining else 0
 
-func _handle_examine() -> void:
+func _handle_examine(is_fresh: bool) -> void:
+	#SweetLogger.info("Examine pressed for player: {0}, focus: {1}", [peer_id, focus_sensor.focus.name], "Player.gd", "_handle_examine")
 	focus_sensor.focus.interact(self, InteractionTypes.ExaminableData.examine())
 	examining = focus_sensor.focus
 	examining_key = focus_sensor.focus.key
 
-	if multiplayer.get_unique_id() == peer_id:
+	if local_player and is_fresh:
+		# we may need to lock this behind is_fresh to avoid double side effects
 		InputModeManager.set_input_mode(Input.MOUSE_MODE_CONFINED)
 		camera_manager.transition_to(CameraManager.RigType.EXAMINE, focus_sensor.focus.examine_camera_anchor)
 
-func _handle_examine_disengage() -> void:
+func _handle_examine_disengage(is_fresh: bool) -> void:
+	#SweetLogger.info("Examine disengaged for player: {0}, focus: {1}", [peer_id, examining.name], "Player.gd", "_handle_examine_disengage")
 	examining.interact(self, InteractionTypes.ExaminableData.disengage())
 
 	examining = null
 	examining_key = 0
 	
-	if multiplayer.get_unique_id() == peer_id:
+	if local_player and is_fresh:
+		# we may need to lock this behind is_fresh to avoid double side effects
 		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON, camera_anchor_fp)
 #===================================================================================#
@@ -361,10 +372,8 @@ func _handle_examine_disengage() -> void:
 #===================================================================================#
 func _handle_escape(tick: int, is_fresh: bool) -> void:
 	if examining:
-		_handle_examine_disengage()
+		_handle_examine_disengage(is_fresh)
 		return
-
-	var local_player = multiplayer.get_unique_id() == peer_id
 	
 	if player_status == PlayerStatus.ESC:
 		player_status = PlayerStatus.PLAYING
@@ -376,16 +385,16 @@ func _handle_escape(tick: int, is_fresh: bool) -> void:
 	if local_player and is_fresh:
 		_handle_esc_local(tick)
 
-func _handle_esc_local(tick: int) -> void:
-	SweetLogger.info("Escape pressed for player: {0}, player status: {1} at tick: {2}", [peer_id, player_status, tick], "Player.gd", "_handle_escape_local")
+func _handle_esc_local(_tick: int) -> void:
+	#SweetLogger.info("Escape pressed for player: {0}, player status: {1} at tick: {2}", [peer_id, player_status, _tick], "Player.gd", "_handle_escape_local")
 	var esc_menu: Node = UIManager.show_ui("EscMenu")
 	if esc_menu and esc_menu.has_signal("resume_pressed"):
 		esc_menu.resume_pressed.connect(_on_esc_menu_resume_pressed, CONNECT_ONE_SHOT)
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
 	camera_manager.set_look_input_enabled(false)
 
-func _handle_resume_local(tick: int) -> void:
-	SweetLogger.info("Escape released for player: {0}, player status: {1} at tick: {2} and is fresh: {3}", [peer_id, player_status, tick], "Player.gd", "_handle_resume_local")
+func _handle_resume_local(_tick: int) -> void:
+	#SweetLogger.info("Escape released for player: {0}, player status: {1} at tick: {2} and is fresh: {3}", [peer_id, player_status, _tick], "Player.gd", "_handle_resume_local")
 	UIManager.hide_ui("EscMenu")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 	camera_manager.set_look_input_enabled(true)
@@ -406,6 +415,7 @@ func _process_rewindable_action(
 	action: RewindableAction,
 	should_activate: bool,
 	tick: int,
+	is_fresh: bool,
 	_action_name: String,
 	on_confirming: Callable,
 	on_cancelling: Callable
@@ -418,11 +428,11 @@ func _process_rewindable_action(
 		RewindableAction.CONFIRMING:
 			if IS_VERBOSE:
 				SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
-			on_confirming.call()
+			on_confirming.call(is_fresh)
 		RewindableAction.CANCELLING:
 			if IS_VERBOSE:
 				SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
-			on_cancelling.call()
+			on_cancelling.call(is_fresh)
 			action.set_active(false, tick)
 		RewindableAction.ACTIVE:
 			pass
@@ -485,6 +495,12 @@ func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 	var head_forward = camera_basis.z
 	var target_angle = atan2(head_forward.x, head_forward.z)
 	model.rotation.y = lerp_angle(model.rotation.y, target_angle, delta * 10.0)
+#===================================================================================#
+
+# API
+#===================================================================================#
+func is_examining() -> bool:
+	return examining_key != 0
 #===================================================================================#
 
 # SIGNALS

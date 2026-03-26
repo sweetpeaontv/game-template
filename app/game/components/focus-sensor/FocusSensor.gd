@@ -7,12 +7,20 @@ extends Node3D
 var focus_key: int = 0
 var focus: Interactable = null
 
+# INIT
+#===================================================================================#
 func _ready() -> void:
 	NetworkTime.before_tick_loop.connect(_gather)
+#===================================================================================#
 
+# DESTRUCT
+#===================================================================================#
 func _exit_tree() -> void:
 	NetworkTime.before_tick_loop.disconnect(_gather)
+#===================================================================================#
 
+# PER TICK
+#===================================================================================#
 func _gather() -> void:
 	if not actor or multiplayer.get_unique_id() != actor.peer_id:
 		return
@@ -50,13 +58,10 @@ func _query_focus_hit() -> Object:
 		return null
 
 	return collider
+#===================================================================================#
 
-func query_focus_key() -> int:
-	var hit := _query_focus_hit()
-	if hit is Interactable:
-		return (hit as Interactable).key
-	return 0
-
+# SYNC
+#===================================================================================#
 func _handle_focus_sync() -> void:
 	if focus_key == 0 and focus != null:
 		focus = null
@@ -64,3 +69,16 @@ func _handle_focus_sync() -> void:
 		var new_focus = InteractableRegistries.interactables.get_entry(focus_key)
 		if new_focus:
 			focus = new_focus
+#===================================================================================#
+
+# API
+#===================================================================================#
+func is_focused() -> bool:
+	return focus_key != 0
+
+func get_focus() -> Interactable:
+	return focus
+
+func get_focus_key() -> int:
+	return focus_key
+#===================================================================================#
