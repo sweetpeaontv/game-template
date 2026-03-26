@@ -68,6 +68,7 @@ func get_interaction_type() -> int:
 	return InteractionTypes.InteractionType.OPERABLE
 
 func toggle() -> void:
+	SweetLogger.info("Toggling operable: {0}", [name], "Operable.gd", "toggle")
 	var cycle := _get_cycle_state_names()
 	if cycle.size() < 2:
 		return

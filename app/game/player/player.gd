@@ -233,6 +233,7 @@ func _handle_focus_sensor_sync() -> void:
 #===================================================================================#
 func _handle_interact(is_fresh: bool) -> void:
 	if not focus_sensor.focus or not focus_sensor.focus is Interactable:
+		SweetLogger.error("No focus or focus is not an Interactable for player: {0}", [peer_id], "Player.gd", "_handle_interact")
 		return
 
 	var interaction_type = focus_sensor.focus.get_interaction_type()
@@ -240,6 +241,7 @@ func _handle_interact(is_fresh: bool) -> void:
 		InteractionTypes.InteractionType.PICKUPABLE:
 			_handle_pickup(is_fresh)
 		InteractionTypes.InteractionType.OPERABLE:
+			SweetLogger.info("Interacting with operable: {0}", [focus_sensor.focus.name], "Player.gd", "_handle_interact")
 			focus_sensor.focus.interact(self, InteractionTypes.OperableData.toggle())
 		InteractionTypes.InteractionType.EXAMINABLE:
 			_handle_examine(is_fresh)
@@ -254,7 +256,7 @@ func _handle_interact_cancelled(_is_fresh: bool) -> void:
 #===================================================================================#
 # needs to be generalized, as other interactables may have different alt interact data
 # currently only works for pickupables
-func _handle_alt_interact() -> void:
+func _handle_alt_interact(_is_fresh: bool) -> void:
 	if not holding:
 		return
 	
@@ -345,25 +347,21 @@ func _handle_examine_sync() -> void:
 			examining_key = new_examining.key if new_examining else 0
 
 func _handle_examine(is_fresh: bool) -> void:
-	#SweetLogger.info("Examine pressed for player: {0}, focus: {1}", [peer_id, focus_sensor.focus.name], "Player.gd", "_handle_examine")
 	focus_sensor.focus.interact(self, InteractionTypes.ExaminableData.examine())
 	examining = focus_sensor.focus
 	examining_key = focus_sensor.focus.key
 
 	if local_player and is_fresh:
-		# we may need to lock this behind is_fresh to avoid double side effects
 		InputModeManager.set_input_mode(Input.MOUSE_MODE_CONFINED)
 		camera_manager.transition_to(CameraManager.RigType.EXAMINE, focus_sensor.focus.examine_camera_anchor)
 
 func _handle_examine_disengage(is_fresh: bool) -> void:
-	#SweetLogger.info("Examine disengaged for player: {0}, focus: {1}", [peer_id, examining.name], "Player.gd", "_handle_examine_disengage")
 	examining.interact(self, InteractionTypes.ExaminableData.disengage())
 
 	examining = null
 	examining_key = 0
 	
 	if local_player and is_fresh:
-		# we may need to lock this behind is_fresh to avoid double side effects
 		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON, camera_anchor_fp)
 #===================================================================================#
@@ -386,7 +384,6 @@ func _handle_escape(tick: int, is_fresh: bool) -> void:
 		_handle_esc_local(tick)
 
 func _handle_esc_local(_tick: int) -> void:
-	#SweetLogger.info("Escape pressed for player: {0}, player status: {1} at tick: {2}", [peer_id, player_status, _tick], "Player.gd", "_handle_escape_local")
 	var esc_menu: Node = UIManager.show_ui("EscMenu")
 	if esc_menu and esc_menu.has_signal("resume_pressed"):
 		esc_menu.resume_pressed.connect(_on_esc_menu_resume_pressed, CONNECT_ONE_SHOT)
@@ -394,13 +391,12 @@ func _handle_esc_local(_tick: int) -> void:
 	camera_manager.set_look_input_enabled(false)
 
 func _handle_resume_local(_tick: int) -> void:
-	#SweetLogger.info("Escape released for player: {0}, player status: {1} at tick: {2} and is fresh: {3}", [peer_id, player_status, _tick], "Player.gd", "_handle_resume_local")
 	UIManager.hide_ui("EscMenu")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 	camera_manager.set_look_input_enabled(true)
 
 func _on_esc_menu_resume_pressed() -> void:
-	if multiplayer.get_unique_id() != peer_id:
+	if not local_player:
 		return
 	if player_status != PlayerStatus.ESC:
 		return
@@ -430,8 +426,8 @@ func _process_rewindable_action(
 				SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_confirming.call(is_fresh)
 		RewindableAction.CANCELLING:
-			if IS_VERBOSE:
-				SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
+			#if IS_VERBOSE:
+			SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_cancelling.call(is_fresh)
 			action.set_active(false, tick)
 		RewindableAction.ACTIVE:

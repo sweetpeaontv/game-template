@@ -2,7 +2,7 @@ extends Node
 
 ## Global Logger singleton for consistent logging across the game.
 ## All logs are prefixed with [peer_id]: to identify which instance is logging.
-## Uses print_rich with colorized backgrounds for peer IDs and log types.
+## Uses print_rich with colorized backgrounds for log type, local time, peer IDs, and script context.
 
 # COLORS
 #===================================================================================#
@@ -68,6 +68,9 @@ const LOG_LINE_BG_COLOR = "#1a1a1a"
 
 ## Background color for the script/function name column
 const SCRIPT_FUNCTION_BG_COLOR = "#4a5a6a"
+
+## Background color for the local time column (between log type and peer id)
+const TIMESTAMP_BG_COLOR = "#1e3a5f"
 #===================================================================================#
 
 # WIDTHS
@@ -75,6 +78,9 @@ const SCRIPT_FUNCTION_BG_COLOR = "#4a5a6a"
 ## Column widths for alignment (in characters)
 const PEER_ID_COLUMN_WIDTH = 10
 const LOG_TYPE_COLUMN_WIDTH = 8
+## Default mm:ss:ms; with SHOW_TIMESTAMP_HOURS, hh:mm:ss:ms
+const TIMESTAMP_COLUMN_WIDTH_MMSSMS = 9
+const TIMESTAMP_COLUMN_WIDTH_HHMMSSMS = 12
 const SCRIPT_FUNCTION_COLUMN_WIDTH = 40
 #===================================================================================#
 
@@ -86,6 +92,8 @@ var _peer_color_cache: Dictionary = {}
 ## Enable/disable showing script name and function name in logs
 @export var SHOW_SCRIPT_NAME = true
 @export var SHOW_FUNCTION_NAME = true
+## When false (default), timestamp is local mm:ss:ms. When true, local hh:mm:ss:ms (wider column).
+@export var SHOW_TIMESTAMP_HOURS = false
 #===================================================================================#
 
 # GETTERS
@@ -170,6 +178,15 @@ func _truncate_text(text: String, max_length: int) -> String:
 		return text
 	return text.substr(0, max_length)
 
+func _get_local_timestamp_string() -> String:
+	"""Local time: mm:ss:ms by default, or hh:mm:ss:ms when SHOW_TIMESTAMP_HOURS is true."""
+	var unix = Time.get_unix_time_from_system()
+	var ms = clampi(int(floor(fmod(unix, 1.0) * 1000.0)), 0, 999)
+	var t = Time.get_time_dict_from_system()
+	if SHOW_TIMESTAMP_HOURS:
+		return "%02d:%02d:%02d:%03d" % [t.hour, t.minute, t.second, ms]
+	return "%02d:%02d:%03d" % [t.minute, t.second, ms]
+
 #===================================================================================#
 
 # PRINT
@@ -192,6 +209,11 @@ func _print_rich_log(peer_id_str: String, log_type: String, message: String, scr
 	# Format log type with its background color
 	var log_type_padded = _pad_text(log_type_label, LOG_TYPE_COLUMN_WIDTH)
 	var log_type_formatted = _format_rich_text(log_type_padded, log_config.bg_color, log_config.text_color)
+
+	# Local time column (between log type and peer id)
+	var ts_width = TIMESTAMP_COLUMN_WIDTH_HHMMSSMS if SHOW_TIMESTAMP_HOURS else TIMESTAMP_COLUMN_WIDTH_MMSSMS
+	var time_padded = _pad_text(_get_local_timestamp_string(), ts_width)
+	var time_formatted = _format_rich_text(time_padded, TIMESTAMP_BG_COLOR, CONTRAST_TEXT)
 
 	# Build the context string (script name and function name) combined in one column
 	var context_string = ""
@@ -225,8 +247,8 @@ func _print_rich_log(peer_id_str: String, log_type: String, message: String, scr
 		peer_and_message += peer_space + context_string
 	peer_and_message += peer_space + message_formatted
 
-	# Create the full log line with peer-colored space between peer ID and log type+message
-	var log_line = log_type_formatted + peer_and_message
+	# Create the full log line: log type, timestamp, then peer id and message
+	var log_line = log_type_formatted + time_formatted + peer_and_message
 	var wrapped_line = "[bgcolor=%s]%s[/bgcolor]" % [LOG_LINE_BG_COLOR, log_line]
 
 	print_rich(wrapped_line)
