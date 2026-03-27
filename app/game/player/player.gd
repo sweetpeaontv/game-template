@@ -313,9 +313,8 @@ func _handle_pickup(is_fresh: bool) -> void:
 		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP		
 		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
 
-func _handle_object_yanked() -> void:
-	''' Called (outside of rollback loop) when another player takes an object from the player.'''
-	SweetLogger.info("Object yanked from player: {0}, setting holding to null", [peer_id], "Player.gd", "_handle_object_yanked")
+func _handle_object_released() -> void:
+	SweetLogger.info("Object released from player: {0}, setting holding to null", [peer_id], "Player.gd", "_handle_object_released")
 	holding_key = 0
 	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 	NetworkRollback.mutate(self)
@@ -328,11 +327,7 @@ func _handle_let_go() -> void:
 		var throw_power = input.alt_interact_hold_time * 10.0
 		holding.interact(self, InteractionTypes.PickupData.throw(throw_power))
 
-	holding_key = 0
-	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
-	NetworkRollback.mutate(self)
-	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
-	UIManager.hide_ui("PickupHUD")
+	_handle_object_released()
 #===================================================================================#
 
 # EXAMINE ACTION
@@ -505,5 +500,5 @@ func _on_pickupable_yanked() -> void:
 	if not holding:
 		return
 	
-	_handle_object_yanked()
+	_handle_object_released()
 #===================================================================================#

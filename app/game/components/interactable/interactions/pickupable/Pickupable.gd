@@ -148,8 +148,9 @@ func _handle_holder_point_forces(_delta: float) -> void:
 	var dist = displacement.length()
 
 	if dist > drop_distance:
-		# drop
-		pass
+		pickupable_yanked.emit()
+		_drop()
+		return
 
 	var spring_force = displacement * spring_k
 	var damper_force = -body.linear_velocity * damper_b
