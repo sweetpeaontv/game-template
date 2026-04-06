@@ -109,7 +109,7 @@ func _rollback_tick(_delta, tick, is_fresh):
 		return
 
 	# sync
-	_handle_focus_sensor_sync()
+	focus_sensor._handle_focus_sync()
 	_handle_holding_sync()
 	_handle_examine_sync()
 
@@ -211,22 +211,6 @@ func _handle_other_input(tick: int, is_fresh: bool) -> void:
 
 	if input.escape_released:
 		_handle_escape(tick, is_fresh)
-#===================================================================================#
-
-# FOCUS SENSOR
-#===================================================================================#
-func is_focused() -> bool:
-	return focus_sensor.is_focused()
-
-func _handle_focus_sensor_sync() -> void:
-	if focus_sensor.focus_key == 0 and focus_sensor.focus != null:
-		focus_sensor.focus.on_focus_exit(self)
-		focus_sensor.focus = null
-	if focus_sensor.focus_key != 0 and focus_sensor.focus == null:
-		var new_focus = InteractableRegistries.interactables.get_entry(focus_sensor.focus_key)
-		if new_focus:
-			focus_sensor.focus = new_focus
-			focus_sensor.focus.on_focus_enter(self)
 #===================================================================================#
 
 # INTERACT ACTION
@@ -490,8 +474,23 @@ func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 
 # API
 #===================================================================================#
+func is_focused() -> bool:
+	return focus_sensor.is_focused()
+
+func get_focus() -> Interactable:
+	return focus_sensor.get_focus()
+
 func is_examining() -> bool:
 	return examining_key != 0
+
+func get_examining() -> Examinable:
+	return examining if examining_key != 0 else null
+
+func is_holding() -> bool:
+	return holding_key != 0
+
+func get_holding() -> Pickupable:
+	return holding if holding_key != 0 else null
 #===================================================================================#
 
 # SIGNALS

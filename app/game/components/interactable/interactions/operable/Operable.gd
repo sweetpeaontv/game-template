@@ -53,6 +53,8 @@ func _interact(_interactor: Node3D, _data: Variant = null) -> void:
 		return
 
 	match _data.action:
+		InteractionTypes.OperableData.Action.PULSE:
+			pulse()
 		InteractionTypes.OperableData.Action.TOGGLE:
 			toggle()
 		InteractionTypes.OperableData.Action.SET_STATE:
@@ -66,6 +68,9 @@ func _interact(_interactor: Node3D, _data: Variant = null) -> void:
 
 func get_interaction_type() -> int:
 	return InteractionTypes.InteractionType.OPERABLE
+
+func pulse() -> void:
+	SweetLogger.info("Pulsing operable: {0}", [name], "Operable.gd", "pulse")
 
 func toggle() -> void:
 	SweetLogger.info("Toggling operable: {0}", [name], "Operable.gd", "toggle")

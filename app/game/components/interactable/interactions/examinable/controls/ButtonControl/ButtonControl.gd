@@ -70,7 +70,7 @@ func _disconnect_area_signals() -> void:
 		if a.input_event.is_connected(cb):
 			a.input_event.disconnect(cb)
 
-func _on_area_input_event(camera: Camera3D, event: InputEvent, position: Vector3, normal: Vector3, shape_idx: int, area: Area3D) -> void:
+func _on_area_input_event(_camera: Camera3D, event: InputEvent, curr_position: Vector3, _normal: Vector3, _shape_idx: int, area: Area3D) -> void:
 	if not is_enabled:
 		return
 	if not (event is InputEventMouseButton):
@@ -86,11 +86,11 @@ func _on_area_input_event(camera: Camera3D, event: InputEvent, position: Vector3
 	if id == &"":
 		return
 	
-	SweetLogger.info('Button pressed: {0}', [id], 'ButtonControl.gd', '_on_area_input_event')
+	# SweetLogger.info('Button pressed: {0}', [id], 'ButtonControl.gd', '_on_area_input_event')
 
 	emit_activated({
 		"id": id,
-		"world_pos": position
+		"world_pos": curr_position
 	})
 
 # Call this if you change button entries at runtime.

@@ -24,13 +24,16 @@ class PickupData extends InteractionTypes:
 		return PickupData.new(Action.THROW, power, direction)
 
 class OperableData extends InteractionTypes:
-	enum Action { TOGGLE, SET_STATE, NEXT_STATE, PREV_STATE }
+	enum Action { PULSE, TOGGLE, SET_STATE, NEXT_STATE, PREV_STATE }
 	var action: Action
 	var target_state: StringName = &""
 
 	func _init(_action: Action, _target_state: StringName = &""):
 		action = _action
 		target_state = _target_state
+
+	static func pulse() -> OperableData:
+		return OperableData.new(Action.PULSE)
 
 	static func toggle() -> OperableData:
 		return OperableData.new(Action.TOGGLE)

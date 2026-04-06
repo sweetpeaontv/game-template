@@ -33,13 +33,29 @@ func _get_aim_origin() -> Vector3:
 func _get_aim_dir() -> Vector3:
 	return -camera_manager.get_look_basis().z
 
+func _get_mouse_aim_origin() -> Vector3:
+	var cam: Camera3D = camera_manager.get_camera()
+	return cam.project_ray_origin(get_viewport().get_mouse_position())
+
+func _get_mouse_aim_dir() -> Vector3:
+	var cam: Camera3D = camera_manager.get_camera()
+	return cam.project_ray_normal(get_viewport().get_mouse_position())
+
 func _query_focus_hit() -> Object:
 	if not camera_manager:
 		SweetLogger.error('No camera manager present for FocusSensor', [], 'FocusSensor.gd', '_query_focus_hit')
 		return
-	
-	var origin: Vector3 = _get_aim_origin()
-	var dir: Vector3 = _get_aim_dir()
+
+	var origin: Vector3
+	var dir: Vector3
+	var exclude: Array[RID] = [actor.get_rid()]
+	if actor.is_examining():
+		origin = _get_mouse_aim_origin()
+		dir = _get_mouse_aim_dir()
+		exclude.append(actor.get_examining().get_rid())
+	else:
+		origin = _get_aim_origin()
+		dir = _get_aim_dir()
 
 	var to := origin + dir * max_distance
 
@@ -47,7 +63,7 @@ func _query_focus_hit() -> Object:
 	query.collide_with_areas = true
 	query.collide_with_bodies = true
 	query.collision_mask = LayerDefs.PHYSICS_LAYERS_3D["INTERACTABLE"]
-	query.exclude = [actor.get_rid()]
+	query.exclude = exclude
 
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
 	if hit.is_empty():
@@ -64,11 +80,14 @@ func _query_focus_hit() -> Object:
 #===================================================================================#
 func _handle_focus_sync() -> void:
 	if focus_key == 0 and focus != null:
+		focus.on_focus_exit(actor)
 		focus = null
 	if focus_key != 0 and focus == null:
 		var new_focus = InteractableRegistries.interactables.get_entry(focus_key)
 		if new_focus:
 			focus = new_focus
+			SweetLogger.info("Focus sensor focus set to: {0}", [focus.name], "FocusSensor.gd", "_handle_focus_sync")
+			focus.on_focus_enter(actor)
 #===================================================================================#
 
 # API

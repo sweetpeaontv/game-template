@@ -2,11 +2,14 @@
 
 [ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/objects/interactables/examinables/keypad/KeypadButton.tscn" id="1_k2c6y"]
 [ext_resource type="PackedScene" uid="uid://cvqj8c4edvdto" path="res://app/game/components/interactable/interactions/examinable/mediators/KeypadMediator/KeypadMediator.tscn" id="1_rxuor"]
+[ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="2_0daay"]
 [ext_resource type="PackedScene" uid="uid://c364nmt4mly4v" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/ButtonControl.tscn" id="2_2es7a"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
 [ext_resource type="Script" uid="uid://dpcx443cc80hx" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/data/ButtonEntry.gd" id="3_o11ma"]
 [ext_resource type="PackedScene" uid="uid://dqsv6jr6v1mbj" path="res://app/game/components/interactable/interactions/examinable/actuators/PressActuator/PressActuator.tscn" id="4_press"]
+[ext_resource type="Script" uid="uid://b1iumw3hfju0g" path="res://app/game/objects/interactables/examinables/keypad/KeypadState.gd" id="10_keystate"]
+[ext_resource type="Script" uid="uid://djrsbptfs1afx" path="res://app/game/components/interactable/interactions/examinable/actuators/KeypadDisplayActuator/KeypadDisplayActuator.gd" id="11_keydisp"]
 
 [sub_resource type="Resource" id="Resource_obdr8"]
 script = ExtResource("3_o11ma")
@@ -482,16 +485,29 @@ points = PackedVector3Array(0.11505277, 0.01470694, 0.15894459, 0.11505277, 0, 0
 
 [node name="KeypadRoot" type="Node3D" parent="." unique_id=1401501180]
 
-[node name="KeypadMediator" parent="KeypadRoot" unique_id=1853250219 instance=ExtResource("1_rxuor")]
+[node name="KeypadState" type="Node3D" parent="KeypadRoot" unique_id=725613144]
+script = ExtResource("10_keystate")
+
+[node name="StateSynchronizer" type="Node" parent="KeypadRoot" unique_id=1339532938 node_paths=PackedStringArray("root")]
+script = ExtResource("2_0daay")
+root = NodePath("..")
+properties = Array[String](["KeypadState:entered_digits"])
+metadata/_custom_type_script = "uid://3lbngqcexe0l"
+
+[node name="KeypadMediator" parent="KeypadRoot" unique_id=1853250219 node_paths=PackedStringArray("keypad_state") instance=ExtResource("1_rxuor")]
+keypad_state = NodePath("../KeypadState")
 control_paths = Array[NodePath]([NodePath("../ButtonControl")])
 actuator_paths = Array[NodePath]([NodePath("../PressActuator")])
 routing_map = {
 "keypad_buttons": ["press"]
 }
 
-[node name="PressActuator" parent="KeypadRoot" unique_id=1158678369 node_paths=PackedStringArray("screen", "screen_label") instance=ExtResource("4_press")]
-screen = NodePath("../Screen")
+[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596 node_paths=PackedStringArray("keypad_state", "screen_label")]
+script = ExtResource("11_keydisp")
+keypad_state = NodePath("../KeypadState")
 screen_label = NodePath("../Screen/Label3D")
+
+[node name="PressActuator" parent="KeypadRoot" unique_id=1158678369 instance=ExtResource("4_press")]
 button_meshes = {
 &"1": NodePath("../Buttons/Button1Pivot"),
 &"2": NodePath("../Buttons/Button2Pivot"),
