@@ -101,6 +101,12 @@ func _gather():
 
 	_escape_release_buffer = false
 
+func _gather_always() -> void:
+	if not is_multiplayer_authority():
+		return
+	interact_released = _interact_release_buffer
+	_interact_release_buffer = false
+
 func queue_escape_release() -> void:
 	if not is_multiplayer_authority():
 		return

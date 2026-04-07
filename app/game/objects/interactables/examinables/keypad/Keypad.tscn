@@ -1,69 +1,15 @@
 [gd_scene format=4 uid="uid://cvl14edykthr5"]
 
 [ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/objects/interactables/examinables/keypad/KeypadButton.tscn" id="1_k2c6y"]
-[ext_resource type="PackedScene" uid="uid://cvqj8c4edvdto" path="res://app/game/components/interactable/interactions/examinable/mediators/KeypadMediator/KeypadMediator.tscn" id="1_rxuor"]
 [ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="2_0daay"]
-[ext_resource type="PackedScene" uid="uid://c364nmt4mly4v" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/ButtonControl.tscn" id="2_2es7a"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
-[ext_resource type="Script" uid="uid://dpcx443cc80hx" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/data/ButtonEntry.gd" id="3_o11ma"]
-[ext_resource type="PackedScene" uid="uid://dqsv6jr6v1mbj" path="res://app/game/components/interactable/interactions/examinable/actuators/PressActuator/PressActuator.tscn" id="4_press"]
+[ext_resource type="PackedScene" uid="uid://cqviiexjirkxu" path="res://app/game/components/interactable/interactions/operable/Operable.tscn" id="8_kpf7x"]
+[ext_resource type="Script" uid="uid://bkihxocr50e0e" path="res://app/game/objects/interactables/examinables/keypad/buttons.gd" id="8_p4swm"]
+[ext_resource type="PackedScene" uid="uid://dt1v6nils4ibb" path="res://app/game/components/interactable/interactions/operable/states/pulse/Idle.tscn" id="9_8fog2"]
 [ext_resource type="Script" uid="uid://b1iumw3hfju0g" path="res://app/game/objects/interactables/examinables/keypad/KeypadState.gd" id="10_keystate"]
+[ext_resource type="PackedScene" uid="uid://dwiyfp2ld8hwd" path="res://app/game/components/interactable/interactions/operable/states/pulse/Pulse.tscn" id="10_p4swm"]
 [ext_resource type="Script" uid="uid://djrsbptfs1afx" path="res://app/game/components/interactable/interactions/examinable/actuators/KeypadDisplayActuator/KeypadDisplayActuator.gd" id="11_keydisp"]
-
-[sub_resource type="Resource" id="Resource_obdr8"]
-script = ExtResource("3_o11ma")
-id = &"1"
-area_path = NodePath("../Buttons/Button1Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_o11ma"]
-script = ExtResource("3_o11ma")
-id = &"2"
-area_path = NodePath("../Buttons/Button2Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_rh6i7"]
-script = ExtResource("3_o11ma")
-id = &"3"
-area_path = NodePath("../Buttons/Button3Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_t11dc"]
-script = ExtResource("3_o11ma")
-id = &"4"
-area_path = NodePath("../Buttons/Button4Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_lf0qj"]
-script = ExtResource("3_o11ma")
-id = &"5"
-area_path = NodePath("../Buttons/Button5Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_l3bsi"]
-script = ExtResource("3_o11ma")
-id = &"6"
-area_path = NodePath("../Buttons/Button6Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_ljr5l"]
-script = ExtResource("3_o11ma")
-id = &"7"
-area_path = NodePath("../Buttons/Button7Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_vmgt6"]
-script = ExtResource("3_o11ma")
-id = &"8"
-area_path = NodePath("../Buttons/Button8Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
-
-[sub_resource type="Resource" id="Resource_nx62p"]
-script = ExtResource("3_o11ma")
-id = &"9"
-area_path = NodePath("../Buttons/Button9Pivot/KeypadButton/Area3D")
-metadata/_custom_type_script = "uid://dpcx443cc80hx"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyns4"]
 resource_name = "Button"
@@ -102,6 +48,9 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ky3t3")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_pqhvt"]
+points = PackedVector3Array(-0.033421244, 0, -0.03342124, -0.025844542, 0.013227951, -0.025844539, 0.033421237, 0, -0.03342124, -0.033421244, 0, 0.033421233, -0.025844542, 0.013227951, 0.025837988, 0.025837995, 0.013227951, -0.025844539, 0.033421237, 0, 0.033421233, 0.025837995, 0.013227951, 0.025837988)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ghnfc"]
 _surfaces = [{
@@ -488,43 +437,20 @@ points = PackedVector3Array(0.11505277, 0.01470694, 0.15894459, 0.11505277, 0, 0
 [node name="KeypadState" type="Node3D" parent="KeypadRoot" unique_id=725613144]
 script = ExtResource("10_keystate")
 
-[node name="StateSynchronizer" type="Node" parent="KeypadRoot" unique_id=1339532938 node_paths=PackedStringArray("root")]
+[node name="StateSynchronizer" type="Node" parent="KeypadRoot/KeypadState" unique_id=102134222 node_paths=PackedStringArray("root")]
 script = ExtResource("2_0daay")
 root = NodePath("..")
-properties = Array[String](["KeypadState:entered_digits"])
+properties = Array[String]([":entered_digits"])
 metadata/_custom_type_script = "uid://3lbngqcexe0l"
-
-[node name="KeypadMediator" parent="KeypadRoot" unique_id=1853250219 node_paths=PackedStringArray("keypad_state") instance=ExtResource("1_rxuor")]
-keypad_state = NodePath("../KeypadState")
-control_paths = Array[NodePath]([NodePath("../ButtonControl")])
-actuator_paths = Array[NodePath]([NodePath("../PressActuator")])
-routing_map = {
-"keypad_buttons": ["press"]
-}
 
 [node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596 node_paths=PackedStringArray("keypad_state", "screen_label")]
 script = ExtResource("11_keydisp")
 keypad_state = NodePath("../KeypadState")
 screen_label = NodePath("../Screen/Label3D")
 
-[node name="PressActuator" parent="KeypadRoot" unique_id=1158678369 instance=ExtResource("4_press")]
-button_meshes = {
-&"1": NodePath("../Buttons/Button1Pivot"),
-&"2": NodePath("../Buttons/Button2Pivot"),
-&"3": NodePath("../Buttons/Button3Pivot"),
-&"4": NodePath("../Buttons/Button4Pivot"),
-&"5": NodePath("../Buttons/Button5Pivot"),
-&"6": NodePath("../Buttons/Button6Pivot"),
-&"7": NodePath("../Buttons/Button7Pivot"),
-&"8": NodePath("../Buttons/Button8Pivot"),
-&"9": NodePath("../Buttons/Button9Pivot")
-}
-
-[node name="ButtonControl" parent="KeypadRoot" unique_id=1648321710 instance=ExtResource("2_2es7a")]
-buttons = Array[ExtResource("3_o11ma")]([SubResource("Resource_obdr8"), SubResource("Resource_o11ma"), SubResource("Resource_rh6i7"), SubResource("Resource_t11dc"), SubResource("Resource_lf0qj"), SubResource("Resource_l3bsi"), SubResource("Resource_ljr5l"), SubResource("Resource_vmgt6"), SubResource("Resource_nx62p")])
-control_id = &"keypad_buttons"
-
-[node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322]
+[node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322 node_paths=PackedStringArray("keypad_state")]
+script = ExtResource("8_p4swm")
+keypad_state = NodePath("../KeypadState")
 
 [node name="Button1Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1146163727]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.11996389)
@@ -533,8 +459,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.1
 mesh = SubResource("ArrayMesh_5gm0g")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button1Pivot" unique_id=1163693650 instance=ExtResource("1_k2c6y")]
-label_text = "1"
+[node name="Operable" parent="KeypadRoot/Buttons/Button1Pivot" unique_id=2057239684 instance=ExtResource("8_kpf7x")]
+default_operate_action = 0
+default_state = &"Idle"
+default_animation_duration = 0.5
+default_animation_ease = 2
+default_animation_trans = 7
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button1Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button1Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(2057239684, 1888479538) index="0" unique_id=603860550 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button1Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(2057239684, 1888479538) index="1" unique_id=1742067676 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button2Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1913696921]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.11996389)
@@ -629,7 +567,7 @@ skeleton = NodePath("")
 transform = Transform3D(-0.49994993, -4.3864475e-08, -0.0070757074, -0.0070757074, 2.1621451e-08, 0.49994993, -4.355411e-08, 0.5, -2.224003e-08, 0, 0.02300775, 0.11825748)
 no_depth_test = true
 
-[node name="Examinable" parent="." unique_id=2057239684 node_paths=PackedStringArray("examine_target") instance=ExtResource("2_c6fxj")]
+[node name="Examinable" parent="." unique_id=759504959 node_paths=PackedStringArray("examine_target") instance=ExtResource("2_c6fxj")]
 examine_target = NodePath("../KeypadRoot")
 
 [node name="FocusCollisionShape" parent="Examinable" index="1" unique_id=1075540080]
@@ -638,7 +576,7 @@ shape = SubResource("ConvexPolygonShape3D_ycede")
 [node name="AnchorPoint" parent="Examinable" index="2" unique_id=781110576]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
-[editable path="KeypadRoot/Buttons/Button1Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button1Pivot/Operable"]
 [editable path="KeypadRoot/Buttons/Button2Pivot/KeypadButton"]
 [editable path="KeypadRoot/Buttons/Button3Pivot/KeypadButton"]
 [editable path="KeypadRoot/Buttons/Button4Pivot/KeypadButton"]

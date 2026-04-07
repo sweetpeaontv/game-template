@@ -37,7 +37,7 @@ func _exit_tree() -> void:
 
 # INTERACTION
 #===================================================================================#
-func _interact(interactor: Node3D, data: Variant = null) -> void:
+func _interact(interactor: Node3D, data: Variant = null, _rollback_is_fresh: bool = true) -> void:
 	if not data is PickupData:
 		SweetLogger.error("Invalid data type: {0}", [data.get_class()], "Pickupable.gd", "_interact")
 		return

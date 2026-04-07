@@ -29,10 +29,8 @@ var entered_digits: Array[int]:
 
 signal state_changed(entered_digits: Array[int])
 
-
 func _ready() -> void:
 	reset()
-
 
 func _enter_tree() -> void:
 	if multiplayer.has_multiplayer_peer():
@@ -41,10 +39,8 @@ func _enter_tree() -> void:
 		if sync:
 			sync.set_multiplayer_authority(1)
 
-
 func get_digit_count() -> int:
 	return digit_count
-
 
 func _digit_arrays_equal(a: Array[int], b: Array[int]) -> bool:
 	if a.size() != b.size():
@@ -54,6 +50,11 @@ func _digit_arrays_equal(a: Array[int], b: Array[int]) -> bool:
 			return false
 	return true
 
+func append_digit(digit: int) -> void:
+	var next: Array[int] = _entered_digits.duplicate()
+	next.append(digit)
+	entered_digits = next
+	NetworkRollback.mutate(self)
 
 ## Call only on the multiplayer authority (server) or in single-player.
 func append_from_button_id(button_id: StringName) -> void:
@@ -64,39 +65,8 @@ func append_from_button_id(button_id: StringName) -> void:
 	next.append(digit)
 	entered_digits = next
 
-
-## Use from gameplay / [KeypadMediator]: runs [method append_from_button_id] on the server (or
-## offline); on clients sends [@RPC] to the host. [ServerAuthority] only branches — the Callable runs
-## here, never over the network.
-func request_append(button_id: StringName) -> void:
-	if ServerAuthority.run_mutation_on_authority(func(): append_from_button_id(button_id)):
-		return
-	_rpc_append.rpc_id(ServerAuthority.server_peer_id(), button_id)
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _rpc_append(button_id: StringName) -> void:
-	if not multiplayer.is_server():
-		return
-	append_from_button_id(button_id)
-
-
-func request_reset() -> void:
-	if ServerAuthority.run_mutation_on_authority(func(): reset()):
-		return
-	_rpc_reset.rpc_id(ServerAuthority.server_peer_id())
-
-
-@rpc("any_peer", "call_remote", "reliable")
-func _rpc_reset() -> void:
-	if not multiplayer.is_server():
-		return
-	reset()
-
-
 func reset() -> void:
 	entered_digits = []
-
 
 func _button_id_to_digit(button_id: StringName) -> int:
 	var s := String(button_id)

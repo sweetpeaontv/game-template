@@ -4,12 +4,12 @@
 [ext_resource type="Script" uid="uid://cca4b7jyb54gg" path="res://app/game/components/interactable/interactions/operable/Operable.gd" id="2_u6xfc"]
 [ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="3_afm5q"]
 [ext_resource type="Script" uid="uid://byrgwv2o7hstx" path="res://addons/netfox.extras/state-machine/rewindable-state-machine.gd" id="4_aob3t"]
-[ext_resource type="Script" uid="uid://usyufdtn83hc" path="res://addons/netfox.extras/state-machine/rewindable-state.gd" id="5_i2i3t"]
 
 [node name="Operable" unique_id=2057239684 instance=ExtResource("1_bb0my")]
 script = ExtResource("2_u6xfc")
-ordered_states = Array[StringName]([&"Close", &"Open"])
-default_state = &"Close"
+ordered_states = Array[StringName]([])
+pulse_state = &""
+default_state = &""
 animation_duration = 0.5
 animation_ease = 2
 animation_trans = 7
@@ -29,14 +29,6 @@ metadata/_custom_type_script = "uid://d350u8evihs1u"
 [node name="RewindableStateMachine" type="Node" parent="." index="4" unique_id=1888479538]
 script = ExtResource("4_aob3t")
 metadata/_custom_type_script = "uid://byrgwv2o7hstx"
-
-[node name="Open" type="Node" parent="RewindableStateMachine" index="0" unique_id=1510857258]
-script = ExtResource("5_i2i3t")
-metadata/_custom_type_script = "uid://usyufdtn83hc"
-
-[node name="Close" type="Node" parent="RewindableStateMachine" index="1" unique_id=301960061]
-script = ExtResource("5_i2i3t")
-metadata/_custom_type_script = "uid://usyufdtn83hc"
 
 [node name="AnimatableBody3D" type="AnimatableBody3D" parent="." index="5" unique_id=805990844]
 

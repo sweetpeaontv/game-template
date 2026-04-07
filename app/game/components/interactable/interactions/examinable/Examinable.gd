@@ -25,7 +25,7 @@ func _exit_tree() -> void:
 
 # INTERACTION
 #===================================================================================#
-func _interact(_interactor: Node3D, _data: Variant = null) -> void:
+func _interact(_interactor: Node3D, _data: Variant = null, _rollback_is_fresh: bool = true) -> void:
 	if not _data is InteractionTypes.ExaminableData:
 		SweetLogger.error("Invalid data type: {0}", [_data.get_class()], "Examinable.gd", "_interact")
 		return

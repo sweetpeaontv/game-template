@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dwiyfp2ld8hwd"]
+
+[ext_resource type="Script" uid="uid://b6n1cxafusdt0" path="res://app/game/components/interactable/interactions/operable/states/pulse/Pulse.gd" id="1_qfd3r"]
+
+[node name="Pulse" type="Node" unique_id=1742067676]
+script = ExtResource("1_qfd3r")
+metadata/_custom_type_script = "uid://usyufdtn83hc"

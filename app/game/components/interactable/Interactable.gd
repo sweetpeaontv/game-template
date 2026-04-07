@@ -35,11 +35,11 @@ func _on_ready() -> void:
 	pass
 
 ## Public method to trigger interaction - can be called by player controller.
-func interact(interactor: Node3D, _data: Variant = null) -> void:
-	_interact(interactor, _data)
+func interact(interactor: Node3D, _data: Variant = null, _rollback_is_fresh: bool = true) -> void:
+	_interact(interactor, _data, _rollback_is_fresh)
 
 ## Override this in subclasses for custom interaction logic
-func _interact(_interactor: Node3D, _data: Variant = null) -> void:
+func _interact(_interactor: Node3D, _data: Variant = null, _rollback_is_fresh: bool = true) -> void:
 	SweetLogger.info("{0} Interacting with {1} in _interact", ['Player_%d' % _interactor.peer_id, name])
 
 ## Override this in subclasses for custom rollback logic

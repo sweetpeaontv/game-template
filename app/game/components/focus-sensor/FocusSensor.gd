@@ -86,7 +86,6 @@ func _handle_focus_sync() -> void:
 		var new_focus = InteractableRegistries.interactables.get_entry(focus_key)
 		if new_focus:
 			focus = new_focus
-			SweetLogger.info("Focus sensor focus set to: {0}", [focus.name], "FocusSensor.gd", "_handle_focus_sync")
 			focus.on_focus_enter(actor)
 #===================================================================================#
 

@@ -177,6 +177,9 @@ func _handle_interactions(tick: int, is_fresh: bool) -> void:
 		push_error("Player: Input node not found!")
 		return
 
+	if input.interact_released:
+		SweetLogger.info("interact_released: {0} for player: {1} at tick: {2}", [input.interact_released, peer_id, tick], "Player.gd", "_handle_interactions")
+
 	_process_rewindable_action(
 		interact_action,
 		input.interact_released and focus_sensor.focus,
@@ -225,8 +228,7 @@ func _handle_interact(is_fresh: bool) -> void:
 		InteractionTypes.InteractionType.PICKUPABLE:
 			_handle_pickup(is_fresh)
 		InteractionTypes.InteractionType.OPERABLE:
-			SweetLogger.info("Interacting with operable: {0}", [focus_sensor.focus.name], "Player.gd", "_handle_interact")
-			focus_sensor.focus.interact(self, InteractionTypes.OperableData.toggle())
+			_handle_operate(is_fresh)
 		InteractionTypes.InteractionType.EXAMINABLE:
 			_handle_examine(is_fresh)
 		_:
@@ -314,6 +316,16 @@ func _handle_let_go() -> void:
 	_handle_object_released()
 #===================================================================================#
 
+# OPERATE ACTION
+#===================================================================================#
+func _handle_operate(is_fresh: bool) -> void:
+	focus_sensor.focus.interact(
+		self,
+		InteractionTypes.OperableData.new(focus_sensor.focus.default_operate_action),
+		is_fresh
+	)
+#===================================================================================#
+
 # EXAMINE ACTION
 #===================================================================================#
 func _handle_examine_sync() -> void:
@@ -397,16 +409,17 @@ func _process_rewindable_action(
 ) -> void:
 	if should_activate:
 		action.set_active(true, tick)
-		#SweetLogger.info("{0} RewindableAction.ACTIVE current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
-	
+		#if IS_VERBOSE:
+		SweetLogger.info("{0} RewindableAction.ACTIVE current tick: {1}", [_action_name, tick], "Player.gd", "_rollback_tick")
+
 	match action.get_status(tick):
 		RewindableAction.CONFIRMING:
 			if IS_VERBOSE:
 				SweetLogger.info("{0} RewindableAction.CONFIRMING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_confirming.call(is_fresh)
 		RewindableAction.CANCELLING:
-			#if IS_VERBOSE:
-			SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
+			if IS_VERBOSE:
+				SweetLogger.info("{0} RewindableAction.CANCELLING current tick: {1} for player: {2}", [_action_name, tick, peer_id], "Player.gd", "_rollback_tick")
 			on_cancelling.call(is_fresh)
 			action.set_active(false, tick)
 		RewindableAction.ACTIVE:

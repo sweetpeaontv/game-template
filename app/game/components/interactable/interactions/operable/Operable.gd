@@ -4,19 +4,33 @@ class_name Operable
 # BY DEFAULT, AN OPERABLE ACTS AS A TOGGLE (LIKE FOR DOOR, LIGHT SWITCH, ETC...)
 # YOU CAN OVERRIDE THIS BEHAVIOR BY SETTING THE [ordered_states] AND [default_state] EXPORT VARIABLES
 signal state_entered(state_name: StringName)
+## Fired after [method _interact] handles a valid [InteractionTypes.OperableData] (any action branch).
+## [param rollback_is_fresh] is netfox's step flag; use for one-shot UI/state (e.g. keypad digit) without changing toggle/pulse simulation.
+signal operated(interactor: Node3D, data: InteractionTypes.OperableData, rollback_is_fresh: bool)
 
-const IS_VERBOSE := false
+const IS_VERBOSE := true
+
+enum AnimationPoseKind {
+	## [Vector3] euler rotation (radians), [member Node3D.rotation].
+	ROTATION,
+	## [Vector3] local translation, [member Node3D.position].
+	POSITION,
+	## [Transform3D] full local [member Node3D.transform].
+	TRANSFORM,
+}
+
+@export var default_operate_action: InteractionTypes.OperableData.Action
 
 ## Cycle order for [method toggle]. If empty, uses [RewindableStateMachine] child order.
 @export var ordered_states: Array[StringName] = []
 ## Initial state when the machine has no state; if empty, uses first entry in the cycle order.
 @export var default_state: StringName = &""
 
-@export var animation_duration: float = 0.5
-@export var animation_ease: Tween.EaseType = Tween.EASE_IN_OUT
-@export var animation_trans: Tween.TransitionType = Tween.TRANS_CUBIC
+@export var default_animation_duration: float = 0.5
+@export var default_animation_ease: Tween.EaseType = Tween.EASE_IN_OUT
+@export var default_animation_trans: Tween.TransitionType = Tween.TRANS_CUBIC
 
-# { node: { "poses": Dictionary state_name -> Vector3, "duration": float } }
+# { node: { "poses": Dictionary, "duration": float, "pose_kind": AnimationPoseKind } }
 var animation_targets: Dictionary = {}
 
 var _current_tween: Tween
@@ -47,30 +61,45 @@ func _exit_tree() -> void:
 
 # INTERACTION
 #===================================================================================#
-func _interact(_interactor: Node3D, _data: Variant = null) -> void:
+func _interact(_interactor: Node3D, _data: Variant = null, rollback_is_fresh: bool = true) -> void:
 	if not _data is InteractionTypes.OperableData:
 		SweetLogger.error("Invalid data type: {0}", [_data.get_class()], "Operable.gd", "_interact")
 		return
 
-	match _data.action:
+	var operable_data: InteractionTypes.OperableData = _data
+	match operable_data.action:
 		InteractionTypes.OperableData.Action.PULSE:
 			pulse()
 		InteractionTypes.OperableData.Action.TOGGLE:
 			toggle()
 		InteractionTypes.OperableData.Action.SET_STATE:
-			go_to_state(_data.target_state)
+			go_to_state(operable_data.target_state)
 		InteractionTypes.OperableData.Action.NEXT_STATE:
 			next_state()
 		InteractionTypes.OperableData.Action.PREV_STATE:
 			prev_state()
 		_:
-			SweetLogger.error("Invalid action: {0}", [_data.action], "Operable.gd", "_interact")
+			SweetLogger.error("Invalid action: {0}", [operable_data.action], "Operable.gd", "_interact")
+			return
+
+	operated.emit(_interactor, operable_data, rollback_is_fresh)
 
 func get_interaction_type() -> int:
 	return InteractionTypes.InteractionType.OPERABLE
 
 func pulse() -> void:
-	SweetLogger.info("Pulsing operable: {0}", [name], "Operable.gd", "pulse")
+	var cycle := _get_cycle_state_names()
+	if cycle.size() < 2:
+		if IS_VERBOSE:
+			SweetLogger.info("Pulse skipped (need >= 2 states): {0}", [name], "Operable.gd", "pulse")
+		return
+	
+	if not cycle.has(&"Pulse"):
+		if IS_VERBOSE:
+			SweetLogger.info("Pulse skipped (Pulse state not found): {0}", [name], "Operable.gd", "pulse")
+		return
+
+	go_to_state(&"Pulse")
 
 func toggle() -> void:
 	SweetLogger.info("Toggling operable: {0}", [name], "Operable.gd", "toggle")
@@ -87,6 +116,7 @@ func toggle() -> void:
 	go_to_state(target)
 
 func go_to_state(target: StringName) -> bool:
+	SweetLogger.info("Transitioning to: {0}", [target], "Operable.gd", "go_to_state")
 	if state_machine.transition(target):
 		NetworkRollback.mutate(self)
 		state_entered.emit(target)
@@ -118,11 +148,17 @@ func prev_state() -> void:
 
 # ANIMATION / DISPLAY
 #===================================================================================#
-func add_animation_target(node: Node3D, poses_by_state: Dictionary, duration: float = -1.0) -> void:
-	"""poses_by_state: state name -> local rotation. Missing keys skip animation for that state."""
+func add_animation_target(
+	node: Node3D,
+	poses_by_state: Dictionary,
+	duration: float = -1.0,
+	pose_kind: AnimationPoseKind = AnimationPoseKind.ROTATION
+) -> void:
+	"""Per-state pose; value type must match [param pose_kind]. Missing keys skip that state."""
 	animation_targets[node] = {
 		"poses": poses_by_state,
-		"duration": duration if duration > 0 else animation_duration
+		"duration": duration if duration > 0 else default_animation_duration,
+		"pose_kind": pose_kind,
 	}
 
 func _on_display_state_changed(_old_state: RewindableState, new_state: RewindableState) -> void:
@@ -137,16 +173,23 @@ func _animate(state_name: StringName) -> void:
 
 	_current_tween = create_tween()
 	_current_tween.set_parallel(true)
-	_current_tween.set_ease(animation_ease)
-	_current_tween.set_trans(animation_trans)
+	_current_tween.set_ease(default_animation_ease)
+	_current_tween.set_trans(default_animation_trans)
 
 	for node in animation_targets:
 		var config: Dictionary = animation_targets[node]
 		var poses: Dictionary = config["poses"]
 		if not poses.has(state_name):
 			continue
-		var target_rotation: Vector3 = poses[state_name]
-		_current_tween.tween_property(node, "rotation", target_rotation, config["duration"])
+		var pose_value: Variant = poses[state_name]
+		var kind: AnimationPoseKind = config.get("pose_kind", AnimationPoseKind.ROTATION)
+		match kind:
+			AnimationPoseKind.ROTATION:
+				_current_tween.tween_property(node, "rotation", pose_value, config["duration"])
+			AnimationPoseKind.POSITION:
+				_current_tween.tween_property(node, "position", pose_value, config["duration"])
+			AnimationPoseKind.TRANSFORM:
+				_current_tween.tween_property(node, "transform", pose_value, config["duration"])
 
 func snap_to_state(state_name: StringName) -> void:
 	if animation_targets.is_empty():
@@ -156,7 +199,15 @@ func snap_to_state(state_name: StringName) -> void:
 		var poses: Dictionary = config["poses"]
 		if not poses.has(state_name):
 			continue
-		node.rotation = poses[state_name]
+		var pose_value: Variant = poses[state_name]
+		var kind: AnimationPoseKind = config.get("pose_kind", AnimationPoseKind.ROTATION)
+		match kind:
+			AnimationPoseKind.ROTATION:
+				node.rotation = pose_value
+			AnimationPoseKind.POSITION:
+				node.position = pose_value
+			AnimationPoseKind.TRANSFORM:
+				node.transform = pose_value
 #===================================================================================#
 
 # HELPERS
