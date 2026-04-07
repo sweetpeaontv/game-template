@@ -177,12 +177,12 @@ func _handle_interactions(tick: int, is_fresh: bool) -> void:
 		push_error("Player: Input node not found!")
 		return
 
-	if input.interact_released:
-		SweetLogger.info("interact_released: {0} for player: {1} at tick: {2}", [input.interact_released, peer_id, tick], "Player.gd", "_handle_interactions")
+	if input.interact_pressed:
+		SweetLogger.info("interact_released: {0} for player: {1} at tick: {2}", [input.interact_pressed, peer_id, tick], "Player.gd", "_handle_interactions")
 
 	_process_rewindable_action(
 		interact_action,
-		input.interact_released and focus_sensor.focus,
+		(input.interact_pressed or input.left_click_pressed) and focus_sensor.focus,
 		tick,
 		is_fresh,
 		"interact",

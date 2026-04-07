@@ -7,18 +7,15 @@
 
 [node name="Operable" unique_id=2057239684 instance=ExtResource("1_bb0my")]
 script = ExtResource("2_u6xfc")
+default_operate_action = 0
 ordered_states = Array[StringName]([])
-pulse_state = &""
 default_state = &""
-animation_duration = 0.5
-animation_ease = 2
-animation_trans = 7
+default_animation_duration = 0.5
+default_animation_ease = 2
+default_animation_trans = 7
 
 [node name="RemoteTransform3D" type="RemoteTransform3D" parent="." index="0" unique_id=1036021493]
 remote_path = NodePath("../AnimatableBody3D/CollisionShape3D")
-
-[node name="InteractionLabel" parent="." index="1" unique_id=211142206]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.627547, 0)
 
 [node name="RollbackSynchronizer" type="Node" parent="." index="3" unique_id=367096572 node_paths=PackedStringArray("root")]
 script = ExtResource("3_afm5q")

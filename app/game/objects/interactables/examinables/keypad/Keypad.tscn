@@ -1,6 +1,5 @@
 [gd_scene format=4 uid="uid://cvl14edykthr5"]
 
-[ext_resource type="PackedScene" uid="uid://bv2gooj252qh2" path="res://app/game/objects/interactables/examinables/keypad/KeypadButton.tscn" id="1_k2c6y"]
 [ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="2_0daay"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
@@ -49,7 +48,7 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ky3t3")
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_pqhvt"]
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_jkowj"]
 points = PackedVector3Array(-0.033421244, 0, -0.03342124, -0.025844542, 0.013227951, -0.025844539, 0.033421237, 0, -0.03342124, -0.033421244, 0, 0.033421233, -0.025844542, 0.013227951, 0.025837988, 0.025837995, 0.013227951, -0.025844539, 0.033421237, 0, 0.033421233, 0.025837995, 0.013227951, 0.025837988)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ghnfc"]
@@ -83,6 +82,9 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ghnfc")
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_pqhvt"]
+points = PackedVector3Array(-0.033421244, 0, -0.03342124, -0.025844542, 0.013227951, -0.025844539, 0.033421237, 0, -0.03342124, -0.033421244, 0, 0.033421233, -0.025844542, 0.013227951, 0.025837988, 0.025837995, 0.013227951, -0.025844539, 0.033421237, 0, 0.033421233, 0.025837995, 0.013227951, 0.025837988)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_g35y8"]
 resource_name = "keypad_Plane_002"
@@ -459,15 +461,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.1
 mesh = SubResource("ArrayMesh_5gm0g")
 skeleton = NodePath("")
 
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button1Pivot/Button1" unique_id=500420884]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "1"
+
 [node name="Operable" parent="KeypadRoot/Buttons/Button1Pivot" unique_id=2057239684 instance=ExtResource("8_kpf7x")]
-default_operate_action = 0
 default_state = &"Idle"
-default_animation_duration = 0.5
-default_animation_ease = 2
-default_animation_trans = 7
 
 [node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button1Pivot/Operable" index="2" unique_id=1075540080]
-shape = SubResource("ConvexPolygonShape3D_pqhvt")
+shape = SubResource("ConvexPolygonShape3D_jkowj")
 
 [node name="Idle" parent="KeypadRoot/Buttons/Button1Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(2057239684, 1888479538) index="0" unique_id=603860550 instance=ExtResource("9_8fog2")]
 
@@ -481,8 +484,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.11996389)
 mesh = SubResource("ArrayMesh_uck6t")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button2Pivot" unique_id=219515660 instance=ExtResource("1_k2c6y")]
-label_text = "2"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button2Pivot/Button2" unique_id=1967950173]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "2"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button2Pivot" unique_id=519635921 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button2Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button2Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(519635921, 1888479538) index="0" unique_id=818082546 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button2Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(519635921, 1888479538) index="1" unique_id=1765903589 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button3Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=334095931]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.11996389)
@@ -491,8 +507,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.
 mesh = SubResource("ArrayMesh_jc0wr")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button3Pivot" unique_id=1402544149 instance=ExtResource("1_k2c6y")]
-label_text = "3"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button3Pivot/Button3" unique_id=518506235]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "3"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button3Pivot" unique_id=1620245409 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button3Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button3Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1620245409, 1888479538) index="0" unique_id=99789312 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button3Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1620245409, 1888479538) index="1" unique_id=1672744644 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button4Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=381397585]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.043095052)
@@ -501,8 +530,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, -0.0
 mesh = SubResource("ArrayMesh_531xh")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button4Pivot" unique_id=1363436379 instance=ExtResource("1_k2c6y")]
-label_text = "4"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button4Pivot/Button4" unique_id=1825586088]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "4"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button4Pivot" unique_id=1938913151 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button4Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button4Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1938913151, 1888479538) index="0" unique_id=924337623 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button4Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1938913151, 1888479538) index="1" unique_id=1440396388 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button5Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1022639047]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.043095052)
@@ -511,8 +553,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, -0.043095052)
 mesh = SubResource("ArrayMesh_t71fe")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button5Pivot" unique_id=1753052890 instance=ExtResource("1_k2c6y")]
-label_text = "5"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button5Pivot/Button5" unique_id=347408740]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "5"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button5Pivot" unique_id=1949780772 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button5Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button5Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1949780772, 1888479538) index="0" unique_id=872662813 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button5Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1949780772, 1888479538) index="1" unique_id=163690038 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button6Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1581120370]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.043095052)
@@ -521,8 +576,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, -0.
 mesh = SubResource("ArrayMesh_egnvb")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button6Pivot" unique_id=970771186 instance=ExtResource("1_k2c6y")]
-label_text = "6"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button6Pivot/Button6" unique_id=1428168977]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "6"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button6Pivot" unique_id=1707852142 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button6Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button6Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1707852142, 1888479538) index="0" unique_id=1213279910 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button6Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1707852142, 1888479538) index="1" unique_id=803107516 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button7Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=455145056]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, 0.0337738)
@@ -531,8 +599,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07686885, 0.016286096, 0.03
 mesh = SubResource("ArrayMesh_wbeph")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button7Pivot" unique_id=402408537 instance=ExtResource("1_k2c6y")]
-label_text = "7"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button7Pivot/Button7" unique_id=1365293014]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "7"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button7Pivot" unique_id=1597497173 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button7Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button7Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1597497173, 1888479538) index="0" unique_id=739870865 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button7Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1597497173, 1888479538) index="1" unique_id=1174063645 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button8Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1895801357]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, 0.0337738)
@@ -541,8 +622,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016286096, 0.0337738)
 mesh = SubResource("ArrayMesh_e0j5l")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button8Pivot" unique_id=2131232112 instance=ExtResource("1_k2c6y")]
-label_text = "8"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button8Pivot/Button8" unique_id=2109623914]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "8"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button8Pivot" unique_id=1366154901 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button8Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button8Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1366154901, 1888479538) index="0" unique_id=1724224284 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button8Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(1366154901, 1888479538) index="1" unique_id=804004350 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Button9Pivot" type="Node3D" parent="KeypadRoot/Buttons" unique_id=1865515901]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, 0.0337738)
@@ -551,8 +645,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07686886, 0.016286096, 0.0
 mesh = SubResource("ArrayMesh_t8j18")
 skeleton = NodePath("")
 
-[node name="KeypadButton" parent="KeypadRoot/Buttons/Button9Pivot" unique_id=176948278 instance=ExtResource("1_k2c6y")]
-label_text = "9"
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button9Pivot/Button9" unique_id=694039349]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "9"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button9Pivot" unique_id=689535289 instance=ExtResource("8_kpf7x")]
+default_state = &"Idle"
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button9Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_pqhvt")
+
+[node name="Idle" parent="KeypadRoot/Buttons/Button9Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(689535289, 1888479538) index="0" unique_id=552762004 instance=ExtResource("9_8fog2")]
+
+[node name="Pulse" parent="KeypadRoot/Buttons/Button9Pivot/Operable/RewindableStateMachine" parent_id_path=PackedInt32Array(689535289, 1888479538) index="1" unique_id=1587438906 instance=ExtResource("10_p4swm")]
+idle_state = &"Idle"
 
 [node name="Frame" type="MeshInstance3D" parent="KeypadRoot" unique_id=1861617831]
 mesh = SubResource("ArrayMesh_scd2s")
@@ -577,12 +684,12 @@ shape = SubResource("ConvexPolygonShape3D_ycede")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 
 [editable path="KeypadRoot/Buttons/Button1Pivot/Operable"]
-[editable path="KeypadRoot/Buttons/Button2Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button3Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button4Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button5Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button6Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button7Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button8Pivot/KeypadButton"]
-[editable path="KeypadRoot/Buttons/Button9Pivot/KeypadButton"]
+[editable path="KeypadRoot/Buttons/Button2Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button3Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button4Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button5Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button6Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button7Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button8Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button9Pivot/Operable"]
 [editable path="Examinable"]
