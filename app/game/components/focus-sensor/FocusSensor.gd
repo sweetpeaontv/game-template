@@ -21,6 +21,7 @@ func _exit_tree() -> void:
 
 # PER TICK
 #===================================================================================#
+# may want to collect in process (per frame) instead of per tick?
 func _gather() -> void:
 	if not actor or multiplayer.get_unique_id() != actor.peer_id:
 		return
@@ -82,10 +83,14 @@ func _handle_focus_sync() -> void:
 	if focus_key == 0 and focus != null:
 		focus.on_focus_exit(actor)
 		focus = null
+	if focus_key != 0 and focus != null and focus.key != focus_key:
+		focus.on_focus_exit(actor)
+		focus = null
 	if focus_key != 0 and focus == null:
 		var new_focus = InteractableRegistries.interactables.get_entry(focus_key)
 		if new_focus:
 			focus = new_focus
+			SweetLogger.info("FocusSensor: {0} focused on {1}", [actor.peer_id, focus.name], "FocusSensor.gd", "_handle_focus_sync")
 			focus.on_focus_enter(actor)
 #===================================================================================#
 

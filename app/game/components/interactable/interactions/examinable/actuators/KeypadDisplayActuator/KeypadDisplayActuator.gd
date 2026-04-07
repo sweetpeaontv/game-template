@@ -1,7 +1,7 @@
 extends Node3D
 class_name KeypadDisplayActuator
 
-## Listens to [KeypadState] and updates the label. State is updated by [KeypadMediator].
+## Listens to [KeypadState] and updates the label.
 
 @export var keypad_state: KeypadState
 @export var screen_label: Label3D
@@ -20,7 +20,6 @@ func _on_keypad_state_changed(_entered: Array[int]) -> void:
 	_refresh_label()
 
 func _refresh_label() -> void:
-	SweetLogger.info("KeypadDisplayActuator: _refresh_label: {0}", [keypad_state.entered_digits])
 	if keypad_state == null or screen_label == null:
 		return
 	screen_label.text = ""

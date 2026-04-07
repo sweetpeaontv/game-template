@@ -8,7 +8,7 @@ signal state_entered(state_name: StringName)
 ## [param rollback_is_fresh] is netfox's step flag; use for one-shot UI/state (e.g. keypad digit) without changing toggle/pulse simulation.
 signal operated(interactor: Node3D, data: InteractionTypes.OperableData, rollback_is_fresh: bool)
 
-const IS_VERBOSE := true
+const IS_VERBOSE := false
 
 enum AnimationPoseKind {
 	## [Vector3] euler rotation (radians), [member Node3D.rotation].
