@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://b65lu1ad6yijv"]
+
+[ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="1_pax53"]
+[ext_resource type="PackedScene" uid="uid://b26oa0d4fqumc" path="res://app/game/objects/interactables/examinables/table/table.glb" id="2_4lg5h"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_pax53"]
+points = PackedVector3Array(0.9, -5.9604645e-08, 0.39999998, 0.9, -5.9604645e-08, 0.5, 0.9, 0.77494365, 0.39999998, 1, -5.9604645e-08, 0.39999998, 1, -5.9604645e-08, 0.5, 0.9, 0.77494365, 0.5, 1, 0.77494365, 0.39999998, 1, 0.7748678, 0.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_4lg5h"]
+points = PackedVector3Array(0.9, -5.9604645e-08, -0.5, 0.9, -5.9604645e-08, -0.39999998, 0.9, 0.77494365, -0.5, 1, -5.9604645e-08, -0.5, 1, -5.9604645e-08, -0.39999998, 0.9, 0.77494365, -0.39999998, 1, 0.7748678, -0.5, 1, 0.77494365, -0.39999998)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_wqvm7"]
+points = PackedVector3Array(-1, -5.9604645e-08, -0.5, -1, -5.9604645e-08, -0.39999998, -1, 0.7748678, -0.5, -0.9, -5.9604645e-08, -0.5, -0.9, -5.9604645e-08, -0.39999998, -1, 0.77494365, -0.39999998, -0.9, 0.77494365, -0.5, -0.9, 0.77494365, -0.39999998)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_vcbq0"]
+points = PackedVector3Array(-1, -5.9604645e-08, 0.39999998, -1, -5.9604645e-08, 0.5, -1, 0.77494365, 0.39999998, -0.9, -5.9604645e-08, 0.39999998, -0.9, -5.9604645e-08, 0.5, -1, 0.7748678, 0.5, -0.9, 0.77494365, 0.5, -0.9, 0.77494365, 0.39999998)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5hi8j"]
+points = PackedVector3Array(-1, 0.7749436, -0.5, -1, 0.8249436, -0.5, 1, 0.7749436, -0.5, -1, 0.7749436, 0.5, -1, 0.8249436, 0.5, 1, 0.8249436, -0.5, 1, 0.7749436, 0.5, 1, 0.8249436, 0.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3vab7"]
+points = PackedVector3Array(-1, 0.7749436, -0.5, -1, 0.8249436, -0.5, 1, 0.7749436, -0.5, -1, 0.7749436, 0.5, -1, 0.8249436, 0.5, 1, 0.8249436, -0.5, 1, 0.7749436, 0.5, 1, 0.8249436, 0.5)
+
+[node name="Table" type="Node3D" unique_id=1855811571]
+
+[node name="Mesh" parent="." unique_id=351930718 instance=ExtResource("2_4lg5h")]
+
+[node name="Collisions" type="StaticBody3D" parent="Mesh" unique_id=318192169]
+
+[node name="Leg1" type="CollisionShape3D" parent="Mesh/Collisions" unique_id=630210386]
+shape = SubResource("ConvexPolygonShape3D_pax53")
+
+[node name="Leg2" type="CollisionShape3D" parent="Mesh/Collisions" unique_id=683856117]
+shape = SubResource("ConvexPolygonShape3D_4lg5h")
+
+[node name="Leg3" type="CollisionShape3D" parent="Mesh/Collisions" unique_id=445560531]
+shape = SubResource("ConvexPolygonShape3D_wqvm7")
+
+[node name="Leg4" type="CollisionShape3D" parent="Mesh/Collisions" unique_id=898561877]
+shape = SubResource("ConvexPolygonShape3D_vcbq0")
+
+[node name="Tabletop" type="CollisionShape3D" parent="Mesh/Collisions" unique_id=756119127]
+shape = SubResource("ConvexPolygonShape3D_5hi8j")
+
+[node name="Examinable" parent="." unique_id=2057239684 node_paths=PackedStringArray("examine_target") instance=ExtResource("1_pax53")]
+examine_target = NodePath("../Mesh/Table/TableTop/Top")
+
+[node name="InteractionLabel" parent="Examinable" index="0" unique_id=211142206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7941196, 0)
+
+[node name="FocusCollisionShape" parent="Examinable" index="1" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_3vab7")
+
+[node name="AnchorPoint" parent="Examinable" index="2" unique_id=781110576]
+transform = Transform3D(1, 0, 0, 0, 0.7604967, 0.6493419, 0, -0.6493419, 0.7604967, 0, 1.208183, 1.4075482)
+
+[editable path="Mesh"]
+[editable path="Examinable"]

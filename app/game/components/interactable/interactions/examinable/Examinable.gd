@@ -11,10 +11,26 @@ var examiner_ids: Array[int] = []
 #===================================================================================#
 func _on_ready() -> void:
 	if examine_camera_anchor and examine_target:
-		examine_camera_anchor.look_at(examine_target.global_position, Vector3.UP)
+		examine_camera_anchor.look_at(_get_examine_target_position(), Vector3.UP)
 
 	InteractableRegistries.examinables.add_entry(key, self)
 #===================================================================================#
+
+func _get_examine_target_position() -> Vector3:
+	if examine_target is CollisionShape3D:
+		var collision_shape := examine_target as CollisionShape3D
+		if collision_shape.shape:
+			var debug_mesh := collision_shape.shape.get_debug_mesh()
+			var local_center := debug_mesh.get_aabb().get_center()
+			return collision_shape.global_transform * local_center
+
+	if examine_target is MeshInstance3D:
+		var mesh_instance := examine_target as MeshInstance3D
+		if mesh_instance.mesh:
+			var local_center := mesh_instance.mesh.get_aabb().get_center()
+			return mesh_instance.global_transform * local_center
+
+	return examine_target.global_position
 
 # DESTRUCT
 #===================================================================================#

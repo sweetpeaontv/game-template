@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
 [ext_resource type="PackedScene" uid="uid://cqviiexjirkxu" path="res://app/game/components/interactable/interactions/operable/Operable.tscn" id="8_kpf7x"]
-[ext_resource type="Script" uid="uid://bkihxocr50e0e" path="res://app/game/objects/interactables/examinables/keypad/buttons.gd" id="8_p4swm"]
+[ext_resource type="Script" path="res://app/game/objects/interactables/examinables/keypad/buttons.gd" id="8_p4swm"]
 [ext_resource type="PackedScene" uid="uid://dt1v6nils4ibb" path="res://app/game/components/interactable/interactions/operable/states/pulse/Idle.tscn" id="9_8fog2"]
 [ext_resource type="Script" uid="uid://b1iumw3hfju0g" path="res://app/game/objects/interactables/examinables/keypad/KeypadState.gd" id="10_keystate"]
 [ext_resource type="PackedScene" uid="uid://dwiyfp2ld8hwd" path="res://app/game/components/interactable/interactions/operable/states/pulse/Pulse.tscn" id="10_p4swm"]
@@ -430,7 +430,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_bay6t")
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ycede"]
-points = PackedVector3Array(0.11505277, 0.01470694, 0.15894459, 0.11505277, 0, 0.15894459, 0.11505277, 0.01470694, 0.072751075, 0.11135883, 0.017882183, 0.15573956, -0.11505277, 0.01470694, 0.15894459, -0.11505277, 0, 0.15894459, 0.11505277, 0, -0.15894459, 0.11135883, 0.017882183, 0.07592499, 0.11505277, 0.009558987, -0.15894459, -0.11138135, 0.017882183, 0.15573956, -0.11505277, 0.01470694, 0.072751075, -0.11505277, 0, -0.15894459, -0.11138135, 0.017882183, 0.07592499, -0.11505277, 0.009558987, -0.15894459)
+points = PackedVector3Array(0.115, 0.04, 0.159, 0.11505277, 0, 0.15894459, 0.11135883, 0.017882183, 0.15573956, -0.115, 0.04, 0.159, -0.11505277, 0, 0.15894459, 0.11505277, 0, -0.15894459, 0.11135883, 0.017882183, 0.07592499, 0.115, 0.04, -0.159, -0.11138135, 0.017882183, 0.15573956, -0.11505277, 0, -0.15894459, -0.11138135, 0.017882183, 0.07592499, -0.115, 0.04, -0.159)
 
 [node name="Keypad" type="Node3D" unique_id=438612277]
 

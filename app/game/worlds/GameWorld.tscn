@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bpk6vmuacbrvy" path="res://app/game/objects/interactables/pickupables/cube/Cube.tscn" id="2_30h0s"]
 [ext_resource type="PackedScene" uid="uid://cvl14edykthr5" path="res://app/game/objects/interactables/examinables/keypad/Keypad.tscn" id="2_c274h"]
 [ext_resource type="PackedScene" uid="uid://btyr81q5i50hy" path="res://app/game/objects/interactables/operables/door/Door.tscn" id="4_30h0s"]
+[ext_resource type="PackedScene" uid="uid://b65lu1ad6yijv" path="res://app/game/objects/interactables/examinables/table/Table.tscn" id="6_1jik2"]
 [ext_resource type="PackedScene" uid="uid://nnaa5dl8v4wu" path="res://app/game/objects/props/plane/Plane.tscn" id="6_ad2w5"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_bfthn"]
@@ -69,6 +70,9 @@ script = ExtResource("2_5geq7")
 
 [node name="Door" parent="." unique_id=1058546239 instance=ExtResource("4_30h0s")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7489364, -4.7683716e-07, -1.9556003)
+
+[node name="Table" parent="." unique_id=1855811571 instance=ExtResource("6_1jik2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1284046, 0, -6.202426)
 
 [node name="Plane" parent="." unique_id=220405785 instance=ExtResource("6_ad2w5")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.421864, 0.6310797, 0)
