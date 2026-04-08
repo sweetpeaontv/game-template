@@ -4,6 +4,3 @@
 
 # addons: install via Asset Library / upstream
 addons/godot_3d_cursor/
-addons/netfox/
-addons/netfox.extras/
-addons/netfox.internals/
