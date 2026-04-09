@@ -8,17 +8,18 @@ Handles all server-side game management:
 - Server-authoritative game state control (IN_LOBBY, PLAYING, ENDING)
 """
 
+signal game_state_changed(new_state: Game.GameState)
+
 var script_name: String = "ServerManager"
 
 var player_spawner: PlayerSpawner
 
 # Server-authoritative game states
-enum GameState { IN_LOBBY, PLAYING, ENDING }
-var game_state: GameState = GameState.IN_LOBBY
+var game: Game = Game.new(temp, temp)
 var is_verbose: bool = false
 
-signal game_state_changed(new_state: GameState)
-
+func temp() -> void:
+	pass
 # INIT
 #===================================================================================#
 func _ready() -> void:
@@ -69,7 +70,7 @@ func _on_gnet_peer_connected(peer_id: int) -> void:
 		return
 
 	if is_verbose:
-		SweetLogger.info("Peer connected: {0}, game_state: {1}", [peer_id, game_state], script_name, "_on_gnet_peer_connected")
+		SweetLogger.info("Peer connected: {0}, game_state: {1}", [peer_id, game.state], script_name, "_on_gnet_peer_connected")
 
 	_load_gameworld_for_peer.rpc_id(peer_id)
 
@@ -92,7 +93,10 @@ func _on_scene_ready(scene_name: String) -> void:
 		# Server: spawn all players and set state to IN_LOBBY
 		if is_verbose:
 			SweetLogger.info("GameWorld ready, setting state to IN_LOBBY and spawning all players", [], script_name, "_on_scene_ready")
-		_set_game_state(GameState.IN_LOBBY)
+		
+		var new_state = Game.GameState.RUNNING
+		game.set_state(new_state)
+		game_state_changed.emit(new_state)
 
 		# Get all connected peers and prepare spawn data
 		var connected_peers = Gnet.get_connected_players()
@@ -116,23 +120,22 @@ func _on_scene_ready(scene_name: String) -> void:
 
 # SERVER STATE MANAGEMENT
 #===================================================================================#
-func _set_game_state(new_state: GameState) -> void:
+func _set_game_state(new_state: Game.GameState) -> void:
 	"""Set server-authoritative game state and broadcast to all clients."""
-	if game_state == new_state:
+	if game.get_state() == new_state:
 		return
 
-	game_state = new_state
-	game_state_changed.emit(new_state)
+	game.set_state(new_state)
 
 	# Broadcast state change to all clients via RPC
 	_sync_game_state.rpc(new_state)
 
 	if is_verbose:
-		SweetLogger.info("Game state changed to: {0}", [GameState.keys()[new_state]], script_name, "_set_game_state")
+		SweetLogger.info("Game state changed to: {0}", [Game.GameState.keys()[new_state]], script_name, "_set_game_state")
 
-func get_game_state() -> GameState:
+func get_game_state() -> Game.GameState:
 	"""Get current server-authoritative game state."""
-	return game_state
+	return game.get_state()
 #===================================================================================#
 
 # SERVER STARTUP
@@ -150,6 +153,8 @@ func start_server(options: Dictionary = {}) -> bool:
 
 	if is_verbose:
 		SweetLogger.info("Starting server...", [], script_name, "start_server")
+	game.set_state(Game.GameState.RUNNING)
+	game_state_changed.emit(game.get_state())
 	return Gnet.host_game(options)
 #===================================================================================#
 
@@ -167,13 +172,13 @@ func _notify_client_ready() -> void:
 
 @rpc("authority", "call_local", "reliable")
 func _start_game_for_all() -> void:
-	"""RPC called by host to start the game (unlock doors, full gameplay)."""
+	"""RPC called by host to start the game."""
 	# Transition from IN_LOBBY (limited area) to PLAYING (full game)
-	if game_state != GameState.IN_LOBBY:
+	if game.get_state() != Game.GameState.IDLE:
 		push_warning("ServerManager: Can only start game from IN_LOBBY state")
 		return
 
-	_set_game_state(GameState.PLAYING)
+	game.start()
 
 func _load_gameworld_for_host() -> void:
 	"""Load GameWorld for the server (called directly, not via RPC)."""
@@ -186,7 +191,7 @@ func _load_gameworld_for_host() -> void:
 	if is_verbose:
 		SweetLogger.info("Loading GameWorld for server", [], script_name, "_load_gameworld_for_all")
 	# Update server state to LOADING
-	GameManager._set_state(GameManager.SessionState.LOADING)
+	GameManager.set_session_state(ClientSession.SessionState.LOADING)
 	SceneManager.request_scene_change("GameWorld")
 
 @rpc("authority", "call_remote", "reliable")
@@ -205,7 +210,7 @@ func _load_gameworld_for_peer() -> void:
 
 	if is_verbose:
 		SweetLogger.info("Setting client state to LOADING and loading GameWorld", [], script_name, "_load_gameworld_for_peer")
-	GameManager._set_state(GameManager.SessionState.LOADING)
+	GameManager.set_session_state(ClientSession.SessionState.LOADING)
 	SceneManager.goto_scene("GameWorld")
 	if is_verbose:
 		SweetLogger.info("Called SceneManager.goto_scene('GameWorld')", [], script_name, "_load_gameworld_for_peer")
@@ -213,40 +218,13 @@ func _load_gameworld_for_peer() -> void:
 @rpc("authority", "call_local", "reliable")
 func _sync_game_state(server_state: int) -> void:
 	"""RPC called by server to sync game state to clients."""
-	if not GameManager:
-		return
+	game_state_changed.emit(server_state)
 
-	# Map server GameState enum to GameManager SessionState enum
-	# ServerManager.GameState: IN_LOBBY=0, PLAYING=1, ENDING=2
-	# GameManager.SessionState: IN_LOBBY=3, PLAYING=5, ENDING=6
-	match server_state:
-		0:  # IN_LOBBY
-			GameManager._set_state(GameManager.SessionState.IN_LOBBY)
-		1:  # PLAYING
-			GameManager._set_state(GameManager.SessionState.PLAYING)
-		2:  # ENDING
-			GameManager._set_state(GameManager.SessionState.ENDING)
+	
 #===================================================================================#
 
 # SERVER PEER CONNECTION HANDLING
 #===================================================================================#
-func handle_peer_connected(peer_id: int, current_game_state: GameState) -> void:
-	"""Handle peer connection. Called when a peer connects."""
-	if not multiplayer.is_server():
-		return
-
-	if is_verbose:
-		SweetLogger.info("handle_peer_connected for peer_id: {0}, game_state: {1}", [peer_id, current_game_state], script_name, "handle_peer_connected")
-
-	# If we're already in gameworld, load it for the new client
-	if current_game_state == GameState.IN_LOBBY or current_game_state == GameState.PLAYING:
-		# Trigger RPC to load world for this peer
-		_load_gameworld_for_peer.rpc_id(peer_id)
-		# Also sync the current game state to the late joiner
-		_sync_game_state.rpc_id(peer_id, current_game_state)
-		if is_verbose:
-			SweetLogger.info("Sent late-join RPCs to peer_id: {0}", [peer_id], script_name, "handle_peer_connected")
-
 func handle_spawn_request(peer_id: int) -> void:
 	"""Handle spawn request from Gnet. Called when Gnet requests spawning a late-joining player."""
 	if not multiplayer.is_server():
@@ -278,7 +256,7 @@ func launch_game() -> void:
 		push_warning("ServerManager: Only host can launch game")
 		return
 
-	if game_state != GameState.IN_LOBBY:
+	if game.get_state() != Game.GameState.IDLE:
 		push_warning("ServerManager: Can only launch from IN_LOBBY state")
 		return
 

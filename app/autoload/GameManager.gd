@@ -7,12 +7,9 @@ and receives server-authoritative game state updates (IN_LOBBY, PLAYING, ENDING)
 from ServerManager for UI display.
 """
 
-signal session_state_changed(state: SessionState)
+# Client session (managed locally)
+var session: ClientSession = ClientSession.new()
 
-# Client states (managed locally)
-# Server states (IN_LOBBY, PLAYING, ENDING) are received from ServerManager via RPC
-enum SessionState { MAIN_MENU, IDLE, CONNECTING, IN_LOBBY, LOADING, PLAYING, ENDING }
-var state := SessionState.MAIN_MENU
 var script_name: String = "GameManager"
 var game_scene_name: String = "GameWorld"
 var is_verbose: bool = false
@@ -29,12 +26,11 @@ func _ready() -> void:
 	# Connect to SceneManager for client scene ready notification
 	SceneManager.scene_ready.connect(_on_scene_ready)
 
-func _set_state(new_state: SessionState) -> void:
-	if state == new_state:
-		return
+func get_session_state() -> ClientSession.SessionState:
+	return session.get_state()
 
-	state = new_state
-	session_state_changed.emit(state)
+func set_session_state(new_state: ClientSession.SessionState) -> void:
+	session.set_state(new_state)
 
 func _start_game() -> void:
 	"""Start hosting a game. Delegates to ServerManager."""
@@ -57,11 +53,11 @@ func _on_gnet_connection_succeeded() -> void:
 	if not multiplayer.is_server():
 		if is_verbose:
 			SweetLogger.info("Client detected, waiting for host RPC", [], script_name, "_on_gnet_connection_succeeded")
-		_set_state(SessionState.LOADING)
+		session.set_state(ClientSession.SessionState.LOADING)
 
 func _on_gnet_connection_failed(_reason: String) -> void:
 	"""Called when connection fails."""
-	_set_state(SessionState.IDLE)
+	session.set_state(ClientSession.SessionState.MAIN_MENU)
 
 func _on_scene_ready(scene_name: String) -> void:
 	"""Called when a scene is ready. Client notifies server when GameWorld is ready."""
@@ -87,13 +83,13 @@ func _on_server_game_state_changed(new_state: int) -> void:
 	"""Called when server game state changes (for local server/host)."""
 	# Map server GameState to SessionState for UI
 	match new_state:
-		0:  # IN_LOBBY
-			_set_state(SessionState.IN_LOBBY)
-		1:  # PLAYING
-			_set_state(SessionState.PLAYING)
-		2:  # ENDING
-			_set_state(SessionState.ENDING)
+		Game.GameState.IDLE:
+			session.set_state(ClientSession.SessionState.MAIN_MENU)
+		Game.GameState.RUNNING:
+			session.set_state(ClientSession.SessionState.IN_GAME)
+		Game.GameState.ENDING:
+			session.set_state(ClientSession.SessionState.MAIN_MENU)
 
 func _disconnect_game() -> void:
 	Gnet.disconnect_game()
-	_set_state(SessionState.MAIN_MENU)
+	session.set_state(ClientSession.SessionState.MAIN_MENU)
