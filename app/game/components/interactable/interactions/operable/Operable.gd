@@ -102,7 +102,6 @@ func pulse() -> void:
 	go_to_state(&"Pulse")
 
 func toggle() -> void:
-	SweetLogger.info("Toggling operable: {0}", [name], "Operable.gd", "toggle")
 	var cycle := _get_cycle_state_names()
 	if cycle.size() < 2:
 		return
@@ -116,7 +115,6 @@ func toggle() -> void:
 	go_to_state(target)
 
 func go_to_state(target: StringName) -> bool:
-	SweetLogger.info("Transitioning to: {0}", [target], "Operable.gd", "go_to_state")
 	if state_machine.transition(target):
 		NetworkRollback.mutate(self)
 		state_entered.emit(target)
