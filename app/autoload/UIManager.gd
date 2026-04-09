@@ -35,13 +35,18 @@ var _active_ui := {}
 # Container reference (will be set to a CanvasLayer or Control node)
 var _ui_container: Node = null
 
+# INIT
+#===================================================================================#
 func _ready() -> void:
 	# Create a default container for UI if none is specified
 	_ui_container = CanvasLayer.new()
 	_ui_container.name = "UIManagerLayer"
 	_ui_container.layer = 100
 	add_child(_ui_container)
+#===================================================================================#
 
+# PUBLIC API
+#===================================================================================#
 func set_container(container: Node) -> void:
 	"""Set a custom container for UI elements."""
 	_ui_container = container
@@ -59,7 +64,6 @@ func show_ui(ui_name: String, data: Dictionary = {}, signal_connections: Array[S
 		push_warning("UIManager: Unknown UI element: %s" % ui_name)
 		return null
 	
-	# If already active, return existing instance
 	if _active_ui.has(ui_name):
 		return _active_ui[ui_name]["node"]
 	
@@ -120,3 +124,4 @@ func toggle_ui(ui_name: String, data: Dictionary = {}) -> void:
 		hide_ui(ui_name)
 	else:
 		show_ui(ui_name, data)
+#===================================================================================#
