@@ -17,10 +17,10 @@ func _ready() -> void:
 	steamSlider.pressed.connect(_steamSliderPressed)
 
 func _startGameButtonPressed() -> void:
-	GameManager._start_game()
+	GameManager.start_game()
 
 func _joinGameButtonPressed() -> void:
-	GameManager._join_game()
+	GameManager.join_game()
 
 func _settingsButtonPressed() -> void:
 	settings_button_pressed.emit()
