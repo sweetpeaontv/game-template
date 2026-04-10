@@ -9,6 +9,8 @@ signal state_entered(state_name: StringName)
 signal operated(interactor: Node3D, data: InteractionTypes.OperableData, rollback_is_fresh: bool)
 
 const IS_VERBOSE := false
+## Log go_to_state success/failure with rollback tick (pair with Player DEBUG_OPERATE_SYNC).
+const DEBUG_OPERATE_SYNC := true
 
 enum AnimationPoseKind {
 	## [Vector3] euler rotation (radians), [member Node3D.rotation].
@@ -115,11 +117,11 @@ func toggle() -> void:
 	go_to_state(target)
 
 func go_to_state(target: StringName) -> bool:
-	if state_machine.transition(target):
-		NetworkRollback.mutate(self)
-		state_entered.emit(target)
-		return true
-	return false
+	if not state_machine.transition(target):
+		return false
+	NetworkRollback.mutate(state_machine)
+	state_entered.emit(target)
+	return true
 
 func next_state() -> void:
 	var cycle := _get_cycle_state_names()

@@ -167,6 +167,13 @@ func add_input(node: Variant, property: String) -> void:
 func has_input() -> bool:
 	return _has_input
 
+## Returns true if [member _inputs] has a snapshot for [param tick] (exact key).
+## When false, [method _RollbackHistoryRecorder.apply_tick] still applies input via
+## [_HistoryBuffer.get_history], which falls back to the closest older tick and can
+## repeat one-shot fields (e.g. [code]interact_pressed[/code]) from the previous tick.
+func has_exact_input_for_tick(tick: int) -> bool:
+	return _inputs.has(tick)
+
 ## Get the age of currently available input in ticks.
 ##
 ## The available input may be from the current tick, or from multiple ticks ago.
@@ -374,6 +381,9 @@ func _prepare_tick_process(tick: int) -> void:
 			NetworkRollback.notify_simulated(node)
 
 func _can_simulate(node: Node, tick: int) -> bool:
+	# netfox maintainer: keep returning true until mutation-aware filtering here is
+	# aligned with record_state / is_mutated(pe.node) (same Object identity as mutate()).
+	# Otherwise nodes can be skipped for simulation while history still expects updates.
 	return true
 	if not enable_prediction and _is_predicted_tick_for(node, tick):
 		# Don't simulate if prediction is not allowed and tick is predicted

@@ -10,19 +10,23 @@ var focus: Interactable = null
 # INIT
 #===================================================================================#
 func _ready() -> void:
-	NetworkTime.before_tick_loop.connect(_gather)
+	# Match PlayerInput: gather on every tick, not only before_tick_loop.
+	# When NetworkTime runs multiple ticks per frame (catch-up), a single
+	# before_tick_loop sample leaves focus_key stale for later ticks while
+	# interact_pressed can still fire — server replay then disagrees with client prediction.
+	NetworkTime.before_tick.connect(_gather)
 #===================================================================================#
 
 # DESTRUCT
 #===================================================================================#
 func _exit_tree() -> void:
-	NetworkTime.before_tick_loop.disconnect(_gather)
+	NetworkTime.before_tick.disconnect(_gather)
 #===================================================================================#
 
 # PER TICK
 #===================================================================================#
 # may want to collect in process (per frame) instead of per tick?
-func _gather() -> void:
+func _gather(_delta: float, _tick: int) -> void:
 	if not actor or multiplayer.get_unique_id() != actor.peer_id:
 		return
 	var hit = _query_focus_hit()

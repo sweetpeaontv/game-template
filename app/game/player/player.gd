@@ -177,9 +177,13 @@ func _handle_interactions(tick: int, is_fresh: bool) -> void:
 		push_error("Player: Input node not found!")
 		return
 
+	# Without an exact input snapshot for this rollback tick, netfox replays the
+	# closest older tick's input; one-shots like interact_pressed then fire twice.
+	var edge_ok := rollback_synchronizer.has_exact_input_for_tick(tick)
+
 	_process_rewindable_action(
 		interact_action,
-		(input.interact_pressed or input.left_click_pressed) and focus_sensor.focus,
+		edge_ok and (input.interact_pressed or input.left_click_pressed) and focus_sensor.focus,
 		tick,
 		is_fresh,
 		"interact",
@@ -196,7 +200,7 @@ func _handle_interactions(tick: int, is_fresh: bool) -> void:
 
 	_process_rewindable_action(
 		alt_interact_action,
-		holding and input.alt_interact_released,
+		edge_ok and holding and input.alt_interact_released,
 		tick,
 		is_fresh,
 		"alt_interact",

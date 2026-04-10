@@ -50,7 +50,11 @@ var escape_released: bool = false
 var _escape_release_buffer: bool = false
 
 func _ready():
-	NetworkTime.before_tick_loop.connect(_gather)
+	# Continuous state is sampled once per batch; one-shots run on every
+	# before_tick so interact_pressed / click_pressed are not stuck true across
+	# multiple network ticks in the same frame (double operable toggle).
+	NetworkTime.before_tick_loop.connect(_gather_continuous)
+	NetworkTime.before_tick.connect(_gather_edges)
 
 func _process(delta: float) -> void:
 	# MOVEMENT
@@ -120,10 +124,10 @@ func _process(delta: float) -> void:
 		_escape_release_buffer = true
 	#===================================================================================#
 
-func _gather():
+func _gather_continuous() -> void:
 	if not is_multiplayer_authority():
 		return
-	
+
 	# MOVEMENT
 	#===================================================================================#
 	if _movement_samples > 0:
@@ -137,11 +141,30 @@ func _gather():
 	shift = Input.is_action_pressed("shift")
 	#===================================================================================#
 
-	# MOUSE
+	# MOUSE (held only; edges in _gather_edges)
 	#===================================================================================#
 	left_click = _left_click_buffer
+	right_click = _right_click_buffer
+	#===================================================================================#
+
+	# INTERACT / ALT (held only)
+	#===================================================================================#
+	interact = _interact_buffer
+	alt_interact = _alt_interact_buffer
+	#===================================================================================#
+
+
+func _gather_edges(_delta: float, _tick: int) -> void:
+	if not is_multiplayer_authority():
+		return
+
+	# MOUSE one-shots + hold times
+	#===================================================================================#
 	left_click_released = _left_click_release_buffer
+	_left_click_release_buffer = false
+
 	left_click_pressed = _left_click_pressed_buffer
+	_left_click_pressed_buffer = false
 
 	if left_click:
 		left_click_hold_time = _left_click_hold_duration
@@ -152,12 +175,11 @@ func _gather():
 		left_click_hold_time = 0.0
 		_left_click_hold_duration = 0.0
 
-	_left_click_release_buffer = false
-	_left_click_pressed_buffer = false
-
-	right_click = _right_click_buffer
 	right_click_released = _right_click_release_buffer
+	_right_click_release_buffer = false
+
 	right_click_pressed = _right_click_pressed_buffer
+	_right_click_pressed_buffer = false
 
 	if right_click:
 		right_click_hold_time = _right_click_hold_duration
@@ -167,44 +189,35 @@ func _gather():
 	else:
 		right_click_hold_time = 0.0
 		_right_click_hold_duration = 0.0
-
-	_right_click_release_buffer = false
-	_right_click_pressed_buffer = false
-
 	#===================================================================================#
 
-	# Interact Hold + One off release
+	# Interact one-shot + hold time
 	#===================================================================================#
-	interact = _interact_buffer
 	interact_pressed = _interact_pressed_buffer
+	_interact_pressed_buffer = false
 
 	if interact_pressed:
 		interact_hold_time = _interact_hold_duration
 		_interact_hold_duration = 0.0
 	elif not interact:
 		interact_hold_time = 0.0
-
-	_interact_pressed_buffer = false
 	#===================================================================================#
 
-	# Alt Interact Hold + One off release
+	# Alt interact release + hold time
 	#===================================================================================#
-	alt_interact = _alt_interact_buffer
 	alt_interact_released = _alt_interact_release_buffer
+	_alt_interact_release_buffer = false
 
 	if alt_interact_released:
 		alt_interact_hold_time = _alt_interact_hold_duration
 		_alt_interact_hold_duration = 0.0
 	elif not alt_interact:
 		alt_interact_hold_time = 0.0
-
-	_alt_interact_release_buffer = false
 	#===================================================================================#
 
 	# Escape
 	#===================================================================================#
 	escape_released = _escape_release_buffer
-
 	_escape_release_buffer = false
 	#===================================================================================#
 
@@ -214,4 +227,5 @@ func queue_escape_release() -> void:
 	_escape_release_buffer = true
 
 func _exit_tree():
-	NetworkTime.before_tick_loop.disconnect(_gather)
+	NetworkTime.before_tick_loop.disconnect(_gather_continuous)
+	NetworkTime.before_tick.disconnect(_gather_edges)
