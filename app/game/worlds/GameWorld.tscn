@@ -27,6 +27,8 @@ ssao_enabled = true
 ssil_enabled = true
 sdfgi_enabled = true
 glow_enabled = true
+adjustment_enabled = true
+adjustment_saturation = 1.1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bcxc4"]
 size = Vector3(2, 2, 2)
@@ -49,6 +51,9 @@ environment = SubResource("Environment_bcxc4")
 transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.570714, 0.778561, 0.376408, -0.502155, -5, 10, -3)
 light_energy = 2.0
 shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 3.0
+shadow_blur = 0.8
 
 [node name="PhysicsCube" parent="." unique_id=1748285154 instance=ExtResource("2_30h0s")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.924341, 0.27253395, -3.6265616)

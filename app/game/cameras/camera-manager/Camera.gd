@@ -43,7 +43,8 @@ func _transition_process(_delta: float) -> void:
 func _process(delta: float) -> void:
 	match camera_state:
 		CameraManager.CameraState.FIRST_PERSON:
-			_fp_process(delta)
+			#_fp_process(delta)
+			pass
 		CameraManager.CameraState.THIRD_PERSON:
 			_tp_process(delta)
 		CameraManager.CameraState.EXAMINE:

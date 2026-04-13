@@ -9,8 +9,6 @@ signal state_entered(state_name: StringName)
 signal operated(interactor: Node3D, data: InteractionTypes.OperableData, rollback_is_fresh: bool)
 
 const IS_VERBOSE := false
-## Log go_to_state success/failure with rollback tick (pair with Player DEBUG_OPERATE_SYNC).
-const DEBUG_OPERATE_SYNC := true
 
 enum AnimationPoseKind {
 	## [Vector3] euler rotation (radians), [member Node3D.rotation].

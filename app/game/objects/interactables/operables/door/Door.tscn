@@ -19,13 +19,13 @@ script = ExtResource("1_r4pci")
 
 [node name="door-model" parent="." unique_id=669855069 instance=ExtResource("2_a6vmt")]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="door-model/DoorFrame" parent_id_path=PackedInt32Array(669855069, 359516926) index="0" unique_id=1871030434]
+[node name="StaticBody3D" type="StaticBody3D" parent="door-model/DoorFrame" parent_id_path=PackedInt32Array(669855069, 664802603) index="0" unique_id=1871030434]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="door-model/DoorFrame/StaticBody3D" unique_id=1979735125]
 visible = false
 shape = SubResource("ConcavePolygonShape3D_a6vmt")
 
-[node name="Operable" parent="door-model/DoorPivot" parent_id_path=PackedInt32Array(669855069, 405666589) index="0" unique_id=2057239684 instance=ExtResource("3_05u4q")]
+[node name="Operable" parent="door-model/DoorPivot" parent_id_path=PackedInt32Array(669855069, 213734612) index="0" unique_id=2057239684 instance=ExtResource("3_05u4q")]
 default_operate_action = 1
 ordered_states = Array[StringName]([&"Close", &"Open"])
 

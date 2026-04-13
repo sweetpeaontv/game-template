@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
 [ext_resource type="PackedScene" uid="uid://cqviiexjirkxu" path="res://app/game/components/interactable/interactions/operable/Operable.tscn" id="8_kpf7x"]
-[ext_resource type="Script" path="res://app/game/objects/interactables/examinables/keypad/buttons.gd" id="8_p4swm"]
+[ext_resource type="Script" uid="uid://bktnoabo3d5ms" path="res://app/game/objects/interactables/examinables/keypad/buttons.gd" id="8_p4swm"]
 [ext_resource type="PackedScene" uid="uid://dt1v6nils4ibb" path="res://app/game/components/interactable/interactions/operable/states/pulse/Idle.tscn" id="9_8fog2"]
 [ext_resource type="Script" uid="uid://b1iumw3hfju0g" path="res://app/game/objects/interactables/examinables/keypad/KeypadState.gd" id="10_keystate"]
 [ext_resource type="PackedScene" uid="uid://dwiyfp2ld8hwd" path="res://app/game/components/interactable/interactions/operable/states/pulse/Pulse.tscn" id="10_p4swm"]
@@ -672,6 +672,7 @@ skeleton = NodePath("")
 
 [node name="Label3D" type="Label3D" parent="KeypadRoot/Screen" unique_id=1273145400]
 transform = Transform3D(-0.49994993, -4.3864475e-08, -0.0070757074, -0.0070757074, 2.1621451e-08, 0.49994993, -4.355411e-08, 0.5, -2.224003e-08, 0, 0.02300775, 0.11825748)
+double_sided = false
 no_depth_test = true
 
 [node name="Examinable" parent="." unique_id=759504959 node_paths=PackedStringArray("examine_target") instance=ExtResource("2_c6fxj")]
