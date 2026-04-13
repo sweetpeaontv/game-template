@@ -24,13 +24,13 @@ Non-Responsibilities:
 	- Does not manage connection/session flow.
 	- Does not keep track of players, rounds, teams, or timers.
 	- Does not handle RPCs directly; only receives or relays them if
-	  GameManager asks for a synchronized scene change.
+	  ClientManager asks for a synchronized scene change.
 
 Typical Flow:
-	1. GameManager requests a scene by name.
+	1. ClientManager requests a scene by name.
 	2. SceneManager resolves the path and loads it.
 	3. SceneManager signals that the new scene is ready.
-	4. GameManager or GameWorld performs additional setup
+	4. ClientManager or GameWorld performs additional setup
 	   (e.g., spawns players, seeds match data, starts countdowns).
 
 This manager keeps scene transitions clean and centralized so the rest
