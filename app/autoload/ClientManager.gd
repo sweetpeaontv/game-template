@@ -1,6 +1,6 @@
 extends Node
 """
-GameManager - Client-side game state management
+ClientManager - Client-side game state management
 
 Manages client connection state (MAIN_MENU, IDLE, CONNECTING, LOADING)
 and receives server-authoritative game state updates (IN_LOBBY, PLAYING, ENDING)
@@ -9,7 +9,7 @@ from ServerManager for UI display.
 
 var session: ClientSession = ClientSession.new()
 
-var script_name: String = "GameManager"
+var script_name: String = "ClientManager"
 var game_scene_name: String = "GameWorld"
 var is_verbose: bool = false
 
@@ -38,7 +38,7 @@ func start_game() -> void:
 	if ServerManager:
 		ServerManager.start_server()
 	else:
-		push_error("GameManager: ServerManager not initialized")
+		SweetLogger.warning("ServerManager not initialized", [], script_name, "start_game")
 
 func join_game() -> void:
 	# if using steam, lobby id int is the arg
@@ -55,7 +55,7 @@ func launch_game() -> void:
 	if ServerManager:
 		ServerManager.launch_game()
 	else:
-		push_warning("GameManager: ServerManager not initialized")
+		SweetLogger.warning("ServerManager not initialized", [], script_name, "launch_game")
 
 func disconnect_game() -> void:
 	Gnet.disconnect_game()

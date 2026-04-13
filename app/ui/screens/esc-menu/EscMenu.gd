@@ -20,7 +20,7 @@ func _on_settings_button_pressed() -> void:
 	pass
 
 func _on_disconnect_button_pressed() -> void:
-	GameManager.disconnect_game()
+	ClientManager.disconnect_game()
 	UIManager.hide_ui("EscMenu")
 	SceneManager.goto_scene("HomeMenu")
 

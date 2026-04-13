@@ -114,7 +114,7 @@ func _on_scene_ready(scene_name: String) -> void:
 
 func _load_gameworld_for_host() -> void:
 	"""Load GameWorld for the server (called directly, not via RPC)."""
-	if not GameManager:
+	if not ClientManager:
 		return
 
 	if not SceneManager:
@@ -123,7 +123,7 @@ func _load_gameworld_for_host() -> void:
 	if IS_VERBOSE:
 		SweetLogger.info("Loading GameWorld for server", [], script_name, "_load_gameworld_for_all")
 	# Update server state to LOADING
-	GameManager.set_session_state(ClientSession.SessionState.LOADING)
+	ClientManager.set_session_state(ClientSession.SessionState.LOADING)
 	SceneManager.request_scene_change("GameWorld")
 #===================================================================================#
 
@@ -195,8 +195,8 @@ func _load_gameworld_for_peer() -> void:
 	if IS_VERBOSE:
 		SweetLogger.info("_load_gameworld_for_peer RPC received on client", [], script_name, "_load_gameworld_for_peer")
 
-	if not GameManager:
-		push_error("ServerManager: GameManager not available on client")
+	if not ClientManager:
+		push_error("ServerManager: ClientManager not available on client")
 		return
 
 	if not SceneManager:
@@ -205,7 +205,7 @@ func _load_gameworld_for_peer() -> void:
 
 	if IS_VERBOSE:
 		SweetLogger.info("Setting client state to LOADING and loading GameWorld", [], script_name, "_load_gameworld_for_peer")
-	GameManager.set_session_state(ClientSession.SessionState.LOADING)
+	ClientManager.set_session_state(ClientSession.SessionState.LOADING)
 	SceneManager.goto_scene("GameWorld")
 	if IS_VERBOSE:
 		SweetLogger.info("Called SceneManager.goto_scene('GameWorld')", [], script_name, "_load_gameworld_for_peer")

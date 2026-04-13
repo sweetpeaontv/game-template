@@ -66,9 +66,9 @@ func _ready():
 	multiplayer.connected_to_server.connect(_on_connection_succeeded)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
-	# Connect to GameManager for late join spawning
-	if Engine.has_singleton("GameManager"):
-		GameManager.session_state_changed.connect(_on_game_state_changed)
+	# Connect to ClientManager for late join spawning
+	if Engine.has_singleton("ClientManager"):
+		ClientManager.session_state_changed.connect(_on_game_state_changed)
 #===================================================================================#
 
 # PROCESS

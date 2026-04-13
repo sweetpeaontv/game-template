@@ -19,11 +19,11 @@ func _boot() -> void:
 	SceneManager.goto_scene(START_SCENE)
 
 func checkAutoloads() -> void:
-	var autoload_list = ["SceneManager", "GameManager", "AudioManager", "SettingsManager", "DebugOverlay", "EventBus", "Gnet"]
+	var autoload_list = ["SceneManager", "ClientManager", "AudioManager", "SettingsManager", "DebugOverlay", "EventBus", "Gnet"]
 	for autoload in autoload_list:
 		var path := "/root/%s" % autoload
 		if get_tree().root.get_node_or_null(path) == null:
-			print('Missing ' + autoload + ' from autoload list...')
-			print('Quitting Game')
+			SweetLogger.error('Missing Critical Autoload: ' + autoload + ' from autoload list...')
+			SweetLogger.error('Quitting Game')
 			get_tree().quit()
 			return
