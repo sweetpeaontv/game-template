@@ -45,6 +45,10 @@ var holding: Interactable = null
 var examining_key: int = 0
 var examining: Examinable = null
 
+# HOLD POINT VARIABLES
+var prev_hold_point: Vector3 = Vector3.ZERO
+var hold_point_plane: Plane
+
 # PLAYER STATUS
 enum PlayerStatus { LOADING, ESC, PLAYING, DISCONNECTED }
 var player_status: PlayerStatus = PlayerStatus.LOADING
@@ -292,6 +296,14 @@ func _handle_pickup(is_fresh: bool) -> void:
 	holding = focus_sensor.focus
 	holding_key = focus_sensor.focus.key
 
+	# NEW FOR PICKUP WHILE EXAMINING
+	if is_examining():
+		var n := (-get_camera_basis().z).normalized()
+		var plane_point: Vector3 = focus_sensor.focus.global_position
+		hold_point_plane = Plane(n, n.dot(plane_point))
+		prev_hold_point = hold_point.global_position
+		hold_point.global_position = focus_sensor.focus.global_position
+
 	if local_player and is_fresh:
 		#var signal_connections = [
 		#	SignalConnections.new(self, alt_interact_hold_duration_changed, )
@@ -304,6 +316,10 @@ func _handle_object_released() -> void:
 	SweetLogger.info("Object released from player: {0}, setting holding to null", [peer_id], "Player.gd", "_handle_object_released")
 	holding_key = 0
 	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
+
+	if is_examining():
+		hold_point.global_position = prev_hold_point
+
 	NetworkRollback.mutate(self)
 	UIManager.hide_ui("PickupHUD")
 
@@ -467,6 +483,12 @@ func _log_collisions() -> void:
 # quick and dirty solution to update the hold point position and rotation
 # could use a spring arm for better results
 func _update_hold_point() -> void:
+	if is_examining():
+		_examining_hold_point_update()
+	else:
+		_default_hold_point_update()
+
+func _default_hold_point_update() -> void:
 	var camera_basis: Basis = camera_input.camera_basis
 	var hold_offset = Vector3(0.0, 0.3, -1.5)
 
@@ -479,6 +501,36 @@ func _update_hold_point() -> void:
 	var rotated_offset = camera_basis * hold_offset
 	hold_point.global_position = camera_position + rotated_offset
 	hold_point.transform.basis = camera_basis
+
+func _examining_hold_point_update() -> void:
+	if camera_manager == null or camera_manager.get_camera() == null:
+		_default_hold_point_update()
+		return
+
+	var n := (-get_camera_basis().z).normalized()
+	var anchor := _get_examine_hold_plane_anchor()
+	hold_point_plane = Plane(n, n.dot(anchor))
+
+	var mouse_pos: Vector2
+	if local_player:
+		mouse_pos = get_viewport().get_mouse_position()
+	else:
+		mouse_pos = get_viewport().get_visible_rect().size * 0.5
+
+	var hit: Variant = camera_manager.intersect_screen_ray_with_plane(mouse_pos, hold_point_plane, 0.0)
+	if hit is Vector3:
+		hold_point.global_position = hit
+
+	var camera_basis := get_camera_basis()
+	hold_point.transform.basis = camera_basis
+
+func _get_examine_hold_plane_anchor() -> Vector3:
+	var ex := get_examining()
+	if ex:
+		return ex._get_examine_target_position()
+	if holding:
+		return holding.global_position
+	return hold_point.global_position
 
 func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 	var head_forward = camera_basis.z

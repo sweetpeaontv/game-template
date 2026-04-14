@@ -142,6 +142,31 @@ func get_state_from_rig(rig: RigType) -> CameraState:
 			return CameraState.EXAMINE
 		_:
 			return CameraState.FIRST_PERSON
+
+## Viewport pixels [0, size] → world-space ray from the active [Camera3D]. Direction is normalized.
+func get_world_ray_from_screen_px(screen_px: Vector2) -> Dictionary:
+	var origin := _camera.project_ray_origin(screen_px)
+	var direction := _camera.project_ray_normal(screen_px)
+	if direction.length_squared() > 0.0:
+		direction = direction.normalized()
+	return {"origin": origin, "direction": direction}
+
+## Intersection of a world ray with a [Plane]. Returns null if parallel or t is below [param min_t].
+func intersect_ray_with_plane(origin: Vector3, direction: Vector3, plane: Plane, min_t: float = 0.0) -> Variant:
+	var plane_n := plane.normal
+	var plane_d := plane.d
+	var denom := plane_n.dot(direction)
+	if abs(denom) <= 1e-6:
+		return null
+	var t := (plane_d - plane_n.dot(origin)) / denom
+	if t < min_t:
+		return null
+	return origin + direction * t
+
+## Convenience: screen pixel → ray → first hit on [param plane] in front of the ray origin.
+func intersect_screen_ray_with_plane(screen_px: Vector2, plane: Plane, min_t: float = 0.0) -> Variant:
+	var ray := get_world_ray_from_screen_px(screen_px)
+	return intersect_ray_with_plane(ray["origin"], ray["direction"], plane, min_t)
 #===================================================================================#
 
 # SETTERS

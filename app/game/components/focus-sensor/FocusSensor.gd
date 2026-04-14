@@ -1,7 +1,7 @@
 extends Node3D
 
 @export var actor: CharacterBody3D
-@export var camera_manager: Node3D
+@export var camera_manager: CameraManager
 @export var max_distance: float = 3.0
 
 var focus_key: int = 0
@@ -38,14 +38,6 @@ func _get_aim_origin() -> Vector3:
 func _get_aim_dir() -> Vector3:
 	return -camera_manager.get_look_basis().z
 
-func _get_mouse_aim_origin() -> Vector3:
-	var cam: Camera3D = camera_manager.get_camera()
-	return cam.project_ray_origin(get_viewport().get_mouse_position())
-
-func _get_mouse_aim_dir() -> Vector3:
-	var cam: Camera3D = camera_manager.get_camera()
-	return cam.project_ray_normal(get_viewport().get_mouse_position())
-
 func _query_focus_hit() -> Object:
 	if not camera_manager:
 		SweetLogger.error('No camera manager present for FocusSensor', [], 'FocusSensor.gd', '_query_focus_hit')
@@ -55,8 +47,9 @@ func _query_focus_hit() -> Object:
 	var dir: Vector3
 	var exclude: Array[RID] = [actor.get_rid()]
 	if actor.is_examining():
-		origin = _get_mouse_aim_origin()
-		dir = _get_mouse_aim_dir()
+		var mouse_ray: Dictionary = camera_manager.get_world_ray_from_screen_px(get_viewport().get_mouse_position())
+		origin = mouse_ray["origin"]
+		dir = mouse_ray["direction"]
 		exclude.append(actor.get_examining().get_rid())
 	else:
 		origin = _get_aim_origin()

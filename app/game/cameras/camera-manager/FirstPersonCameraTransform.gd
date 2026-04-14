@@ -39,5 +39,5 @@ func _headbob(time) -> Vector3:
 #===================================================================================#
 func _process(delta: float) -> void:
 	t_bob += delta * player.velocity.length() * float(player.is_on_floor())
-	camera_transform.position = _headbob(t_bob)
+	#camera_transform.position = _headbob(t_bob)
 #===================================================================================#
