@@ -372,15 +372,11 @@ shadow_mesh = SubResource("ArrayMesh_s888n")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rxuor"]
 render_priority = 0
 shader = ExtResource("2_ycede")
-shader_parameter/digit_count = 4
-shader_parameter/display_aspect = 3.0
-shader_parameter/digit_spacing = 0.08
-shader_parameter/segment_thickness = 0.14
-shader_parameter/segment_softness = 0.02
-shader_parameter/on_color = Color(0.1, 1, 0.2, 1)
-shader_parameter/off_color = Color(0.02, 0.06, 0.02, 1)
-shader_parameter/emissive_strength = 6.0
-shader_parameter/digits = PackedInt32Array(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/screen_mode = 0
+shader_parameter/color_idle = Color(0.02, 0.06, 0.02, 1)
+shader_parameter/color_reject = Color(0.9, 0.08, 0.08, 1)
+shader_parameter/color_success = Color(0.1, 0.85, 0.2, 1)
+shader_parameter/emissive_strength = 3.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjsex"]
 
@@ -442,13 +438,14 @@ script = ExtResource("10_keystate")
 [node name="StateSynchronizer" type="Node" parent="KeypadRoot/KeypadState" unique_id=102134222 node_paths=PackedStringArray("root")]
 script = ExtResource("2_0daay")
 root = NodePath("..")
-properties = Array[String]([":entered_digits"])
+properties = Array[String]([":entered_digits", ":unlocked", ":reject_ticks_remaining"])
 metadata/_custom_type_script = "uid://3lbngqcexe0l"
 
-[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596 node_paths=PackedStringArray("keypad_state", "screen_label")]
+[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596 node_paths=PackedStringArray("keypad_state", "screen_label", "screen_mesh")]
 script = ExtResource("11_keydisp")
 keypad_state = NodePath("../KeypadState")
 screen_label = NodePath("../Screen/Label3D")
+screen_mesh = NodePath("../Screen")
 
 [node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322 node_paths=PackedStringArray("keypad_state")]
 script = ExtResource("8_p4swm")
