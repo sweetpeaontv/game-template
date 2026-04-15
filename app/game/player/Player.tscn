@@ -59,7 +59,7 @@ metadata/_custom_type_script = "uid://dour8fehaaugp"
 script = ExtResource("4_fvl6w")
 root = NodePath("..")
 state_properties = Array[String]([":global_transform", "Model:transform", ":holding_key", ":examining_key", ":player_status"])
-input_properties = Array[String](["Input:movement", "Input:shift", "Input:interact", "Input:interact_pressed", "Input:interact_hold_time", "Input:alt_interact", "Input:alt_interact_released", "Input:alt_interact_hold_time", "Input:escape_released", "Input:left_click", "Input:left_click_pressed", "Input:left_click_released", "Input:left_click_hold_time", "Input:right_click", "Input:right_click_pressed", "Input:right_click_released", "Input:right_click_hold_time", "FocusSensor:focus_key", "CameraInput:camera_basis"])
+input_properties = Array[String](["Input:movement", "Input:aim_screen", "Input:shift_pressed", "Input:shift_just_pressed", "Input:shift_released", "Input:shift_hold_time", "Input:interact_pressed", "Input:interact_just_pressed", "Input:interact_released", "Input:interact_hold_time", "Input:alt_interact_pressed", "Input:alt_interact_just_pressed", "Input:alt_interact_released", "Input:alt_interact_hold_time", "Input:escape_pressed", "Input:escape_just_pressed", "Input:escape_released", "Input:escape_hold_time", "Input:left_click_pressed", "Input:left_click_just_pressed", "Input:left_click_released", "Input:left_click_hold_time", "Input:right_click_pressed", "Input:right_click_just_pressed", "Input:right_click_released", "Input:right_click_hold_time", "FocusSensor:focus_key", "CameraInput:camera_basis", "CameraInput:camera_origin"])
 enable_input_broadcast = false
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 

@@ -143,13 +143,25 @@ func get_state_from_rig(rig: RigType) -> CameraState:
 		_:
 			return CameraState.FIRST_PERSON
 
-## Viewport pixels [0, size] → world-space ray from the active [Camera3D]. Direction is normalized.
-func get_world_ray_from_screen_px(screen_px: Vector2) -> Dictionary:
+func _world_ray_from_screen_px(screen_px: Vector2) -> Dictionary:
 	var origin := _camera.project_ray_origin(screen_px)
 	var direction := _camera.project_ray_normal(screen_px)
 	if direction.length_squared() > 0.0:
 		direction = direction.normalized()
 	return {"origin": origin, "direction": direction}
+
+## Viewport pixels [0, size] → world-space ray from the active [Camera3D]. Direction is normalized.
+func get_world_ray_from_screen_px(screen_px: Vector2) -> Dictionary:
+	return _world_ray_from_screen_px(screen_px)
+
+## Same as [method get_world_ray_from_screen_px], but uses [param world_camera_transform] for the
+## active [Camera3D] for the duration of the call (for rollback / non-local sim where [code]_process[/code] is off).
+func get_world_ray_from_screen_px_at(world_camera_transform: Transform3D, screen_px: Vector2) -> Dictionary:
+	var prev := _camera.global_transform
+	_camera.global_transform = world_camera_transform
+	var ray: Dictionary = _world_ray_from_screen_px(screen_px)
+	_camera.global_transform = prev
+	return ray
 
 ## Intersection of a world ray with a [Plane]. Returns null if parallel or t is below [param min_t].
 func intersect_ray_with_plane(origin: Vector3, direction: Vector3, plane: Plane, min_t: float = 0.0) -> Variant:
@@ -165,7 +177,12 @@ func intersect_ray_with_plane(origin: Vector3, direction: Vector3, plane: Plane,
 
 ## Convenience: screen pixel → ray → first hit on [param plane] in front of the ray origin.
 func intersect_screen_ray_with_plane(screen_px: Vector2, plane: Plane, min_t: float = 0.0) -> Variant:
-	var ray := get_world_ray_from_screen_px(screen_px)
+	var ray: Dictionary = get_world_ray_from_screen_px(screen_px)
+	return intersect_ray_with_plane(ray["origin"], ray["direction"], plane, min_t)
+
+## Same as [method intersect_screen_ray_with_plane] with a temporary world transform on [member _camera].
+func intersect_screen_ray_with_plane_at(world_camera_transform: Transform3D, screen_px: Vector2, plane: Plane, min_t: float = 0.0) -> Variant:
+	var ray: Dictionary = get_world_ray_from_screen_px_at(world_camera_transform, screen_px)
 	return intersect_ray_with_plane(ray["origin"], ray["direction"], plane, min_t)
 #===================================================================================#
 

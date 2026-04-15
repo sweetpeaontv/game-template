@@ -32,6 +32,20 @@ func _gather(_delta: float, _tick: int) -> void:
 	var hit = _query_focus_hit()
 	focus_key = hit.key if hit and hit is Interactable else 0
 
+func _get_examine_mouse_world_ray() -> Dictionary:
+	var cam_in := actor.get_node_or_null("CameraInput") as CameraInput
+	var pl_in := actor.get_node_or_null("Input") as PlayerInput
+	var vp := get_viewport()
+	var sz := vp.get_visible_rect().size
+	var mouse_px: Vector2
+	if pl_in and sz.x > 0.0 and sz.y > 0.0:
+		mouse_px = Vector2(pl_in.aim_screen.x * sz.x, pl_in.aim_screen.y * sz.y)
+	else:
+		mouse_px = vp.get_mouse_position()
+	if cam_in and camera_manager:
+		return camera_manager.get_world_ray_from_screen_px_at(cam_in.get_simulation_camera_transform(), mouse_px)
+	return camera_manager.get_world_ray_from_screen_px(mouse_px)
+
 func _get_aim_origin() -> Vector3:
 	return camera_manager.get_camera().global_position
 
@@ -47,7 +61,7 @@ func _query_focus_hit() -> Object:
 	var dir: Vector3
 	var exclude: Array[RID] = [actor.get_rid()]
 	if actor.is_examining():
-		var mouse_ray: Dictionary = camera_manager.get_world_ray_from_screen_px(get_viewport().get_mouse_position())
+		var mouse_ray: Dictionary = _get_examine_mouse_world_ray()
 		origin = mouse_ray["origin"]
 		dir = mouse_ray["direction"]
 		exclude.append(actor.get_examining().get_rid())

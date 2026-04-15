@@ -17,6 +17,10 @@ script = ExtResource("1_cfja5")
 metadata/_custom_type_script = "uid://bklxcdyxgbjg2"
 
 [node name="Pickupable" parent="." unique_id=1810217294 instance=ExtResource("2_cfja5")]
+spring_k = 50.0
+damper_b = 10.0
+drop_distance = 4.0
+held_parent_angular_damp = 5.0
 
 [node name="FocusCollisionShape" parent="Pickupable" index="1" unique_id=1075540080]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
@@ -28,7 +32,7 @@ shape = SubResource("BoxShape3D_who7n")
 [node name="RollbackSynchronizer" type="Node" parent="." unique_id=1904365676 node_paths=PackedStringArray("root")]
 script = ExtResource("4_a5hvi")
 root = NodePath("..")
-state_properties = Array[String]([":physics_state", "Pickupable:pending_throw_velocity", "Pickupable:pickup_state", "Pickupable:holder_id"])
+state_properties = Array[String]([":global_position", ":physics_state", "Pickupable:pending_throw_velocity", "Pickupable:pickup_state", "Pickupable:holder_id"])
 metadata/_custom_type_script = "uid://d350u8evihs1u"
 
 [node name="TickInterpolator" type="Node" parent="." unique_id=753056867 node_paths=PackedStringArray("root")]

@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 # SIGNALS
-signal alt_interact_hold_duration_changed(duration: float)
+signal alt_interact_hold_time_changed(hold_time: float)
 
 # DEBUG
 const IS_VERBOSE := false
@@ -158,7 +158,7 @@ func _handle_movement(delta: float) -> void:
 
 	var direction = (camera_input.camera_basis * transform.basis * Vector3(move_input.x, 0, move_input.z)).normalized()
 
-	if input.shift:
+	if input.shift_pressed:
 		speed = SPRINT_SPEED
 	else:
 		speed = WALK_SPEED
@@ -187,7 +187,7 @@ func _handle_interactions(tick: int, is_fresh: bool) -> void:
 
 	_process_rewindable_action(
 		interact_action,
-		edge_ok and (input.interact_pressed or input.left_click_pressed) and focus_sensor.focus,
+		edge_ok and (input.interact_just_pressed or input.left_click_just_pressed) and focus_sensor.focus,
 		tick,
 		is_fresh,
 		"interact",
@@ -199,8 +199,8 @@ func _handle_interactions(tick: int, is_fresh: bool) -> void:
 		_update_hold_point()
 
 	# updates pickup hold duration HUD
-	if input.alt_interact:
-		alt_interact_hold_duration_changed.emit(input._alt_interact_hold_duration)
+	if input.alt_interact_pressed:
+		alt_interact_hold_time_changed.emit(input.alt_interact_hold_time)
 
 	_process_rewindable_action(
 		alt_interact_action,
@@ -297,6 +297,7 @@ func _handle_pickup(is_fresh: bool) -> void:
 	holding_key = focus_sensor.focus.key
 
 	# NEW FOR PICKUP WHILE EXAMINING
+	# should extract this to a function
 	if is_examining():
 		var n := (-get_camera_basis().z).normalized()
 		var plane_point: Vector3 = focus_sensor.focus.global_position
@@ -305,12 +306,9 @@ func _handle_pickup(is_fresh: bool) -> void:
 		hold_point.global_position = focus_sensor.focus.global_position
 
 	if local_player and is_fresh:
-		#var signal_connections = [
-		#	SignalConnections.new(self, alt_interact_hold_duration_changed, )
-		#]
 		var pickup_hud = UIManager.show_ui("PickupHUD", {})
 		# THIS NEEDS TO BE DISCONNECTED WHEN HUD IS HIDDEN OR CONNECTED ONCE IN SETUP		
-		alt_interact_hold_duration_changed.connect(pickup_hud.update_control_value)
+		alt_interact_hold_time_changed.connect(pickup_hud.update_control_value)
 
 func _handle_object_released() -> void:
 	SweetLogger.info("Object released from player: {0}, setting holding to null", [peer_id], "Player.gd", "_handle_object_released")
@@ -445,49 +443,16 @@ func _process_rewindable_action(
 			pass
 #===================================================================================#
 
-# SETTERS
+# HOLD POINT
 #===================================================================================#
-func setNameplate(player_name: String) -> void:
-	if nameplate:
-		nameplate.text = player_name
-	else:
-		push_warning("Player: Cannot set nameplate - nameplate node not initialized")
-#===================================================================================#
-
-# GETTERS
-#===================================================================================#
-func get_camera_basis() -> Basis:
-	return camera_input.camera_basis
-#===================================================================================#
-
-# HELPERS
-#===================================================================================#
-func _log_collisions() -> void:
-	var count := get_slide_collision_count()
-	if count == 0:
-		return
-	for i in count:
-		var collision := get_slide_collision(i)
-		if collision == null:
-			continue
-		var collider = collision.get_collider()
-		if collider == null:
-			continue
-		SweetLogger.info(
-			"Colliding with: {0} (type: {1})",
-			[collider.name, collider.get_class()],
-			"Player.gd",
-			"_log_collisions"
-		)
-
-# quick and dirty solution to update the hold point position and rotation
-# could use a spring arm for better results
 func _update_hold_point() -> void:
 	if is_examining():
 		_examining_hold_point_update()
 	else:
 		_default_hold_point_update()
 
+# quick and dirty solution to update the hold point position and rotation
+# could use a spring arm for better results
 func _default_hold_point_update() -> void:
 	var camera_basis: Basis = camera_input.camera_basis
 	var hold_offset = Vector3(0.0, 0.3, -1.5)
@@ -511,13 +476,11 @@ func _examining_hold_point_update() -> void:
 	var anchor := _get_examine_hold_plane_anchor()
 	hold_point_plane = Plane(n, n.dot(anchor))
 
-	var mouse_pos: Vector2
-	if local_player:
-		mouse_pos = get_viewport().get_mouse_position()
-	else:
-		mouse_pos = get_viewport().get_visible_rect().size * 0.5
+	var vp_size := get_viewport().get_visible_rect().size
+	var mouse_pos := Vector2(input.aim_screen.x * vp_size.x, input.aim_screen.y * vp_size.y)
+	var cam_xf: Transform3D = camera_input.get_simulation_camera_transform()
 
-	var hit: Variant = camera_manager.intersect_screen_ray_with_plane(mouse_pos, hold_point_plane, 0.0)
+	var hit: Variant = camera_manager.intersect_screen_ray_with_plane_at(cam_xf, mouse_pos, hold_point_plane, 0.0)
 	if hit is Vector3:
 		hold_point.global_position = hit
 
@@ -531,6 +494,27 @@ func _get_examine_hold_plane_anchor() -> Vector3:
 	if holding:
 		return holding.global_position
 	return hold_point.global_position
+#===================================================================================#
+
+# HELPERS
+#===================================================================================#
+func _log_collisions() -> void:
+	var count := get_slide_collision_count()
+	if count == 0:
+		return
+	for i in count:
+		var collision := get_slide_collision(i)
+		if collision == null:
+			continue
+		var collider = collision.get_collider()
+		if collider == null:
+			continue
+		SweetLogger.info(
+			"Colliding with: {0} (type: {1})",
+			[collider.name, collider.get_class()],
+			"Player.gd",
+			"_log_collisions"
+		)
 
 func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 	var head_forward = camera_basis.z
@@ -540,6 +524,15 @@ func rotate_player_model(delta: float, camera_basis: Basis) -> void:
 
 # API
 #===================================================================================#
+func setNameplate(player_name: String) -> void:
+	if nameplate:
+		nameplate.text = player_name
+	else:
+		push_warning("Player: Cannot set nameplate - nameplate node not initialized")
+
+func get_camera_basis() -> Basis:
+	return camera_input.camera_basis
+
 func is_focused() -> bool:
 	return focus_sensor.is_focused()
 
