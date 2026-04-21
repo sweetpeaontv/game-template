@@ -57,7 +57,22 @@ func launch_game() -> void:
 	else:
 		SweetLogger.warning("ServerManager not initialized", [], script_name, "launch_game")
 
+func _cleanup_local_session() -> void:
+	"""Clear persistent gameplay nodes and overlays when leaving a multiplayer session."""
+	if PlayerUtils:
+		PlayerUtils.despawn_all_players()
+	if UIManager:
+		UIManager.hide_all_ui()
+	if InputModeManager:
+		InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
+
 func disconnect_game() -> void:
+	if ServerManager:
+		ServerManager.stop_host_session()
+	# Stop netfox before clearing the peer, or NetworkTimeSynchronizer._loop keeps running and errors.
+	if NetworkTime:
+		NetworkTime.stop()
+	_cleanup_local_session()
 	Gnet.disconnect_game()
 	session.set_state(ClientSession.SessionState.MAIN_MENU)
 #===================================================================================#
@@ -76,17 +91,26 @@ func _on_gnet_connection_succeeded() -> void:
 		session.set_state(ClientSession.SessionState.LOADING)
 
 func _on_gnet_connection_failed(_reason: String) -> void:
-	"""Called when connection fails."""
+	"""Called when connection fails or the host disconnects (clients lose the server)."""
+	if NetworkTime:
+		NetworkTime.stop()
+	_cleanup_local_session()
 	session.set_state(ClientSession.SessionState.MAIN_MENU)
+	if SceneManager:
+		SceneManager.call_deferred("goto_scene", "HomeMenu")
 
 func _on_scene_ready(scene_name: String) -> void:
 	"""Called when a scene is ready. Client notifies server when GameWorld is ready."""
-	if scene_name == "GameWorld":
-		# Client: notify server that we're ready (ServerManager handles server-side)
-		if not multiplayer.is_server() and ServerManager:
-			if is_verbose:
-				SweetLogger.info("Client GameWorld ready, notifying server", [], script_name, "_on_scene_ready")
-			ServerManager._notify_client_ready.rpc_id(1)
+	if scene_name != "GameWorld":
+		return
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if multiplayer.is_server():
+		return
+	if ServerManager:
+		if is_verbose:
+			SweetLogger.info("Client GameWorld ready, notifying server", [], script_name, "_on_scene_ready")
+		ServerManager._notify_client_ready.rpc_id(1)
 
 func _on_server_game_state_changed(new_state: int) -> void:
 	"""Called when server game state changes (for local server/host)."""

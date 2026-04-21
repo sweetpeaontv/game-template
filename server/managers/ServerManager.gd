@@ -9,6 +9,7 @@ Handles all server-side game management:
 """
 
 signal game_state_changed(new_state: Game.GameState)
+signal remote_peer_left_session(peer_id: int)
 const IS_VERBOSE: bool = false
 
 var script_name: String = "ServerManager"
@@ -33,17 +34,22 @@ func _connect_signals() -> void:
 	"""Connect to Gnet and SceneManager signals for server-side handling."""
 	if Gnet:
 		Gnet.peer_connected.connect(_on_gnet_peer_connected)
+		Gnet.peer_disconnected.connect(_on_gnet_peer_disconnected)
 		Gnet.connection_succeeded.connect(_on_gnet_connection_succeeded)
 
 	if SceneManager:
 		SceneManager.scene_ready.connect(_on_scene_ready)
 #===================================================================================#
 
+func _is_active_server() -> bool:
+	"""True when we have a peer and are the server. Must be used before multiplayer.is_server()."""
+	return multiplayer.has_multiplayer_peer() and multiplayer.is_server()
+
 # GNET SIGNALS
 #===================================================================================#
 func _on_gnet_connection_succeeded() -> void:
 	"""Handle connection succeeded. Server loads world for itself and any connected clients."""
-	if not multiplayer.is_server():
+	if not _is_active_server():
 		return
 
 	if IS_VERBOSE:
@@ -61,17 +67,31 @@ func _on_gnet_connection_succeeded() -> void:
 
 func _on_gnet_peer_connected(peer_id: int) -> void:
 	"""Handle peer connection. Only acts if we're the server."""
-	if not multiplayer.is_server():
+	if not _is_active_server():
 		return
 
 	if IS_VERBOSE:
 		SweetLogger.info("Peer connected: {0}, game_state: {1}", [peer_id, game.state], script_name, "_on_gnet_peer_connected")
-
+	
 	_load_gameworld_for_peer.rpc_id(peer_id)
+
+func _on_gnet_peer_disconnected(peer_id: int) -> void:
+	"""Host: a remote peer left — remove their character locally and tell other clients to do the same."""
+	if not _is_active_server():
+		return
+	if peer_id == multiplayer.get_unique_id():
+		return
+	if IS_VERBOSE:
+		SweetLogger.info("Peer disconnected: {0}, despawning their player", [peer_id], script_name, "_on_gnet_peer_disconnected")
+
+	if PlayerUtils:
+		PlayerUtils.despawn_player(peer_id)
+	_despawn_remote_player.rpc(peer_id)
+	remote_peer_left_session.emit(peer_id)
 
 func _on_gnet_spawn_requested(peer_id: int) -> void:
 	"""Handle spawn request from Gnet. Only acts if we're the server."""
-	if not multiplayer.is_server():
+	if not _is_active_server():
 		return
 
 	handle_spawn_request(peer_id)
@@ -81,7 +101,7 @@ func _on_gnet_spawn_requested(peer_id: int) -> void:
 #===================================================================================#
 func _on_scene_ready(scene_name: String) -> void:
 	"""Handle scene ready. Server-only: spawns players and sets state."""
-	if not multiplayer.is_server():
+	if not _is_active_server():
 		return
 
 	if scene_name == "GameWorld":
@@ -154,7 +174,6 @@ func start_server(options: Dictionary = {}) -> bool:
 	Start the server. Orchestrates server startup via Gnet.
 	Returns true if server startup was initiated successfully.
 	"""
-	# Clean up any existing multiplayer connection first
 	if multiplayer.has_multiplayer_peer():
 		if IS_VERBOSE:
 			SweetLogger.info("Cleaning up existing multiplayer connection...", [], script_name, "start_server")
@@ -167,12 +186,26 @@ func start_server(options: Dictionary = {}) -> bool:
 	return Gnet.host_game(options)
 #===================================================================================#
 
+# HOST SHUTDOWN
+#===================================================================================#
+func stop_host_session() -> void:
+	"""Reset server game state when the host leaves the session. Call before Gnet.disconnect_game()."""
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not multiplayer.is_server():
+		return
+	if game.get_state() == Game.GameState.IDLE:
+		return
+	game.set_state(Game.GameState.IDLE)
+	game_state_changed.emit(game.get_state())
+#===================================================================================#
+
 # SERVER RPC HANDLERS
 #===================================================================================#
 @rpc("any_peer", "call_remote", "reliable")
 func _notify_client_ready() -> void:
 	"""RPC called by late-joining client to notify host that they're ready."""
-	if not multiplayer.is_server():
+	if not _is_active_server():
 		return
 	var client_peer_id = multiplayer.get_remote_sender_id()
 	if IS_VERBOSE:
@@ -188,6 +221,14 @@ func _start_game_for_all() -> void:
 		return
 
 	game.start()
+
+@rpc("authority", "call_remote", "reliable")
+func _despawn_remote_player(peer_id: int) -> void:
+	"""Remove the disconnected peer's puppet on each remaining client."""
+	if multiplayer.is_server():
+		return
+	if PlayerUtils:
+		PlayerUtils.despawn_player(peer_id)
 
 @rpc("authority", "call_remote", "reliable")
 func _load_gameworld_for_peer() -> void:
@@ -220,7 +261,7 @@ func _sync_game_state(server_state: int) -> void:
 #===================================================================================#
 func handle_spawn_request(peer_id: int) -> void:
 	"""Handle spawn request from Gnet. Called when Gnet requests spawning a late-joining player."""
-	if not multiplayer.is_server():
+	if not _is_active_server():
 		return
 
 	if not SpawnManager:

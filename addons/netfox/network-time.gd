@@ -468,10 +468,18 @@ func stop() -> void:
 	NetworkTimeSynchronizer.stop()
 	_tickrate_handshake.stop()
 	_state = _STATE_INACTIVE
+	# a bit confused why
+	# but this is necessary to avoid a bug where after hosts swap and this value is not reset
+	_initial_sync_done = false
 	_synced_peers.clear()
 
 	if multiplayer.peer_disconnected.is_connected(_handle_peer_disconnect):
 		multiplayer.peer_disconnected.disconnect(_handle_peer_disconnect)
+
+## Returns true while the simulation tick loop is running ([method _loop]).
+## When false, [member tick_factor] is stale and must not drive interpolation.
+func is_tick_loop_active() -> bool:
+	return _state == _STATE_ACTIVE
 
 ## Check if the initial time sync is done.
 func is_initial_sync_done() -> bool:

@@ -24,13 +24,13 @@ func spawn_players(players: Array, target_peer_ids: Array = []) -> void:
 		# Late join - send all existing players to new client
 		spawn_players(all_players, [new_client_id])
 	"""
-	if not multiplayer.is_server():
-		push_warning("PlayerSpawner: spawn_players called on client")
-		return
-
 	if not multiplayer.has_multiplayer_peer():
 		if IS_VERBOSE:
 			SweetLogger.warning("spawn_players - no multiplayer peer", [], SCRIPT_NAME, "spawn_players")
+		return
+
+	if not multiplayer.is_server():
+		push_warning("PlayerSpawner: spawn_players called on client")
 		return
 
 	if players.is_empty():

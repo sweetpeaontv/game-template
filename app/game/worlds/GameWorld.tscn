@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b46nucqwh0xsl"]
 
 [ext_resource type="PackedScene" uid="uid://bpuwfdi56xoau" path="res://app/game/worlds/models/cube.glb" id="1_bcxc4"]
+[ext_resource type="Script" uid="uid://wr5ur5dqrkni" path="res://addons/netfox.extras/physics/godot_driver_3d.gd" id="1_u2ykm"]
 [ext_resource type="Script" uid="uid://ljdti2hjik14" path="res://app/game/worlds/SpawnManager.gd" id="2_5geq7"]
 [ext_resource type="PackedScene" uid="uid://bpk6vmuacbrvy" path="res://app/game/objects/interactables/pickupables/cube/Cube.tscn" id="2_30h0s"]
 [ext_resource type="PackedScene" uid="uid://cvl14edykthr5" path="res://app/game/objects/interactables/examinables/keypad/Keypad.tscn" id="2_c274h"]
@@ -34,6 +35,10 @@ size = Vector3(2, 2, 2)
 
 [node name="GameWorld" type="Node3D" unique_id=1404312807]
 
+[node name="PhysicsDriver3D" type="Node" parent="." unique_id=1021468117]
+script = ExtResource("1_u2ykm")
+metadata/_custom_type_script = "uid://wr5ur5dqrkni"
+
 [node name="GroundPlane" type="MeshInstance3D" parent="." unique_id=1459774560]
 transform = Transform3D(1.00393, 0, 0, 0, 1.00393, 0, 0, 0, 1.00393, 0, 0, 0)
 mesh = SubResource("PlaneMesh_bfthn")
@@ -54,7 +59,10 @@ shadow_bias = 0.01
 shadow_blur = 0.8
 
 [node name="PhysicsCube" parent="." unique_id=1748285154 instance=ExtResource("2_30h0s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.924341, 0.27253395, -3.6265616)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.924, 0.25, -3.627)
+
+[node name="Cube2" parent="." unique_id=5862446 instance=ExtResource("2_30h0s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9115767, 0.25, 0)
 
 [node name="Keypad" parent="." unique_id=438612277 instance=ExtResource("2_c274h")]
 transform = Transform3D(0.8239778, -0.5666219, 6.7568973e-09, -5.7492573e-16, 1.192488e-08, 1, -0.5666219, -0.8239778, 9.82584e-09, 1.6073487, 1.13247, 3.0477386)

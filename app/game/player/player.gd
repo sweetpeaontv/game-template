@@ -358,6 +358,7 @@ func _handle_examine(is_fresh: bool) -> void:
 	examining_key = focus_sensor.focus.key
 
 	if local_player and is_fresh:
+		UIManager.hide_ui("Crosshair")
 		InputModeManager.set_input_mode(Input.MOUSE_MODE_CONFINED)
 		camera_manager.transition_to(CameraManager.RigType.EXAMINE, focus_sensor.focus.examine_camera_anchor)
 
@@ -368,6 +369,7 @@ func _handle_examine_disengage(is_fresh: bool) -> void:
 	examining_key = 0
 	
 	if local_player and is_fresh:
+		UIManager.show_ui("Crosshair")
 		InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 		camera_manager.transition_to(CameraManager.RigType.FIRST_PERSON, camera_anchor_fp)
 #===================================================================================#
@@ -391,6 +393,7 @@ func _handle_escape(tick: int, is_fresh: bool) -> void:
 
 func _handle_esc_local(_tick: int) -> void:
 	var esc_menu: Node = UIManager.show_ui("EscMenu")
+	UIManager.hide_ui("Crosshair")
 	if esc_menu and esc_menu.has_signal("resume_pressed"):
 		esc_menu.resume_pressed.connect(_on_esc_menu_resume_pressed, CONNECT_ONE_SHOT)
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_VISIBLE)
@@ -398,6 +401,7 @@ func _handle_esc_local(_tick: int) -> void:
 
 func _handle_resume_local(_tick: int) -> void:
 	UIManager.hide_ui("EscMenu")
+	UIManager.show_ui("Crosshair")
 	InputModeManager.set_input_mode(Input.MOUSE_MODE_CAPTURED)
 	camera_manager.set_look_input_enabled(true)
 

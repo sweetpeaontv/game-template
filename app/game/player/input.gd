@@ -172,8 +172,14 @@ func _setup_buffers_and_slots() -> void:
 
 # PROCESS
 #===================================================================================#
+func _can_process_input() -> bool:
+	# is_multiplayer_authority() errors when no peer is assigned (e.g. after disconnect).
+	if not multiplayer.has_multiplayer_peer():
+		return true
+	return is_multiplayer_authority()
+
 func _process(delta: float) -> void:
-	if not is_multiplayer_authority():
+	if not _can_process_input():
 		return
 
 	for key in buffers:
@@ -188,7 +194,7 @@ func _process(delta: float) -> void:
 # GATHER
 #===================================================================================#
 func _gather_continuous() -> void:
-	if not is_multiplayer_authority():
+	if not _can_process_input():
 		return
 
 	for key in input_keys:
@@ -201,7 +207,7 @@ func _gather_continuous() -> void:
 			apply_buffer_aim_screen(buffer)
 
 func _gather_one_shots(_delta: float, _tick: int) -> void:
-	if not is_multiplayer_authority():
+	if not _can_process_input():
 		return
 
 	for key in input_keys:
@@ -213,7 +219,7 @@ func _gather_one_shots(_delta: float, _tick: int) -> void:
 # QUEUE INPUTS (outside rollback)
 #===================================================================================#
 func queue_escape_release() -> void:
-	if not is_multiplayer_authority():
+	if not _can_process_input():
 		return
 	buffers["escape"].released = true
 #===================================================================================#

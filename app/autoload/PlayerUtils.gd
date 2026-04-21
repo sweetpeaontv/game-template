@@ -18,6 +18,20 @@ func get_players_container() -> Node:
 		return main.get_node_or_null("Players")
 	return null
 
+func despawn_all_players() -> void:
+	"""Remove all player nodes from Main/Players. They persist across WorldContainer scene swaps."""
+	var container = get_players_container()
+	if not container:
+		return
+	for child in container.get_children():
+		child.queue_free()
+
+func despawn_player(peer_id: int) -> void:
+	"""Remove a single player by peer id (server or client copy)."""
+	var p = find_player(peer_id)
+	if p:
+		p.queue_free()
+
 func find_all_players(players_container: Node) -> Array:
 	"""
 	Find all player nodes in PlayersContainer.
