@@ -22,7 +22,6 @@ sky_material = SubResource("PhysicalSkyMaterial_bcxc4")
 [sub_resource type="Environment" id="Environment_bcxc4"]
 background_mode = 2
 sky = SubResource("Sky_5geq7")
-ssr_enabled = true
 ssao_enabled = true
 ssil_enabled = true
 sdfgi_enabled = true
@@ -51,8 +50,7 @@ environment = SubResource("Environment_bcxc4")
 transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.570714, 0.778561, 0.376408, -0.502155, -5, 10, -3)
 light_energy = 2.0
 shadow_enabled = true
-shadow_bias = 0.0
-shadow_normal_bias = 3.0
+shadow_bias = 0.01
 shadow_blur = 0.8
 
 [node name="PhysicsCube" parent="." unique_id=1748285154 instance=ExtResource("2_30h0s")]

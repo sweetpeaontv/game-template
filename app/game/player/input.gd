@@ -2,15 +2,14 @@ extends BaseNetInput
 class_name PlayerInput
 
 # VARIABLES
-## In order to add a new variable:
+## In order to add a new input source:
 ## - Add a pressed, just_pressed, released, and hold_time variable with intended prefix 
 ## - Add prefix to input_keys array
-## - Ensure that the new variables are included in input_properties in the RollbackSynchronizer
+## - Add new variables to input_properties in the RollbackSynchronizer
 #===================================================================================#
 var movement: Vector3 = Vector3.ZERO
 
 ## Mouse position in visible viewport space: (0,0) top-left, (1,1) bottom-right.
-## Synced for rollback so sim matches across peers with different resolutions.
 var aim_screen: Vector2 = Vector2(0.5, 0.5)
 
 var shift_pressed: bool = false
