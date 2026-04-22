@@ -121,7 +121,7 @@ func _handle_holder_sync() -> void:
 		elif multiplayer.is_server() and not _holder_peer_still_in_session():
 			# Rollback can replay stale holder_id after the holder node was freed; if the
 			# peer is gone from the session, there is no late-join retry — clear state.
-			SweetLogger.info("Dropping pickupable due to stale holder_id", [], "Pickupable.gd", "_handle_holder_sync")
+			#SweetLogger.info("Dropping pickupable due to stale holder_id", [], "Pickupable.gd", "_handle_holder_sync")
 			_drop()
 		else:
 			# Late join: player node may not exist yet while the peer is connected.

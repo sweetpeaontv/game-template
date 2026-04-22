@@ -76,3 +76,13 @@ func _get_examine_target_position() -> Vector3:
 
 	return examine_target.global_position
 #===================================================================================#
+
+# ROLLBACK
+#===================================================================================#
+func _interact_rollback_tick(_delta, _tick):
+	_handle_examiner_sync()
+
+# can basically copy pickupable _handle_holder_sync logic
+func _handle_examiner_sync() -> void:
+	pass
+#===================================================================================#

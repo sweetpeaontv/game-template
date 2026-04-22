@@ -2,6 +2,17 @@
 
 [ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/Interactable.tscn" id="1_qj817"]
 [ext_resource type="Script" uid="uid://urcg7nqs3mw4" path="res://app/game/components/interactable/interactions/pickupable/Pickupable.gd" id="2_sve6c"]
+[ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="3_6gbj4"]
 
 [node name="Pickupable" unique_id=481276386 instance=ExtResource("1_qj817")]
 script = ExtResource("2_sve6c")
+spring_k = 50.0
+damper_b = 10.0
+drop_distance = 4.0
+held_parent_angular_damp = 5.0
+
+[node name="RollbackSynchronizer" type="Node" parent="." index="2" unique_id=358501580 node_paths=PackedStringArray("root")]
+script = ExtResource("3_6gbj4")
+root = NodePath("..")
+state_properties = Array[String]([":holder_id", ":pickup_state", ":pending_throw_velocity"])
+metadata/_custom_type_script = "uid://d350u8evihs1u"
