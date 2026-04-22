@@ -441,8 +441,11 @@ root = NodePath("..")
 properties = Array[String]([":entered_digits", ":unlocked", ":reject_ticks_remaining"])
 metadata/_custom_type_script = "uid://3lbngqcexe0l"
 
-[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596]
+[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596 node_paths=PackedStringArray("keypad_state", "screen_label", "screen_mesh")]
 script = ExtResource("3_jkowj")
+keypad_state = NodePath("../KeypadState")
+screen_label = NodePath("../Screen/Label3D")
+screen_mesh = NodePath("../Screen")
 
 [node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322 node_paths=PackedStringArray("keypad_state")]
 script = ExtResource("8_p4swm")
