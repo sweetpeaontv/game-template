@@ -259,7 +259,8 @@ func _handle_alt_interact(_is_fresh: bool) -> void:
 		holding.interact(self, InteractionTypes.PickupData.throw(throw_power, throw_direction))
 
 	holding_key = 0
-	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
+	if holding.pickupable_yanked.is_connected(_on_pickupable_yanked):
+		holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 	holding = null
 	NetworkRollback.mutate(self)
 	# NEED TO DISCONNECT HOLD DURATION SIGNAL WHEN HUD IS HIDDEN
@@ -313,13 +314,15 @@ func _handle_pickup(is_fresh: bool) -> void:
 func _handle_object_released() -> void:
 	SweetLogger.info("Object released from player: {0}, setting holding to null", [peer_id], "Player.gd", "_handle_object_released")
 	holding_key = 0
-	holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
+	if holding != null and holding.pickupable_yanked.is_connected(_on_pickupable_yanked):
+		holding.pickupable_yanked.disconnect(_on_pickupable_yanked)
 
 	if is_examining():
 		hold_point.global_position = prev_hold_point
 
 	NetworkRollback.mutate(self)
-	UIManager.hide_ui("PickupHUD")
+	if local_player:
+		UIManager.hide_ui("PickupHUD")
 
 func _handle_let_go() -> void:
 	if input.alt_interact_hold_time < 0.2:

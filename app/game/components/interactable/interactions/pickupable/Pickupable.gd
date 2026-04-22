@@ -118,10 +118,24 @@ func _handle_holder_sync() -> void:
 		var player = PlayerUtils.find_player(holder_id)
 		if player:
 			holder = player
+		elif multiplayer.is_server() and not _holder_peer_still_in_session():
+			# Rollback can replay stale holder_id after the holder node was freed; if the
+			# peer is gone from the session, there is no late-join retry — clear state.
+			SweetLogger.info("Dropping pickupable due to stale holder_id", [], "Pickupable.gd", "_handle_holder_sync")
+			_drop()
 		else:
-			# this is a bit troublesome because when a late joiner connects
-			# the player node may not be ready yet, so we could wait for it to be ready...
+			# Late join: player node may not exist yet while the peer is connected.
 			SweetLogger.warning("Player {0} not found", [holder_id], "Pickupable.gd", "_handle_holder_sync")
+
+func _holder_peer_still_in_session() -> bool:
+	if not multiplayer.has_multiplayer_peer():
+		return true
+	if holder_id == multiplayer.get_unique_id():
+		return true
+	for peer in multiplayer.get_peers():
+		if peer == holder_id:
+			return true
+	return false
 
 ## Snaps the body to the hold point each tick (overrides physics / [member NetworkRigidBody3D.physics_state]).
 func _handle_holder_point_transform() -> void:
