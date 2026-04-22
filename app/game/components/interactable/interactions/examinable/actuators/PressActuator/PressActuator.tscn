@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://dqsv6jr6v1mbj"]
-
-[ext_resource type="Script" uid="uid://d16esn3inrjwk" path="res://app/game/components/interactable/interactions/examinable/actuators/PressActuator/PressActuator.gd" id="1_press"]
-
-[node name="PressActuator" type="Node3D" unique_id=1600247745]
-script = ExtResource("1_press")
-actuator_id = &"press"

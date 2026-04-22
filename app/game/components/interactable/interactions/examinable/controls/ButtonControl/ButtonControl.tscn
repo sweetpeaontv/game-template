@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://c364nmt4mly4v"]
-
-[ext_resource type="Script" uid="uid://dvtrseylw5ja8" path="res://app/game/components/interactable/interactions/examinable/controls/ButtonControl/ButtonControl.gd" id="1_71uaq"]
-
-[node name="ButtonControl" type="Node3D" unique_id=1648321710]
-script = ExtResource("1_71uaq")

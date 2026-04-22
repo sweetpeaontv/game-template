@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://3lbngqcexe0l" path="res://addons/netfox/state-synchronizer.gd" id="2_0daay"]
 [ext_resource type="PackedScene" uid="uid://dcc3wecpvmb4f" path="res://app/game/components/interactable/interactions/examinable/Examinable.tscn" id="2_c6fxj"]
 [ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/Screen.gdshader" id="2_ycede"]
+[ext_resource type="Script" uid="uid://d1ylqdouuk3jw" path="res://app/game/objects/interactables/examinables/keypad/KeypadDisplayActuator.gd" id="3_jkowj"]
 [ext_resource type="PackedScene" uid="uid://cqviiexjirkxu" path="res://app/game/components/interactable/interactions/operable/Operable.tscn" id="8_kpf7x"]
 [ext_resource type="Script" uid="uid://bktnoabo3d5ms" path="res://app/game/objects/interactables/examinables/keypad/buttons.gd" id="8_p4swm"]
 [ext_resource type="PackedScene" uid="uid://dt1v6nils4ibb" path="res://app/game/components/interactable/interactions/operable/states/pulse/Idle.tscn" id="9_8fog2"]
 [ext_resource type="Script" uid="uid://b1iumw3hfju0g" path="res://app/game/objects/interactables/examinables/keypad/KeypadState.gd" id="10_keystate"]
 [ext_resource type="PackedScene" uid="uid://dwiyfp2ld8hwd" path="res://app/game/components/interactable/interactions/operable/states/pulse/Pulse.tscn" id="10_p4swm"]
-[ext_resource type="Script" uid="uid://djrsbptfs1afx" path="res://app/game/components/interactable/interactions/examinable/actuators/KeypadDisplayActuator/KeypadDisplayActuator.gd" id="11_keydisp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyns4"]
 resource_name = "Button"
@@ -441,11 +441,8 @@ root = NodePath("..")
 properties = Array[String]([":entered_digits", ":unlocked", ":reject_ticks_remaining"])
 metadata/_custom_type_script = "uid://3lbngqcexe0l"
 
-[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596 node_paths=PackedStringArray("keypad_state", "screen_label", "screen_mesh")]
-script = ExtResource("11_keydisp")
-keypad_state = NodePath("../KeypadState")
-screen_label = NodePath("../Screen/Label3D")
-screen_mesh = NodePath("../Screen")
+[node name="KeypadDisplayActuator" type="Node3D" parent="KeypadRoot" unique_id=1851351596]
+script = ExtResource("3_jkowj")
 
 [node name="Buttons" type="Node3D" parent="KeypadRoot" unique_id=1586389322 node_paths=PackedStringArray("keypad_state")]
 script = ExtResource("8_p4swm")

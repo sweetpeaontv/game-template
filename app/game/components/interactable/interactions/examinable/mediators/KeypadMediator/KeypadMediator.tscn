@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://cvqj8c4edvdto"]
-
-[ext_resource type="Script" uid="uid://vrjtlcur8prl" path="res://app/game/components/interactable/interactions/examinable/mediators/KeypadMediator/KeypadMediator.gd" id="1_edv17"]
-
-[node name="KeypadMediator" type="Node3D" unique_id=1853250219]
-script = ExtResource("1_edv17")
