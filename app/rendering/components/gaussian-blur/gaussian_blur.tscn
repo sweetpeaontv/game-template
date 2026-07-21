@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://c8kqm3blur001"]
+
+[ext_resource type="Shader" uid="uid://w82r1abrsslo" path="res://app/rendering/shaders/gaussian_blur.gdshader" id="1_shader"]
+[ext_resource type="Script" uid="uid://d3fa808kseyk6" path="res://app/rendering/components/gaussian-blur/gaussian_blur.gd" id="2_script"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_horizontal"]
+shader = ExtResource("1_shader")
+shader_parameter/use_screen_texture = true
+shader_parameter/blur_direction = Vector2(1, 0)
+shader_parameter/sigma = 2.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vertical"]
+shader = ExtResource("1_shader")
+shader_parameter/use_screen_texture = true
+shader_parameter/blur_direction = Vector2(0, 1)
+shader_parameter/sigma = 2.0
+
+[node name="GaussianBlur" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_script")
+
+[node name="BackBufferCopy" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="HorizontalPass" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_horizontal")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BackBufferCopyVertical" type="BackBufferCopy" parent="."]
+copy_mode = 2
+
+[node name="VerticalPass" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_vertical")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://4rjktbtyd7ug"]
+
+[ext_resource type="Script" uid="uid://5bl8m6qwnijl" path="res://app/ui/widgets/labeled-h-slider/labeled_h_slider.gd" id="1_ht7he"]
+
+[node name="LabeledHSlider" type="VBoxContainer" unique_id=400076951]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ht7he")
+
+[node name="Label" type="Label" parent="." unique_id=1602623196]
+layout_mode = 2
+
+[node name="HSlider" type="HSlider" parent="." unique_id=1015067179]
+layout_mode = 2

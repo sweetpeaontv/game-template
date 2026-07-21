@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cxh1hk2mrhhrj"]
+
+[ext_resource type="PackedScene" uid="uid://d30vcv8q7rnjc" path="res://app/game/character/model/armature/armature.tscn" id="1_1gxw7"]
+[ext_resource type="Script" uid="uid://df8qyxskk04fj" path="res://app/game/character/character.gd" id="1_plqb4"]
+
+[node name="Character" type="Node3D" unique_id=1457987062]
+script = ExtResource("1_plqb4")
+
+[node name="Armature" parent="." unique_id=1985967918 instance=ExtResource("1_1gxw7")]
+
+[node name="CoreAP" type="Node3D" parent="." unique_id=1304643374]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.90547514, -1.7768435)
+
+[node name="HeadAP" type="Node3D" parent="." unique_id=914945517]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.5761843, -0.53852016)
+
+[node name="BodyAP" type="Node3D" parent="." unique_id=1028318799]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.69775224, -1.2130489)
+
+[editable path="Armature"]

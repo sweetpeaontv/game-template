@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b8syncstate01"]
+
+[ext_resource type="Script" uid="uid://02akj02ectum" path="res://app/game/components/sync-state/sync_state.gd" id="1_sync"]
+
+[node name="SyncState" type="Node" unique_id=1688477120]
+script = ExtResource("1_sync")

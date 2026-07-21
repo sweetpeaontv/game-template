@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://cvdh3jict1cyy"]
+
+[ext_resource type="Script" uid="uid://dsgnbu1att5w3" path="res://app/ui/components/wizard/wizard.gd" id="1_ac00c"]
+[ext_resource type="PackedScene" uid="uid://c41mob7sa32t1" path="res://app/ui/components/wizard/wizard_header.tscn" id="1_d8u6q"]
+
+[node name="Wizard" type="ScrollContainer" unique_id=1788587413]
+custom_minimum_size = Vector2(300, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -852.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ac00c")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=35111219]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Header" parent="VBoxContainer" unique_id=1988690601 instance=ExtResource("1_d8u6q")]
+layout_mode = 2
+
+[node name="MarginBody" type="MarginContainer" parent="VBoxContainer" unique_id=1470682841]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Body" type="VBoxContainer" parent="VBoxContainer/MarginBody" unique_id=423128948]
+layout_mode = 2

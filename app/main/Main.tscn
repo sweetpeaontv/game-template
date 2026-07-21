@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://b851e7ne5q1lu"]
+
+[ext_resource type="Script" uid="uid://0tjw67kj0jvx" path="res://app/main/main.gd" id="1_7l6rf"]
+
+[node name="Main" type="Node" unique_id=2110270909]
+script = ExtResource("1_7l6rf")
+
+[node name="WorldContainer" type="Node" parent="." unique_id=426004408]
+
+[node name="Players" type="Node" parent="." unique_id=1832452676]
+
+[node name="UI" type="Node" parent="." unique_id=1203340800]
+
+[node name="Menu" type="CanvasLayer" parent="UI" unique_id=1361876420]
+layer = 10
+
+[node name="HUD" type="CanvasLayer" parent="UI" unique_id=738379899]
+layer = 20
+
+[node name="Backdrop" type="CanvasLayer" parent="UI" unique_id=1407858295]
+layer = 25
+
+[node name="Overlay" type="CanvasLayer" parent="UI" unique_id=358446718]
+layer = 30

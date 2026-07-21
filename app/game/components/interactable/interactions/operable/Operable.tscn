@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://lamwxpdmnw24"]
+
+[ext_resource type="Script" uid="uid://c1f5wj1sms674" path="res://app/game/components/interactable/interactions/operable/operable.gd" id="1_ibjj0"]
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/interactable.tscn" id="1_lykr1"]
+[ext_resource type="Script" uid="uid://0cerx7tkgrgf" path="res://app/game/components/interactable/interactions/operable/operable-animator.gd" id="3_kcfrp"]
+
+[node name="Operable" unique_id=2057239684 instance=ExtResource("1_lykr1")]
+script = ExtResource("1_ibjj0")
+ordered_states = Array[String]([])
+moment_name = &"Pulse"
+moment_return_to = &"Idle"
+operate_context = {}
+
+[node name="Animator" type="Node3D" parent="." index="0" unique_id=728586058]
+script = ExtResource("3_kcfrp")

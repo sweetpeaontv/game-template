@@ -1,0 +1,206 @@
+[gd_scene format=3 uid="uid://balm57gttxias"]
+
+[ext_resource type="PackedScene" uid="uid://d2v28euqu51y5" path="res://app/game/objects/interactables/examinables/keypad/keypad.glb" id="1_nojwc"]
+[ext_resource type="PackedScene" uid="uid://cbmdqphthi5hl" path="res://app/game/components/interactable/interactions/examinable/examinable.tscn" id="2_0tlcc"]
+[ext_resource type="Script" uid="uid://dof7g0dwndahw" path="res://app/game/objects/interactables/examinables/keypad/keypad-sync-state/keypad.gd" id="2_e16ct"]
+[ext_resource type="PackedScene" uid="uid://lamwxpdmnw24" path="res://app/game/components/interactable/interactions/operable/operable.tscn" id="2_oj3iv"]
+[ext_resource type="Script" uid="uid://5srpn0np85f5" path="res://app/game/objects/interactables/examinables/keypad/keypad-sync-state/buttons.gd" id="2_oubgt"]
+[ext_resource type="Script" uid="uid://dg0d733bs1x5c" path="res://app/game/objects/interactables/examinables/keypad/keypad-sync-state/keypad_screen.gd" id="5_1xjy1"]
+[ext_resource type="Shader" uid="uid://f1bdrqg7i0w3" path="res://app/game/objects/interactables/examinables/keypad/screen.gdshader" id="5_eq0q0"]
+[ext_resource type="Script" uid="uid://w01qhbqd8aa" path="res://app/game/objects/interactables/examinables/keypad/keypad-sync-state/keypad_authority.gd" id="6_5a53t"]
+[ext_resource type="PackedScene" uid="uid://b8syncstate01" path="res://app/game/components/sync-state/sync_state.tscn" id="7_yo1kg"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_oubgt"]
+points = PackedVector3Array(-0.033421244, 0, -0.03342124, -0.025844542, 0.013227951, -0.025844539, 0.033421237, 0, -0.03342124, -0.033421244, 0, 0.033421233, -0.025844542, 0.013227951, 0.025837988, 0.025837995, 0.013227951, -0.025844539, 0.033421237, 0, 0.033421233, 0.025837995, 0.013227951, 0.025837988)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_e16ct"]
+points = PackedVector3Array(-0.03342124, 0, -0.03342124, -0.025844539, 0.013227951, -0.025844539, 0.03342124, 0, -0.03342124, -0.03342124, 0, 0.033421233, -0.025844539, 0.013227951, 0.025837988, 0.025837999, 0.013227951, -0.025844539, 0.03342124, 0, 0.033421233, 0.025837999, 0.013227951, 0.025837988)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_1xjy1"]
+points = PackedVector3Array(-0.033421233, 0, -0.03342124, -0.025844531, 0.013227951, -0.025844539, 0.03342124, 0, -0.03342124, -0.033421233, 0, 0.033421233, -0.025844531, 0.013227951, 0.025837988, 0.025837995, 0.013227951, -0.025844539, 0.03342124, 0, 0.033421233, 0.025837995, 0.013227951, 0.025837988)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5a53t"]
+points = PackedVector3Array(-0.033421244, 0, -0.03342124, -0.025844542, 0.013227951, -0.025844539, 0.033421237, 0, -0.03342124, -0.033421244, 0, 0.03342124, -0.025844542, 0.013227951, 0.025837999, 0.025837995, 0.013227951, -0.025844539, 0.033421237, 0, 0.03342124, 0.025837995, 0.013227951, 0.025837999)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_eq0q0"]
+points = PackedVector3Array(-0.03342124, 0, -0.03342124, -0.025844539, 0.013227951, -0.025844539, 0.03342124, 0, -0.03342124, -0.03342124, 0, 0.03342124, -0.025844539, 0.013227951, 0.025837999, 0.025837999, 0.013227951, -0.025844539, 0.03342124, 0, 0.03342124, 0.025837999, 0.013227951, 0.025837999)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_yo1kg"]
+points = PackedVector3Array(0.03342124, 0, 0.03342124, 0.025837995, 0.013227951, 0.025837999, -0.033421233, 0, 0.03342124, 0.03342124, 0, -0.03342124, 0.025837995, 0.013227951, -0.025844539, -0.025844531, 0.013227951, 0.025837999, -0.033421233, 0, -0.03342124, -0.025844531, 0.013227951, -0.025844539)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qbhmp"]
+points = PackedVector3Array(-0.033421244, 0, -0.03342124, -0.025844542, 0.013227951, -0.025844539, 0.033421237, 0, -0.03342124, -0.033421244, 0, 0.03342124, -0.025844542, 0.013227951, 0.025837999, 0.025837995, 0.013227951, -0.025844539, 0.033421237, 0, 0.03342124, 0.025837995, 0.013227951, 0.025837999)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ejmf2"]
+points = PackedVector3Array(-0.03342124, 0, -0.03342124, -0.025844539, 0.013227951, -0.025844539, 0.03342124, 0, -0.03342124, -0.03342124, 0, 0.03342124, -0.025844539, 0.013227951, 0.025837999, 0.025837999, 0.013227951, -0.025844539, 0.03342124, 0, 0.03342124, 0.025837999, 0.013227951, 0.025837999)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8sbro"]
+points = PackedVector3Array(0.03342124, 0, 0.03342124, 0.025837995, 0.013227951, 0.025837999, -0.033421233, 0, 0.03342124, 0.03342124, 0, -0.03342124, 0.025837995, 0.013227951, -0.025844539, -0.025844531, 0.013227951, 0.025837999, -0.033421233, 0, -0.03342124, -0.025844531, 0.013227951, -0.025844539)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yo1kg"]
+render_priority = 0
+shader = ExtResource("5_eq0q0")
+shader_parameter/screen_mode = 0
+shader_parameter/color_idle = Color(0.02, 0.06, 0.02, 1)
+shader_parameter/color_reject = Color(0.9, 0.08, 0.08, 1)
+shader_parameter/color_success = Color(0.1, 0.85, 0.2, 1)
+shader_parameter/emissive_strength = 3.0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ycede"]
+points = PackedVector3Array(0.115, 0.04, 0.159, 0.11505277, 0, 0.15894459, 0.11135883, 0.017882183, 0.15573956, -0.115, 0.04, 0.159, -0.11505277, 0, 0.15894459, 0.11505277, 0, -0.15894459, 0.11135883, 0.017882183, 0.07592499, 0.115, 0.04, -0.159, -0.11138135, 0.017882183, 0.15573956, -0.11505277, 0, -0.15894459, -0.11138135, 0.017882183, 0.07592499, -0.115, 0.04, -0.159)
+
+[node name="Keypad" unique_id=1053794021 instance=ExtResource("1_nojwc")]
+
+[node name="KeypadRoot" parent="." index="0" unique_id=1059197307 node_paths=PackedStringArray("_sync_state")]
+script = ExtResource("2_e16ct")
+_sync_state = NodePath("SyncState")
+
+[node name="Buttons" parent="KeypadRoot" index="0" unique_id=1847406174]
+script = ExtResource("2_oubgt")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button1Pivot/Button1" parent_id_path=PackedInt32Array(282733390) index="0" unique_id=1117181241]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "1"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button1Pivot" parent_id_path=PackedInt32Array(1742454603) index="1" unique_id=2057239684 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button1Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_oubgt")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button2Pivot/Button2" parent_id_path=PackedInt32Array(175880428) index="0" unique_id=425024957]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "2"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button2Pivot" parent_id_path=PackedInt32Array(1679023451) index="1" unique_id=1125437661 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button2Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_e16ct")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button3Pivot/Button3" parent_id_path=PackedInt32Array(1055109111) index="0" unique_id=810537756]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "3"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button3Pivot" parent_id_path=PackedInt32Array(2020903776) index="1" unique_id=431735141 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button3Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_1xjy1")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button4Pivot/Button4" parent_id_path=PackedInt32Array(18799488) index="0" unique_id=616210210]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "4"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button4Pivot" parent_id_path=PackedInt32Array(341809028) index="1" unique_id=222636812 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button4Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_5a53t")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button5Pivot/Button5" parent_id_path=PackedInt32Array(2010669005) index="0" unique_id=768061457]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "5"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button5Pivot" parent_id_path=PackedInt32Array(80680882) index="1" unique_id=1499633939 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button5Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_eq0q0")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button6Pivot/Button6" parent_id_path=PackedInt32Array(1524257875) index="0" unique_id=321818237]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "6"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button6Pivot" parent_id_path=PackedInt32Array(547712929) index="1" unique_id=240523706 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button6Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_yo1kg")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button7Pivot/Button7" parent_id_path=PackedInt32Array(2131306334) index="0" unique_id=1718918371]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "7"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button7Pivot" parent_id_path=PackedInt32Array(2096654661) index="1" unique_id=860448801 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button7Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_qbhmp")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button8Pivot/Button8" parent_id_path=PackedInt32Array(1008536978) index="0" unique_id=1078987891]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "8"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button8Pivot" parent_id_path=PackedInt32Array(933448145) index="1" unique_id=831228107 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button8Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_ejmf2")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Buttons/Button9Pivot/Button9" parent_id_path=PackedInt32Array(2013638183) index="0" unique_id=1574779254]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, 0, 0.014, 0)
+pixel_size = 0.0008
+text = "9"
+
+[node name="Operable" parent="KeypadRoot/Buttons/Button9Pivot" parent_id_path=PackedInt32Array(1124992201) index="1" unique_id=1595775458 instance=ExtResource("2_oj3iv")]
+default_operate_action = 0
+
+[node name="FocusCollisionShape" parent="KeypadRoot/Buttons/Button9Pivot/Operable" index="2" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_8sbro")
+
+[node name="Screen" parent="KeypadRoot" index="2" unique_id=332832198 node_paths=PackedStringArray("screen_label", "screen_mesh")]
+material_override = SubResource("ShaderMaterial_yo1kg")
+script = ExtResource("5_1xjy1")
+screen_label = NodePath("Label3D")
+screen_mesh = NodePath(".")
+
+[node name="Label3D" type="Label3D" parent="KeypadRoot/Screen" index="0" unique_id=1986356320]
+transform = Transform3D(-0.49994993, -4.3864475e-08, -0.0070757074, -0.0070757074, 2.1621451e-08, 0.49994993, -4.355411e-08, 0.5, -2.224003e-08, 0, 0.02300775, 0.11825748)
+double_sided = false
+no_depth_test = true
+
+[node name="SyncState" parent="KeypadRoot" index="3" unique_id=1688477120 instance=ExtResource("7_yo1kg")]
+initial_state = {
+"entered_digits": PackedInt32Array(),
+"screen_mode": 0,
+"unlocked": false
+}
+
+[node name="Authority" type="Node" parent="KeypadRoot" index="4" unique_id=108186055 node_paths=PackedStringArray("sync_state")]
+script = ExtResource("6_5a53t")
+sync_state = NodePath("../SyncState")
+
+[node name="Examinable" parent="." index="1" unique_id=835183576 node_paths=PackedStringArray("examine_camera_anchor", "examine_target") instance=ExtResource("2_0tlcc")]
+examine_camera_anchor = NodePath("AnchorPoint")
+examine_target = NodePath("../KeypadRoot")
+
+[node name="FocusCollisionShape" parent="Examinable" index="1" unique_id=1075540080]
+shape = SubResource("ConvexPolygonShape3D_ycede")
+
+[node name="AnchorPoint" parent="Examinable" index="2" unique_id=483383978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="SyncState" parent="Examinable" index="3" unique_id=1688477120]
+initial_state = {
+"examiner_ids": []
+}
+
+[editable path="KeypadRoot/Buttons/Button1Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button2Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button3Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button4Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button5Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button6Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button7Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button8Pivot/Operable"]
+[editable path="KeypadRoot/Buttons/Button9Pivot/Operable"]
+[editable path="Examinable"]

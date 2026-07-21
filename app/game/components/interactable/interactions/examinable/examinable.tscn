@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cbmdqphthi5hl"]
+
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/interactable.tscn" id="1_4147l"]
+[ext_resource type="Script" uid="uid://c2iovlfetuah4" path="res://app/game/components/interactable/interactions/examinable/examinable.gd" id="2_b30d6"]
+[ext_resource type="PackedScene" uid="uid://b8syncstate01" path="res://app/game/components/sync-state/sync_state.tscn" id="3_akpdb"]
+
+[node name="Examinable" unique_id=2057239684 instance=ExtResource("1_4147l")]
+script = ExtResource("2_b30d6")
+
+[node name="AnchorPoint" type="Node3D" parent="." index="2" unique_id=483383978]
+
+[node name="SyncState" parent="." index="3" unique_id=1688477120 instance=ExtResource("3_akpdb")]
+initial_state = {
+"examiner_ids": PackedInt32Array()
+}

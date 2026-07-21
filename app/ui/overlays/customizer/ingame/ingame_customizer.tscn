@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://csss5cv66bcwv"]
+
+[ext_resource type="Script" uid="uid://c0ux5auw41wkk" path="res://app/ui/overlays/customizer/ingame/ingame_customizer.gd" id="1_g0fqb"]
+[ext_resource type="PackedScene" uid="uid://cvdh3jict1cyy" path="res://app/ui/components/wizard/wizard.tscn" id="2_hd8re"]
+
+[node name="InGameCustomizer" type="HBoxContainer" unique_id=1970562455]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_g0fqb")
+
+[node name="Wizard" parent="." unique_id=1788587413 instance=ExtResource("2_hd8re")]
+layout_mode = 2

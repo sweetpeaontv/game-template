@@ -1,0 +1,121 @@
+[gd_scene format=3 uid="uid://b46nucqwh0xsl"]
+
+[ext_resource type="PackedScene" uid="uid://bpuwfdi56xoau" path="res://app/game/objects/props/cube/cube.glb" id="1_bcxc4"]
+[ext_resource type="Script" uid="uid://wr5ur5dqrkni" path="res://addons/netfox.extras/physics/godot_driver_3d.gd" id="1_u2ykm"]
+[ext_resource type="Script" uid="uid://ljdti2hjik14" path="res://app/game/worlds/game-world/spawn_manager.gd" id="2_5geq7"]
+[ext_resource type="PackedScene" uid="uid://bpk6vmuacbrvy" path="res://app/game/objects/interactables/pickupables/cube/cube.tscn" id="2_30h0s"]
+[ext_resource type="Shader" uid="uid://cdom372rswlpx" path="res://app/rendering/shaders/sky.gdshader" id="2_wuxsu"]
+[ext_resource type="PackedScene" uid="uid://balm57gttxias" path="res://app/game/objects/interactables/examinables/keypad/keypad-sync-state/keypad.tscn" id="3_8japc"]
+[ext_resource type="Script" uid="uid://da8qww7mq1e0t" path="res://app/rendering/components/sun-driver/sun_driver.gd" id="3_mxndc"]
+[ext_resource type="PackedScene" uid="uid://b65lu1ad6yijv" path="res://app/game/objects/interactables/examinables/table/table.tscn" id="6_1jik2"]
+[ext_resource type="PackedScene" uid="uid://cpf7b82xvo2ky" path="res://app/game/objects/interactables/operables/door/door-sync-state/door.tscn" id="10_ycecn"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_bfthn"]
+size = Vector2(15, 15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8mhuu"]
+size = Vector3(15, 0, 15)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mxndc"]
+shader = ExtResource("2_wuxsu")
+shader_parameter/sky_color_day = Color(0.25, 0.55, 0.95, 1)
+shader_parameter/horizon_color_day = Color(0.7, 0.85, 1, 1)
+shader_parameter/sky_color_sunset = Color(0.25, 0.15, 0.45, 1)
+shader_parameter/horizon_color_sunset = Color(1, 0.55, 0.35, 1)
+shader_parameter/sun_glow_color = Color(1, 0.8, 0.5, 1)
+shader_parameter/sun_height = 0.5
+shader_parameter/horizon_sharpness = 4.0
+shader_parameter/cloud_coverage = 0.4
+shader_parameter/cloud_softness = 0.35
+shader_parameter/cloud_scale = 1.8
+shader_parameter/cloud_speed = 0.02
+shader_parameter/cloud_height = 0.2
+shader_parameter/cloud_color_day = Color(1, 1, 1, 1)
+shader_parameter/cloud_color_sunset = Color(1, 0.65, 0.55, 1)
+shader_parameter/cloud_shadow_color = Color(0.55, 0.55, 0.65, 1)
+
+[sub_resource type="Sky" id="Sky_u2ykm"]
+sky_material = SubResource("ShaderMaterial_mxndc")
+
+[sub_resource type="Environment" id="Environment_bcxc4"]
+background_mode = 2
+sky = SubResource("Sky_u2ykm")
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+adjustment_enabled = true
+adjustment_saturation = 1.1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bcxc4"]
+size = Vector3(2, 2, 2)
+
+[node name="GameWorld" type="Node3D" unique_id=1404312807]
+
+[node name="PhysicsDriver3D" type="Node" parent="." unique_id=1021468117]
+script = ExtResource("1_u2ykm")
+metadata/_custom_type_script = "uid://wr5ur5dqrkni"
+
+[node name="GroundPlane" type="MeshInstance3D" parent="." unique_id=1459774560]
+transform = Transform3D(1.00393, 0, 0, 0, 1.00393, 0, 0, 0, 1.00393, 0, 0, 0)
+mesh = SubResource("PlaneMesh_bfthn")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="GroundPlane" unique_id=1694330633]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GroundPlane/StaticBody3D" unique_id=1025016590]
+shape = SubResource("BoxShape3D_8mhuu")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=983836539]
+environment = SubResource("Environment_bcxc4")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1361878470]
+transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.570714, 0.778561, 0.376408, -0.502155, -5, 10, -3)
+light_energy = 2.0
+shadow_enabled = true
+shadow_bias = 0.01
+shadow_blur = 0.8
+script = ExtResource("3_mxndc")
+
+[node name="PhysicsCube" parent="." unique_id=1748285154 instance=ExtResource("2_30h0s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.924, 0.25, -3.627)
+
+[node name="Cube2" parent="." unique_id=5862446 instance=ExtResource("2_30h0s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9115767, 0.25, 0)
+
+[node name="Keypad" parent="." unique_id=1053794021 instance=ExtResource("3_8japc")]
+transform = Transform3D(0.8239779, -0.56662196, -2.4767832e-08, 0, -4.371139e-08, 1, -0.56662196, -0.8239779, -3.6017216e-08, 1.6073487, 1.13247, 3.0477386)
+
+[node name="KeypadRoot" parent="Keypad" index="0" unique_id=1059197307 node_paths=PackedStringArray("door_sync_state")]
+door_sync_state = NodePath("../../Door3/door-model/DoorPivot/Operable/SyncState")
+
+[node name="bigcube" parent="." unique_id=2033660520 instance=ExtResource("1_bcxc4")]
+transform = Transform3D(0.819152, 0, 0.573576, 0, 1, 0, -0.573576, 0, 0.819152, 2, 0, 4)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="bigcube" unique_id=2004580155]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="bigcube/StaticBody3D" unique_id=1808679141]
+transform = Transform3D(1.00128, 0, 0, 0, 1.00128, 0, 0, 0, 1.00128, 0, 1, 0)
+shape = SubResource("BoxShape3D_bcxc4")
+
+[node name="SpawnManager" type="Node3D" parent="." unique_id=1929162974]
+script = ExtResource("2_5geq7")
+
+[node name="Table" parent="." unique_id=1855811571 instance=ExtResource("6_1jik2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1284046, 0, -6.202426)
+
+[node name="Door3" parent="." unique_id=182025813 instance=ExtResource("10_ycecn")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.9979551, 0, 3.4205942)
+
+[editable path="Keypad"]
+[editable path="Keypad/KeypadRoot/Buttons/Button1Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button2Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button3Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button4Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button5Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button6Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button7Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button8Pivot/Operable"]
+[editable path="Keypad/KeypadRoot/Buttons/Button9Pivot/Operable"]
+[editable path="Keypad/Examinable"]
+[editable path="Door3"]
+[editable path="Door3/door-model/DoorPivot/Operable"]

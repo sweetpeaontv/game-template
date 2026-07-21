@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://d30vcv8q7rnjc"]
+
+[ext_resource type="PackedScene" uid="uid://lcdlxcy4qijr" path="res://app/game/character/model/armature/armature.glb" id="1_1b6x1"]
+[ext_resource type="Skin" uid="uid://cd8rbmheidrvu" path="res://app/game/character/model/armature/skin.res" id="2_2nj7c"]
+[ext_resource type="Script" uid="uid://dhw36xl6ffva" path="res://app/game/character/model/armature/armature.gd" id="2_kxfl6"]
+
+[node name="Armature" unique_id=1985967918 instance=ExtResource("1_1b6x1")]
+script = ExtResource("2_kxfl6")
+
+[node name="HeadSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="0" unique_id=2053808261]
+skin = ExtResource("2_2nj7c")
+
+[node name="HairSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="1" unique_id=662256330]
+skin = ExtResource("2_2nj7c")
+
+[node name="BeardSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="2" unique_id=342594043]
+skin = ExtResource("2_2nj7c")
+
+[node name="GlassesSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="3" unique_id=1520219303]
+skin = ExtResource("2_2nj7c")
+
+[node name="TorsoSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="4" unique_id=1502598608]
+skin = ExtResource("2_2nj7c")
+
+[node name="LegsSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="5" unique_id=1805956782]
+skin = ExtResource("2_2nj7c")
+
+[node name="ShoesSlot" type="MeshInstance3D" parent="rig/Skeleton3D" parent_id_path=PackedInt32Array(1976563326) index="6" unique_id=686893441]
+skin = ExtResource("2_2nj7c")

@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://fw8tdtgk64bf"]
+
+[ext_resource type="Script" uid="uid://dqefadb0resw3" path="res://app/game/cameras/camera-manager/camera_manager.gd" id="1_nme0w"]
+[ext_resource type="Script" uid="uid://dmvhb6x87jjp0" path="res://app/game/cameras/camera-manager/camera.gd" id="2_iaa2s"]
+[ext_resource type="Script" uid="uid://7b5flimd6mwi" path="res://app/game/cameras/camera-manager/first_person_camera_transform.gd" id="2_judky"]
+
+[node name="CameraManager" type="Node3D" unique_id=348133072]
+script = ExtResource("1_nme0w")
+
+[node name="Rigs" type="Node3D" parent="." unique_id=1795618038]
+
+[node name="FirstPerson" type="Node3D" parent="Rigs" unique_id=1306034645]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/FirstPerson" unique_id=1240429989]
+
+[node name="CameraMount" type="Node3D" parent="Rigs/FirstPerson/RigRoot" unique_id=1671121612]
+
+[node name="CameraRotation" type="Node3D" parent="Rigs/FirstPerson/RigRoot/CameraMount" unique_id=244594672]
+
+[node name="CameraTransform" type="Node3D" parent="Rigs/FirstPerson/RigRoot/CameraMount/CameraRotation" unique_id=628432061]
+script = ExtResource("2_judky")
+
+[node name="ThirdPerson" type="Node3D" parent="Rigs" unique_id=1801151386]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/ThirdPerson" unique_id=1548813330]
+
+[node name="OrbitPivot" type="Node3D" parent="Rigs/ThirdPerson/RigRoot" unique_id=790479969]
+
+[node name="PitchPivot" type="Node3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot" unique_id=416126531]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot" unique_id=1014321098]
+
+[node name="CameraTransform" type="Node3D" parent="Rigs/ThirdPerson/RigRoot/OrbitPivot/PitchPivot/SpringArm3D" unique_id=339386777]
+
+[node name="Examine" type="Node3D" parent="Rigs" unique_id=647511533]
+
+[node name="RigRoot" type="Node3D" parent="Rigs/Examine" unique_id=2074037441]
+
+[node name="CameraTransform" type="Node3D" parent="Rigs/Examine/RigRoot" unique_id=1324022917]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1193000326]
+script = ExtResource("2_iaa2s")

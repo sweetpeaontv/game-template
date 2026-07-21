@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://yvwib18s4bso"]
+
+[ext_resource type="Script" uid="uid://b5lyw0knmhqqv" path="res://app/ui/overlays/customizer/menu/main_menu_customizer.gd" id="1_4afjn"]
+[ext_resource type="PackedScene" uid="uid://cvdh3jict1cyy" path="res://app/ui/components/wizard/wizard.tscn" id="2_01v8x"]
+[ext_resource type="PackedScene" uid="uid://boowuh6mlc164" path="res://app/ui/widgets/character-viewer/character_viewer.tscn" id="3_dy3ay"]
+
+[node name="CharacterCustomizer" type="HBoxContainer" unique_id=987842865]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4afjn")
+
+[node name="Wizard" parent="." unique_id=1471704841 instance=ExtResource("2_01v8x")]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+
+[node name="PreviewRoot" type="Control" parent="." unique_id=755495722]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SubViewPortContainer" type="SubViewportContainer" parent="PreviewRoot" unique_id=1127501661]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="PreviewRoot/SubViewPortContainer" unique_id=1788097307]
+handle_input_locally = false
+size = Vector2i(744, 648)
+render_target_update_mode = 4
+
+[node name="CharacterViewer" parent="PreviewRoot/SubViewPortContainer/SubViewport" unique_id=1036063836 instance=ExtResource("3_dy3ay")]
+
+[node name="RotationRegion" type="Control" parent="PreviewRoot" unique_id=1272696061]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="mouse_entered" from="PreviewRoot/RotationRegion" to="." method="_on_rotation_region_mouse_entered"]
+[connection signal="mouse_exited" from="PreviewRoot/RotationRegion" to="." method="_on_rotation_region_mouse_exited"]

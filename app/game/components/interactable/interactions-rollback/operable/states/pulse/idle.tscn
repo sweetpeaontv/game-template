@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dt1v6nils4ibb"]
+
+[ext_resource type="Script" uid="uid://usyufdtn83hc" path="res://addons/netfox.extras/state-machine/rewindable-state.gd" id="1_ck3dq"]
+
+[node name="Idle" type="Node" unique_id=603860550]
+script = ExtResource("1_ck3dq")
+metadata/_custom_type_script = "uid://usyufdtn83hc"

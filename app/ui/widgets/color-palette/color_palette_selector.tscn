@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://c7ukvprivnkqt"]
+
+[ext_resource type="Script" uid="uid://dy2ktsgxptflr" path="res://app/ui/widgets/color-palette/color_palette_selector.gd" id="1_2udty"]
+
+[node name="ColorPaletteSelector" type="VBoxContainer" unique_id=1772966634]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2udty")
+
+[node name="Label" type="Label" parent="." unique_id=2112258988]
+layout_mode = 2
+text = "Color Type"
+
+[node name="ButtonContainer" type="HFlowContainer" parent="." unique_id=584760110]
+layout_mode = 2

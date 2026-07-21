@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://dd2bnsjixsqe2"]
+
+[ext_resource type="Script" uid="uid://cdf4hxsdl36u1" path="res://app/ui/widgets/character-model-slot-options/character_model_slot_options.gd" id="1_7u7xb"]
+
+[node name="ModelSlotOptions" type="VBoxContainer" unique_id=1616692919]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7u7xb")
+
+[node name="Title" type="Label" parent="." unique_id=539101119]
+layout_mode = 2
+text = "Title"
+
+[node name="MeshOptions" type="HFlowContainer" parent="." unique_id=2024594163]
+layout_mode = 2
+
+[node name="ColorOptions" type="VBoxContainer" parent="." unique_id=1417503511]
+layout_mode = 2

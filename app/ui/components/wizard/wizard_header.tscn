@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://c41mob7sa32t1"]
+
+[ext_resource type="Script" uid="uid://rt3ekfxwayyc" path="res://app/ui/components/wizard/wizard_header.gd" id="1_q8tk5"]
+
+[node name="WizardHeader" type="HBoxContainer" unique_id=1988690601]
+custom_minimum_size = Vector2(300, 0)
+offset_right = 25.0
+offset_bottom = 23.0
+script = ExtResource("1_q8tk5")
+
+[node name="Prev" type="Button" parent="." unique_id=364082902]
+layout_mode = 2
+
+[node name="HExpansion" type="Control" parent="." unique_id=295574277]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Title" type="Label" parent="." unique_id=1907525385]
+layout_mode = 2
+
+[node name="HExpansion2" type="Control" parent="." unique_id=203120570]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Next" type="Button" parent="." unique_id=1027825364]
+layout_mode = 2

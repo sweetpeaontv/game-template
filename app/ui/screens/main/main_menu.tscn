@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://ctackpldgak63"]
+
+[ext_resource type="Script" uid="uid://cjgruyes500td" path="res://app/ui/screens/main/main_menu.gd" id="1_sww8x"]
+
+[node name="MainMenu" type="VBoxContainer" unique_id=316511285]
+offset_right = 170.0
+offset_bottom = 233.0
+script = ExtResource("1_sww8x")
+
+[node name="Title" type="Label" parent="." unique_id=765356570]
+layout_mode = 2
+text = "Sweetpea's MultiplayerGame Template"
+
+[node name="StartGameButton" type="Button" parent="." unique_id=216581438]
+layout_mode = 2
+text = "Start Game"
+
+[node name="JoinGameButton" type="Button" parent="." unique_id=484070846]
+layout_mode = 2
+text = "Join Game"
+
+[node name="CharacterButton" type="Button" parent="." unique_id=858003740]
+layout_mode = 2
+text = "Character"
+
+[node name="SettingsButton" type="Button" parent="." unique_id=1231736977]
+layout_mode = 2
+text = "Settings"
+
+[node name="QuitButton" type="Button" parent="." unique_id=1571058733]
+layout_mode = 2
+text = "Quit"
+
+[node name="SteamCheckButton" type="CheckButton" parent="." unique_id=642639213]
+layout_mode = 2
+text = "Steam?"

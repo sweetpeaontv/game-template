@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://boowuh6mlc164"]
+
+[ext_resource type="Script" uid="uid://bifh58p6qn6b6" path="res://app/ui/widgets/character-viewer/character_viewer.gd" id="1_kqofs"]
+[ext_resource type="PackedScene" uid="uid://dusy1i1c3j8n2" path="res://app/game/worlds/customizer/customizer_world.tscn" id="2_aay7j"]
+
+[node name="CharacterViewer" type="Node3D" unique_id=1036063836]
+script = ExtResource("1_kqofs")
+
+[node name="World" parent="." unique_id=1797802227 instance=ExtResource("2_aay7j")]

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cjw1dw3ep4mhw"]
+
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/interactable.tscn" id="1_interactable"]
+[ext_resource type="Script" uid="uid://cplcxf8yvvcnw" path="res://app/game/components/interactable/interactions-rollback/operable/operable-no-roll.gd" id="2_script"]
+
+[node name="OperableNoRoll" unique_id=1854686869 instance=ExtResource("1_interactable")]
+script = ExtResource("2_script")
+default_operate_action = 0
+ordered_states = Array[StringName]([])
+default_state = &""
+default_animation_duration = 0.5
+default_animation_ease = 2
+default_animation_trans = 7
+pulse_idle_state = &"Idle"
+pulse_duration_sec = 0.2
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="." index="0" unique_id=1036021493]
+remote_path = NodePath("../AnimatableBody3D/CollisionShape3D")
+
+[node name="States" type="Node" parent="." index="3" unique_id=1888479538]
+
+[node name="Close" type="Node" parent="States" index="0" unique_id=1225433423]
+
+[node name="Open" type="Node" parent="States" index="1" unique_id=1879248838]
+
+[node name="AnimatableBody3D" type="AnimatableBody3D" parent="." index="4" unique_id=590225537]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AnimatableBody3D" index="0" unique_id=716605895]

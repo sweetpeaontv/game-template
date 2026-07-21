@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://dusy1i1c3j8n2"]
+
+[ext_resource type="Script" uid="uid://cnbr05cvxgodv" path="res://app/game/worlds/customizer/customizer_world.gd" id="1_dfhae"]
+[ext_resource type="Script" uid="uid://4wawwyh7fyhl" path="res://app/game/cameras/customizer-camera/customizer_camera.gd" id="2_bp8ax"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_0s80k"]
+
+[sub_resource type="Sky" id="Sky_5geq7"]
+sky_material = SubResource("PhysicalSkyMaterial_0s80k")
+
+[sub_resource type="Environment" id="Environment_grriv"]
+background_mode = 2
+sky = SubResource("Sky_5geq7")
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+adjustment_enabled = true
+adjustment_saturation = 1.1
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0s80k"]
+size = Vector2(15, 15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_grriv"]
+size = Vector3(15, 0, 15)
+
+[node name="CustomizerWorld" type="Node3D" unique_id=1797802227]
+script = ExtResource("1_dfhae")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=538976080]
+environment = SubResource("Environment_grriv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1569753283]
+transform = Transform3D(-0.626914, 0.429945, -0.649713, -0.0286577, 0.820649, 0.570714, 0.778561, 0.376408, -0.502155, -5, 10, -3)
+light_energy = 2.0
+shadow_enabled = true
+shadow_bias = 0.01
+
+[node name="GroundPlane" type="MeshInstance3D" parent="." unique_id=1408697234]
+transform = Transform3D(1.00393, 0, 0, 0, 1.00393, 0, 0, 0, 1.00393, 0, 0, 0)
+mesh = SubResource("PlaneMesh_0s80k")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="GroundPlane" unique_id=1119104028]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GroundPlane/StaticBody3D" unique_id=1535711012]
+shape = SubResource("BoxShape3D_grriv")
+
+[node name="CustomizerCamera" type="Camera3D" parent="." unique_id=472701505]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.4803078, -0.45997787)
+current = true
+script = ExtResource("2_bp8ax")
+
+[node name="CoreAP" type="Node3D" parent="." unique_id=680110914]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.90547514, -1.7768435)
+
+[node name="HeadAP" type="Node3D" parent="." unique_id=1306619886]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.5761843, -0.53852016)
+
+[node name="BodyAP" type="Node3D" parent="." unique_id=1424048548]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.69775224, -1.2130489)

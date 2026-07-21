@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bwgk64v6qjj3i"]
+
+[ext_resource type="Script" uid="uid://cvadlbdu6010n" path="res://app/ui/overlays/settings/settings.gd" id="1_qv2wb"]
+
+[node name="Settings" type="Control" unique_id=880708556]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_qv2wb")
+
+[node name="BackButton" type="Button" parent="." unique_id=10025774]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Back"
+
+[node name="Label" type="Label" parent="." unique_id=532271538]
+layout_mode = 0
+offset_left = 89.0
+offset_top = 6.0
+offset_right = 215.0
+offset_bottom = 29.0
+text = "SETTINGS MENU"

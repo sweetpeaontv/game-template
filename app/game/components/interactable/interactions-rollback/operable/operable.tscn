@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cqviiexjirkxu"]
+
+[ext_resource type="PackedScene" uid="uid://d0d0hw864xqyq" path="res://app/game/components/interactable/interactable.tscn" id="1_bb0my"]
+[ext_resource type="Script" uid="uid://cca4b7jyb54gg" path="res://app/game/components/interactable/interactions-rollback/operable/operable.gd" id="2_u6xfc"]
+[ext_resource type="Script" uid="uid://d350u8evihs1u" path="res://addons/netfox/rollback/rollback-synchronizer.gd" id="3_afm5q"]
+[ext_resource type="Script" uid="uid://byrgwv2o7hstx" path="res://addons/netfox.extras/state-machine/rewindable-state-machine.gd" id="4_aob3t"]
+
+[node name="Operable" unique_id=2057239684 instance=ExtResource("1_bb0my")]
+script = ExtResource("2_u6xfc")
+default_operate_action = 0
+ordered_states = Array[StringName]([])
+default_state = &""
+default_animation_duration = 0.5
+default_animation_ease = 2
+default_animation_trans = 7
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="." index="0" unique_id=1036021493]
+remote_path = NodePath("../AnimatableBody3D/CollisionShape3D")
+
+[node name="RollbackSynchronizer" type="Node" parent="." index="3" unique_id=367096572 node_paths=PackedStringArray("root")]
+script = ExtResource("3_afm5q")
+root = NodePath("..")
+state_properties = Array[String](["RewindableStateMachine:state"])
+metadata/_custom_type_script = "uid://d350u8evihs1u"
+
+[node name="RewindableStateMachine" type="Node" parent="." index="4" unique_id=1888479538]
+script = ExtResource("4_aob3t")
+metadata/_custom_type_script = "uid://byrgwv2o7hstx"
+
+[node name="AnimatableBody3D" type="AnimatableBody3D" parent="." index="5" unique_id=805990844]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AnimatableBody3D" index="0" unique_id=1631186179]
