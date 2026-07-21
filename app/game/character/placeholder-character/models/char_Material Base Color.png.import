@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cp4pu86p4e1ot"
-path.s3tc="res://.godot/imported/char_material_base_color.png-84b211772943e7c0c38be109a7069cdc.s3tc.ctex"
+uid="uid://uxpnrxx70kw2"
+path.s3tc="res://.godot/imported/char_Material Base Color.png-0fe49b47437d58fe28f7f75432b074b8.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://app/game/player/models/char_material_base_color.png"
-dest_files=["res://.godot/imported/char_material_base_color.png-84b211772943e7c0c38be109a7069cdc.s3tc.ctex"]
+source_file="res://app/game/character/placeholder-character/models/char_Material Base Color.png"
+dest_files=["res://.godot/imported/char_Material Base Color.png-0fe49b47437d58fe28f7f75432b074b8.s3tc.ctex"]
 
 [params]
 

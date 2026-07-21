@@ -5,9 +5,12 @@ signal alt_interact_hold_time_changed(hold_time: float)
 
 # DEBUG
 const IS_VERBOSE := false
+const IS_TEMPLATE: bool = true
 
 # SCENES
-const character_scene: PackedScene = preload("res://app/game/character/character.tscn")
+# character.tscn depends on proprietary armature/mesh assets — load lazily when not in template mode.
+const character_scene_path := "res://app/game/character/character.tscn"
+const PlaceholderCharacterScript = preload("res://app/game/player/placeholder_character.gd")
 
 # CONFIG
 var config: CharacterConfig
@@ -64,8 +67,11 @@ var player_status: PlayerStatus = PlayerStatus.LOADING
 #===================================================================================#
 func _enter_tree() -> void:
 	# Necessary for TickInterpolator/RollbackSynchronizer to resolve paths.
-	if character_model == null and config != null:
-		_create_character()
+	if IS_TEMPLATE:
+		_create_placeholder_model()
+	else:
+		if character_model == null and config != null:
+			_create_character()
 
 func on_init(new_peer_id: int, new_snapshot: Dictionary) -> void:
 	self.peer_id = new_peer_id
@@ -120,11 +126,22 @@ func _setup() -> void:
 	player_status = PlayerStatus.PLAYING
 
 func _create_character() -> void:
+	var character_scene := load(character_scene_path) as PackedScene
+	if character_scene == null:
+		push_error("Player: failed to load %s — falling back to placeholder" % character_scene_path)
+		_create_placeholder_model()
+		return
 	var new_character: Node3D = character_scene.instantiate()
 	new_character.setup_config(config)
 	new_character.name = "CharacterModel"
 	add_child(new_character)
 	character_model = new_character
+
+func _create_placeholder_model() -> void:
+	var new_model: Node3D = PlaceholderCharacterScript.new()
+	new_model.name = "CharacterModel"
+	add_child(new_model)
+	character_model = new_model
 #===================================================================================#
 
 # DESTRUCT

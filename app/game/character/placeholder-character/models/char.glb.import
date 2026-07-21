@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://cg6uw4vpjuqvj"
-path="res://.godot/imported/char.glb-59982f5c7cf888f10547e13cdba66cd1.scn"
+path="res://.godot/imported/char.glb-72868163d125d9e1318da4f753c7489b.scn"
 
 [deps]
 
-source_file="res://app/game/player/models/char.glb"
-dest_files=["res://.godot/imported/char.glb-59982f5c7cf888f10547e13cdba66cd1.scn"]
+source_file="res://app/game/character/placeholder-character/models/char.glb"
+dest_files=["res://.godot/imported/char.glb-72868163d125d9e1318da4f753c7489b.scn"]
 
 [params]
 

@@ -101,8 +101,9 @@ func _scan_slot_dir(dir_path: String) -> Dictionary:
 	var display_names := {}
 	var dir := DirAccess.open(dir_path)
 	if dir == null:
+		# Template builds ship without proprietary mesh packs; empty slots are valid.
 		push_warning("MeshRegistry: missing mesh directory %s" % dir_path)
-		return meshes
+		return { "meshes": meshes, "display_names": display_names }
 
 	dir.list_dir_begin()
 	var file_name := dir.get_next()
